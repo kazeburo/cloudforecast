@@ -15,12 +15,14 @@ my $server_list_yaml = $root_dir . '/server_list.yaml';
 
 my $max_workers            = 4;
 my $max_requests_per_child = 100;
+my $max_execution_time = 60;
 
 GetOptions(
     'c|config=s' => \$config_yaml,
     'l|server-list=s' => \$server_list_yaml,
     'max-workers=i'   => \$max_workers,
     'max-request-per-child=i' => \$max_requests_per_child,
+    'max-exection-time=i' => \$max_execution_time,
 );
 
 die 'config not found' unless $config_yaml;
@@ -42,5 +44,6 @@ my $gearman = CloudForecast::Gearman->new({
     port => $global_config->{gearman_server}->{port},
 });
 
-$gearman->fetcher_worker($global_config, $max_workers, $max_requests_per_child);
+$gearman->fetcher_worker($global_config, $max_workers,
+                         $max_requests_per_child, $max_execution_time);
 

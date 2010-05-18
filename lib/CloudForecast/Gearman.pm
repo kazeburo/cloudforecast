@@ -6,9 +6,11 @@ use base qw/Class::Accessor::Fast/;
 use Gearman::Client;
 use Gearman::Worker;
 use CloudForecast::Log;
-use Parallel::Prefork;
+use Parallel::Prefork::SpareWorkers;
 use UNIVERSAL::require;
 use Storable qw//;
+use CloudForecast::Gearman::Scoreboard;
+
 
 __PACKAGE__->mk_accessors(qw/host port/);
 
@@ -132,16 +134,40 @@ sub updater_worker {
     $self->run_worker(@_);
 }
 
+sub fork_watch_zombie {
+    my $self = shift;
+    my $scoreboard = shift;
+    my $max_exection_time = shift;
+
+    my $pid = fork();
+    return if($pid); # main process
+
+    while ( 1 ) {
+        my @statuses = $scoreboard->get_parsed_statuses;
+        my @long_active = grep {
+            $_->{status} eq CloudForecast::Gearman::Scoreboard::STATUS_ACTIVE
+                && time - $_->{time} > $max_exection_time
+            } @statuses;
+        map { kill 'TERM', $_->{pid} } @long_active;
+        sleep 30;
+    }
+}
+
 sub run_worker {
     my $self = shift;
-    my ($max_workers, $max_requests_per_child ) = @_;
+    my ($max_workers, $max_requests_per_child, $max_exection_time ) = @_;
     $max_workers ||= 4;
     $max_requests_per_child ||= 50;
+    $max_exection_time ||= 60;
 
     my $worker = $self->gearman_worker;
+ 
+    my $scoreboard = CloudForecast::Gearman::Scoreboard->new( undef, $max_workers );
+    $self->fork_watch_zombie( $scoreboard, $max_exection_time );
 
-    my $pm = Parallel::Prefork->new({
+    my $pm = Parallel::Prefork::SpareWorkers->new({
         max_workers  => $max_workers,
+        scoreboard   => $scoreboard,
         trap_signals => {
             TERM => 'TERM',
             HUP  => 'TERM',
@@ -153,9 +179,21 @@ sub run_worker {
         $pm->start and next;
 
         my $i = 0;
-        while ($i++ < $max_requests_per_child) {
-            $worker->work();
-        }
+        $worker->work(
+            start_cb => sub {
+                $i++;
+                $pm->set_status( CloudForecast::Gearman::Scoreboard::STATUS_ACTIVE );
+            },
+            on_fail => sub {
+                $pm->set_status( CloudForecast::Gearman::Scoreboard::STATUS_IDLE );
+            },
+            on_complete => sub {
+                $pm->set_status( CloudForecast::Gearman::Scoreboard::STATUS_IDLE );
+            },
+            stop_if => sub {
+                $i++ >= $max_requests_per_child
+            }
+        );
 
         $pm->finish;
     }
