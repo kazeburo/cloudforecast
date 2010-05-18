@@ -10,3 +10,5 @@ nytprof.out
 MANIFEST.bak
 *.sw[po]
 *~
+site-lib
+data
