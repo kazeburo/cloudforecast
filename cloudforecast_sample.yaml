@@ -1,0 +1,17 @@
+---
+config:
+  gearman_enable: 1
+  gearman_server:
+    host: localhost
+    port: 7004
+  data_dir: data
+  host_config_dir: host_config
+
+component_config:
+  SNMP:
+    community: public
+    version: 2
+  MySQL:
+    user: root
+    password: ""
+

@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib";
+use lib "$FindBin::Bin/site-lib";
+use Getopt::Long;
+use CloudForecast::Radar;
+
+my $root_dir = $FindBin::Bin;
+my $config = $root_dir . '/cloudforecast.yaml';
+my $server_list = $root_dir .'/server_list.yaml';
+
+GetOptions(
+    'c|config=s' => \$config,
+    'l|server-list=s' => \$server_list,
+);
+
+die 'config not found' unless $config;
+die 'server_list not found' unless $server_list;
+
+my $radar = CloudForecast::Radar->new({
+    root_dir => $root_dir,
+    global_config => $config,
+    server_list => $server_list,
+});
+$radar->run;
+
+
+
+
+

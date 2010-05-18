@@ -1,0 +1,8 @@
+---
+components_config:
+resources:
+  - traffic:3:eth1
+  - basic
+  - mysql
+  - innodb
+

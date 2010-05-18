@@ -1,0 +1,22 @@
+--- #Dev
+servers:
+  - config: basic.yaml
+    hosts:
+      - 192.168.55.10 dev1 develop
+      - 192.168.55.11 dev2 develop
+
+--- #Production
+servers:
+  - config: httpd.yaml
+    hosts:
+      - 192.168.51.10 web1 web memcached
+      - 192.168.51.11 web2 web memcached
+  - config: mysql.yaml
+    hosts:
+      - 192.168.51.60 db1 mysql master
+      - 192.168.51.61 db2 mysql slave
+      - 192.168.51.62 db2 mysql slave
+  - config: basic.yaml
+    hosts:
+      - 192.168.51.90 batch1 batch
+

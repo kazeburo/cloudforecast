@@ -1,0 +1,8 @@
+---
+components_config:
+resources:
+  - traffic:2:eth0
+  - traffic:3:eth1
+  - basic
+  - http:80
+  - memcached:11211

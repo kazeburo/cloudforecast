@@ -1,0 +1,16 @@
+CloudForecast - server resource monitoring framework
+
+WARNING: Alpha quality code
+
+# 
+CF_DEBUG=1 ./cloudforecast_radar -c cloudforecast.yaml -l server_list.yaml
+
+# fetcher worker
+CF_DEBUG=1 ./cf_fetcher_worker -c cloudforecast.yaml -l server_list.yaml
+
+# rrd update worker
+CF_DEBUG=1 ./cf_updater_worker -c cloudforecast.yaml -l server_list.yaml
+
+# web server
+CF_DEBUG=1 ./cloudforecast_web -p 5000 -c cloudforecast.yaml -l server_list.yaml
+
