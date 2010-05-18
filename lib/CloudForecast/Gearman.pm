@@ -11,11 +11,26 @@ use UNIVERSAL::require;
 use Storable qw//;
 use CloudForecast::Gearman::Scoreboard;
 
-
-__PACKAGE__->mk_accessors(qw/host port/);
+__PACKAGE__->mk_accessors(qw/host port max_workers
+                             max_requests_per_child max_exection_time/);
 
 our $GEARMAN_CONNECT = {};
 our $GEARMAN_WORKER_CONNECT = {};
+
+sub new {
+    my $class = shift;
+    my $args = ref $_[0] ? shift : { @_ };
+
+    Carp::croak "no gearman host" unless $args->{host};
+
+    $class->SUPER::new({
+        host => $args->{host},
+        port => $args->{port} || 7003,
+        max_workers => $args->{max_workers} || 4,
+        max_requests_per_child => $args->{max_requests_per_child} || 50,
+        max_exection_time => $args->{max_exection_time} || 60,
+    });
+}
 
 sub gearman_client {
     my $self = shift;
@@ -137,36 +152,33 @@ sub updater_worker {
 sub fork_watch_zombie {
     my $self = shift;
     my $scoreboard = shift;
-    my $max_exection_time = shift;
 
     my $pid = fork();
     return if($pid); # main process
 
     while ( 1 ) {
         my @statuses = $scoreboard->get_parsed_statuses;
-        my @long_active = grep {
-            $_->{status} eq CloudForecast::Gearman::Scoreboard::STATUS_ACTIVE
-                && time - $_->{time} > $max_exection_time
-            } @statuses;
-        map { kill 'TERM', $_->{pid} } @long_active;
+        for my $status ( @statuses ) {
+            if ( $status->{status} eq CloudForecast::Gearman::Scoreboard::STATUS_ACTIVE
+                     && time - $status->{time} > $self->max_exection_time ) {
+                CloudForecast::Log->warn("exection_time exceed, kill: " . $status->{pid});
+                kill 'TERM', $status->{pid}
+            }
+        }
         sleep 30;
     }
 }
 
 sub run_worker {
     my $self = shift;
-    my ($max_workers, $max_requests_per_child, $max_exection_time ) = @_;
-    $max_workers ||= 4;
-    $max_requests_per_child ||= 50;
-    $max_exection_time ||= 60;
-
     my $worker = $self->gearman_worker;
  
-    my $scoreboard = CloudForecast::Gearman::Scoreboard->new( undef, $max_workers );
-    $self->fork_watch_zombie( $scoreboard, $max_exection_time );
+    my $scoreboard = CloudForecast::Gearman::Scoreboard->new( 
+        undef, $self->max_workers );
+    $self->fork_watch_zombie( $scoreboard );
 
     my $pm = Parallel::Prefork::SpareWorkers->new({
-        max_workers  => $max_workers,
+        max_workers  => $self->max_workers,
         scoreboard   => $scoreboard,
         trap_signals => {
             TERM => 'TERM',
@@ -191,7 +203,7 @@ sub run_worker {
                 $pm->set_status( CloudForecast::Gearman::Scoreboard::STATUS_IDLE );
             },
             stop_if => sub {
-                $i++ >= $max_requests_per_child
+                $i++ >= $self->max_requests_per_child
             }
         );
 

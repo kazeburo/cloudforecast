@@ -11,7 +11,6 @@ use Getopt::Long;
 
 my $root_dir = $FindBin::Bin;
 my $config_yaml = $root_dir . '/cloudforecast.yaml';
-my $server_list_yaml = $root_dir . '/server_list.yaml';
 
 my $max_workers            = 4;
 my $max_requests_per_child = 100;
@@ -19,21 +18,18 @@ my $max_execution_time = 60;
 
 GetOptions(
     'c|config=s' => \$config_yaml,
-    'l|server-list=s' => \$server_list_yaml,
     'max-workers=i'   => \$max_workers,
     'max-request-per-child=i' => \$max_requests_per_child,
     'max-exection-time=i' => \$max_execution_time,
 );
 
 die 'config not found' unless $config_yaml;
-die 'server_list not found' unless $server_list_yaml;
 
 my $configloader = CloudForecast::ConfigLoader->new({
     root_dir => $root_dir,
     global_config => $config_yaml,
-    server_list => $server_list_yaml,
 });
-$configloader->load_all();
+$configloader->load_global_config();
 my $global_config = $configloader->global_config;
 
 die 'gearman is disabled' unless $global_config->{gearman_enable};
@@ -42,8 +38,10 @@ die 'gearman is disabled' unless $global_config->{gearman_enable};
 my $gearman = CloudForecast::Gearman->new({
     host => $global_config->{gearman_server}->{host},
     port => $global_config->{gearman_server}->{port},
+    max_workers => $max_workers,
+    max_requests_per_child => $max_requests_per_child,
+    max_execution_time => $max_execution_time,
 });
 
-$gearman->fetcher_worker($global_config, $max_workers,
-                         $max_requests_per_child, $max_execution_time);
+$gearman->fetcher_worker($global_config);
 
