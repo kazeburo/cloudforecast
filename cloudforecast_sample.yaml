@@ -4,6 +4,8 @@ config:
   gearman_server:
     host: localhost
     port: 7004
+  web:
+    port: 5000
   data_dir: data
   host_config_dir: host_config
 

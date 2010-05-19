@@ -260,7 +260,6 @@ sub rrd_path {
         URI::Escape::uri_escape( $self->address ),
         join( "-", @{$self->args});
     return Path::Class::file(
-        $self->global_config->{root_dir},
         $self->global_config->{data_dir},
         $self->resource_name,
         $filename )->cleanup;

@@ -5,6 +5,9 @@ use warnings;
 use base qw/Class::Accessor::Fast/;
 use Path::Class qw//;
 use YAML qw//;
+use Cwd;
+use Filesys::Notify::Simple;
+use CloudForecast::Log;
 
 __PACKAGE__->mk_accessors(qw/root_dir global_config_yaml server_list_yaml 
                            global_config global_component_config server_list
@@ -60,8 +63,21 @@ sub load_global_config {
     $self->global_component_config( $config->{component_config} || {} );
     $self->global_config( $config->{config} || {} );
 
-    die 'data_dir isnot defined in config' unless $self->global_config->{data_dir}; 
-    $self->global_config->{root_dir} = $self->root_dir;
+
+    my $host_config_dir = $self->global_config->{host_config_dir} || 'host_config';
+    if ( $host_config_dir !~ m!^/! ) {
+        $self->global_config->{host_config_dir} = Path::Class::dir(
+            $self->root_dir,
+            $host_config_dir );
+    }
+
+    my $data_dir = $self->global_config->{data_dir};
+    die 'data_dir isnot defined in config' unless $data_dir; 
+    if ( $data_dir !~ m!^/! ) {
+        $self->global_config->{data_dir} = Path::Class::dir(
+            $self->root_dir,
+            $data_dir );
+    }
 }
 
 sub load_server_list {
@@ -130,8 +146,7 @@ sub load_host_config {
         if $host_config_cache->{$file};
 
     my $config = $self->load_yaml(
-        Path::Class::file($self->root_dir,
-                          $self->global_config->{host_config_dir},
+        Path::Class::file( $self->global_config->{host_config_dir},
                           $file
                       )->stringify );
     $config ||= {};
@@ -169,6 +184,37 @@ sub parse_host {
         component_config => $config->{component_config},
         resources => $config->{resources}
     };
+}
+
+
+sub watchdog {
+    my $self = shift;
+    my $parent_pid = $$;
+
+    my $root_dir = $self->root_dir;
+    die "root_dir is undefined" unless $root_dir;
+    my @path;
+    push @path, "$root_dir/lib", "$root_dir/site-lib";
+    my $program_name = Cwd::realpath($0);
+    push @path, $program_name if -f $program_name;
+    push @path, $self->global_config_yaml if $self->global_config_yaml;
+    push @path, $self->server_list_yaml if $self->server_list_yaml;
+    push @path, $self->global_config->{host_config_dir}
+        if $self->global_config->{host_config_dir};
+
+    my $pid = fork();
+    die "failed fork: $!" unless defined $pid;
+    return $pid if($pid); # main process
+    
+    my $watcher = Filesys::Notify::Simple->new([ "." ]);
+    while (1) {
+        $watcher->wait( sub {
+            my @path = map { $_->{path} } @_;
+            CloudForecast::Log->warn( "File updates: " , join(",", @path) );
+            sleep 1;
+            kill 'TERM', $parent_pid;
+        } );
+    }
 }
 
 1;

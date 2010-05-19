@@ -22,7 +22,7 @@ time := \d{14} ;
 =cut
 
 our $SLOT_SIZE = 1 + 14 + 14 + 1; # STATUS + PID + TIME + "\n";
-our $EMPTY_SLOT = _format_slot( STATUS_NEXIST, 0, 0 );
+our $EMPTY_SLOT = STATUS_NEXIST . (' ' x ($SLOT_SIZE - 2)) . "\n";
 
 sub _format_slot {
     my ( $status, $pid, $time ) = @_;
@@ -111,6 +111,7 @@ sub clear_child {
 
 sub child_start {
     my $self = shift;
+
     die "child_start cannot be called twite"
         if defined $self->{slot};
     close $self->{fh}
