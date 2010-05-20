@@ -10,5 +10,7 @@ nytprof.out
 MANIFEST.bak
 *.sw[po]
 *~
+cloudforecast_dev.yaml
+server_list_dev.yaml
 site-lib
 data

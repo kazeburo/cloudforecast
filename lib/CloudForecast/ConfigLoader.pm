@@ -209,7 +209,8 @@ sub watchdog {
     my $watcher = Filesys::Notify::Simple->new([ "." ]);
     while (1) {
         $watcher->wait( sub {
-            my @path = map { $_->{path} } @_;
+            my @path = grep { $_ !~ m![/\\][\._]|\.bak$|~$!  } map { $_->{path} } @_;
+            return if ! @path;
             CloudForecast::Log->warn( "File updates: " , join(",", @path) );
             sleep 1;
             kill 'TERM', $parent_pid;
