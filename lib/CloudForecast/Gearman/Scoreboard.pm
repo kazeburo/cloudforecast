@@ -39,7 +39,7 @@ sub new {
     sysopen my $fh, $filename, O_RDWR | O_CREAT
         or die "failed to create scoreboard file:$filename:$!";
     my $wlen = syswrite $fh, $EMPTY_SLOT x $max_workers;
-
+warn $filename;
     my $self = bless {
         filename    => $filename,
         fh          => $fh,
@@ -97,7 +97,7 @@ sub clear_child {
         my $rlen = sysread($self->{fh}, my $data, $SLOT_SIZE);
         die "unexpected eof while reading scoreboard file:$!"
             unless $rlen == $SLOT_SIZE;
-        if ($data =~ /^.$pid[ ]*\n$/) {
+        if ($data =~ /^.$pid .*\n$/) {
             # found
             sysseek $self->{fh}, $SLOT_SIZE * $slot, SEEK_SET
                 or die "seek failed:$!";
