@@ -14,14 +14,20 @@ requires 'UNIVERSAL::require';
 requires 'Path::Class';
 requires 'URI::Escape';
 requires 'Scalar::Util';
-requires 'Plack', 0.9931;
+requires 'Plack', 0.9937;
 requires 'Router::Simple';
 requires 'Text::MicroTemplate';
 requires 'Gearman::Client', 1.10;
 reuiress 'Gearman::Server';
-requries 'Parallel::Prefork';
+requries 'Parallel::Prefork', 0.08;
 requires 'YAML', 0.71;
+requires 'Starlet', 0.08;
+requires 'Filesys::Notify::Simple';
 #requires 'RRDs'; $ yum install rrdtool-perl
+
+if ( $^O eq 'linux' ) {
+    requires 'Linux::Inotify2'
+}
 
 requires 'LWP::UserAgent';
 #requires 'SNMP'; $ yum install net-snmp-perl
