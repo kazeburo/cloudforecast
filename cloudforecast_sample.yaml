@@ -3,7 +3,7 @@ config:
   gearman_enable: 1
   gearman_server:
     host: localhost
-    port: 7004
+    port: 7003
   web:
     port: 5000
   data_dir: data

@@ -45,7 +45,7 @@ sub run {
     my $next = $now - ( $now % 300 )  + 300;
     my $pid;
 
-    CloudForecast::Log->debug( sprintf( "next radar start in %s", scalar localtime $next) );
+    CloudForecast::Log->warn( sprintf( "first radar start in %s", scalar localtime $next) );
 
     while ( 1 ) {
         select( undef, undef, undef, 0.5 );
@@ -56,7 +56,8 @@ sub run {
                 $pid = undef;
             }
             elsif ( $kid ) {
-                CloudForecast::Log->debug( sprintf("radar finish pid: %d, code:%d", $kid, $? >> 8) );
+                CloudForecast::Log->warn( sprintf("radar finish pid: %d, code:%d", $kid, $? >> 8) );
+                CloudForecast::Log->warn( sprintf( "next radar start in %s", scalar localtime $next) );
                 $pid = undef;
             }
         }
@@ -68,7 +69,7 @@ sub run {
 
         $now = time;
         if ( $now >= $next ) {
-            CloudForecast::Log->debug( sprintf( "(%s) radar start ", scalar localtime $next) );
+            CloudForecast::Log->warn( sprintf( "(%s) radar start ", scalar localtime $next) );
             $next = $now - ( $now % 300 ) + 300;
 
             if ( $pid ) {
