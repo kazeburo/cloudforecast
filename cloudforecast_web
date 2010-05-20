@@ -3,171 +3,29 @@
 use FindBin;
 use lib "$FindBin::Bin/lib";
 use lib "$FindBin::Bin/site-lib";
-use CloudForecast::Web -base;
-use CloudForecast::ConfigLoader;
-use CloudForecast::Host;
+use CloudForecast::Web::Server;
 use Getopt::Long;
 
 my $root_dir = $FindBin::Bin;
-my $config_yaml = $root_dir . '/cloudforecast.yaml';
-my $server_list_yaml = $root_dir . '/server_list.yaml';
+my $config = $root_dir . '/cloudforecast.yaml';
+my $server_list = $root_dir .'/server_list.yaml';
+my $restarter = 0;
+my $port = 5000;
 
-my @argv = @ARGV;
-Getopt::Long::Configure("no_ignore_case", "pass_through");
 GetOptions(
-    'c|config=s' => \$config_yaml,
-    'l|server-list=s' => \$server_list_yaml,
+    'port=s' => \$port,
+    'r|restarter' => \$restarter,
+    'c|config=s' => \$config,
+    'l|server-list=s' => \$server_list,
 );
 
-die 'config not found' unless $config_yaml;
-die 'server_list not found' unless $server_list_yaml;
+die 'config not found' unless $config;
+die 'server_list not found' unless $server_list;
 
-my $configloader = CloudForecast::ConfigLoader->new({
+CloudForecast::Web::Server->new({
+    port => $port,
+    restarter => $restarter,
     root_dir => $root_dir,
-    global_config => $config_yaml,
-    server_list => $server_list_yaml,
-});
-$configloader->load_all();
-
-my $global_config = $configloader->global_config;
-my $server_list = $configloader->server_list;
-my $all_hosts = $configloader->all_hosts;
-
-my $page_title = $server_list_yaml;
-$page_title =~ s!^(.+)/!!;
-$page_title =~ s!\.[^.]+$!!;
-
-sub get_host {
-    my $host = shift;
-    my $host_instance = CloudForecast::Host->new({
-        address => $host->{address},
-        hostname => $host->{hostname},
-        details => $host->{details},
-        resources => $host->{resources},
-        component_config => $host->{component_config},
-        global_config => $global_config,
-    });
-    $host_instance;
-}
-
-get '/' => sub {
-    my $req = shift;
-    my $p = shift;
-    return render('index.mt');
-};
-
-get '/server' => sub {
-    my $req = shift;
-
-    my $address = $req->param('address');
-    return [ 404, [], ['Address Not Found'] ] unless $address;
-
-    my $host = $all_hosts->{$address};
-    return [ 404, [], ['Host Not Found'] ] unless $host;
-
-    my $host_instance = get_host($host);
-    my @graph_list = $host_instance->list_graph;
-
-    return render('server.mt');
-};
-
-get '/graph' => sub {
-    my $req = shift;
-
-    my $address = $req->param('address');
-    return [ 404, [], ['Address Not Found'] ] unless $address;
-    my $resource = $req->param('resource');
-    return [ 404, [], ['Resource Not Found'] ] unless $resource;
-    my $key = $req->param('key');
-    return [ 404, [], ['Graph type key Not Found'] ] unless $key;
-
-    my $span = $req->param('span') || 'd';
-    my $host = $all_hosts->{$address};
-    return [ 404, [], ['Host Not Found'] ] unless $host;
-
-    my $host_instance = get_host($host);
-    my ($img,$err) = $host_instance->draw_graph($resource,$key, $span);
-
-    return [ 500, [], ['Internal Server Error', $err] ] unless $img;
-    return [ 200, ['Content-Type','image/png'], [$img] ];
-};
-
-get '/default.css' => sub {
-    my $req = shift;
-    return [ 200, ['Content-Type','text/css'], [render('css.mt')] ];
-}; 
-
-
-run_server(@argv);
-
-__DATA__
-@@ index.mt
-<html>
-<head>
-<title>CloudForecast Server List</title>
-<link rel="stylesheet" type="text/css" href="/default.css" />
-</head>
-<body>
-<h1 class="title"><?= $page_title ?> </h1>
-
-<ul>
-<? my $i=0 ?>
-<? for my $server ( @$server_list ) { ?>
-<li><a href="#group-<?= $i ?>"><?= $server->{title} ?></a></li>
-<? $i++ } ?>
-</ul>
-
-<hr>
-
-<ul>
-<? my $k=0 ?>
-<? for my $server ( @$server_list ) { ?>
-<li id="group-<?= $k ?>"><?= $server->{title} ?></li>
-<ul>
-  <? for my $host ( @{$server->{hosts}} ) { ?>
-  <li><a href="/server?address=<?= $host->{address} ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></li>
-  <? } ?>
-</ul>
-<? $k++ } ?>
-</ul>
-
-</body>
-</html>
-
-@@ server.mt
-<html>
-<head>
-<title>CloudForecast Server List</title>
-<link rel="stylesheet" type="text/css" href="/default.css" />
-</head>
-<body>
-<h1 class="title"><?= $page_title ?> </h1>
-<h2><span class="address"><?= $host->{address} ?></span> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></h2>
-
-<? for my $resource ( @graph_list ) { ?>
-<h4><?= $resource->{resource_class} ?></h4>
-<? for my $graph ( @{$resource->{graphs}} ) { ?>
-<nobr />
-<? for my $term ( qw/d w m y/ ) { ?>
-<img src="/graph?span=<?= $term ?>&amp;address=<?= $host->{address} ?>&amp;resource=<?= $resource->{resource} ?>&amp;key=<?= $graph ?>" />
-<? } ?>
-<br />
-<? } ?>
-<? } ?>
-
-</body>
-</html>
-
-
-@@ css.mt
-
-a { color: #5555cc;}
-a:link { color: #5555cc;}
-a:visited { color: #555599;}
-a:active { color: #999999;  }
-a:hover { color: #999999;  }
-
-ol, ul{
-    list-style-position:inside;
-}
-
+    global_config => $config,
+    server_list => $server_list,
+})->run;
