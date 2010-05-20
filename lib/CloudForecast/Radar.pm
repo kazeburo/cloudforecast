@@ -6,8 +6,12 @@ use base qw/Class::Accessor::Fast/;
 use CloudForecast::ConfigLoader;
 use CloudForecast::Host;
 use CloudForecast::Log;
+use POSIX ":sys_wait_h";
 
-__PACKAGE__->mk_accessors(qw/root_dir global_config server_list/);
+__PACKAGE__->mk_accessors(qw/restarter
+                             root_dir
+                             global_config
+                             server_list/);
 
 
 sub run {
@@ -25,13 +29,78 @@ sub run {
 
     CloudForecast::Log->debug("finished parse yaml");
     
-    foreach my $server ( @$server_list ) {
-        my $hosts = $server->{hosts};
-        foreach my $host ( @$hosts ) {
-            $self->run_host($host, $global_config);
+    my @watchdog_pid;
+    if ( $self->restarter ) {
+        CloudForecast::Log->debug("restarter start");
+        push @watchdog_pid, $configloader->watchdog;
+    }
+
+    my @signals_received;
+    $SIG{$_} = sub {
+        push @signals_received, $_[0];
+    } for (qw/INT TERM HUP/);
+    $SIG{PIPE} = 'IGNORE';
+
+    my $now = time;
+    my $next = $now - ( $now % 300 )  + 300;
+    my $pid;
+
+    CloudForecast::Log->debug( sprintf( "next radar start in %s", scalar localtime $next) );
+
+    while ( 1 ) {
+        select( undef, undef, undef, 0.5 );
+        if ( $pid ) {
+            my $kid = waitpid( $pid, WNOHANG );
+            if ( $kid == -1 ) {
+                CloudForecast::Log->warn( "no child process");
+                $pid = undef;
+            }
+            elsif ( $kid ) {
+                CloudForecast::Log->debug( sprintf("radar finish pid: %d, code:%d", $kid, $? >> 8) );
+                $pid = undef;
+            }
+        }
+
+        if ( scalar @signals_received ) {
+            CloudForecast::Log->warn( "signals_received:" . join ",",  @signals_received );
+            last;
+        }
+
+        $now = time;
+        if ( $now >= $next ) {
+            CloudForecast::Log->debug( sprintf( "(%s) radar start ", scalar localtime $next) );
+            $next = $now - ( $now % 300 ) + 300;
+
+            if ( $pid ) {
+                CloudForecast::Log->warn( "Previous radar exists, skipping this time");
+                next;
+            }
+
+            $pid = fork();
+            die "failed fork: $!" unless defined $pid;
+            next if $pid; #main process
+
+            # child process
+            foreach my $server ( @$server_list ) {
+                my $hosts = $server->{hosts};
+                foreach my $host ( @$hosts ) {
+                    $self->run_host($host, $global_config);
+                }
+            }
+            
+            exit 0;
         }
     }
 
+    if ( $pid ) {
+        CloudForecast::Log->warn( "waiting for radar process finishing" );
+        waitpid( $pid, 0 );
+    }
+    
+    for my $watchdog_pid ( @watchdog_pid ) {
+        kill 'TERM', $watchdog_pid;
+        waitpid( $watchdog_pid, 0 );
+    }
 }
 
 

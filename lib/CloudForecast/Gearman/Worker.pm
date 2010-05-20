@@ -155,6 +155,7 @@ sub run_worker {
     my @watchdog_pid;
     push @watchdog_pid, $self->watchdog_zombie( $scoreboard );
     if ( $self->restarter ) {
+        CloudForecast::Log->debug("restarter start");
         push @watchdog_pid, $self->configloader->watchdog;
     }
 

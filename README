@@ -2,7 +2,7 @@ CloudForecast - server resource monitoring framework
 
 WARNING: Alpha quality code
 
-# cron
+# schedule daemon
 CF_DEBUG=1 ./cloudforecast_radar -c cloudforecast.yaml -l server_list.yaml
 
 # fetcher worker
