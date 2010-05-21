@@ -9,7 +9,7 @@ sub session {
         DestHost => $self->address,
         Community => $self->config->{community},
         Version => $self->config->{version},
-        Timeout => 10,
+        Timeout => 1000000,
     );
     $self->{session};
 }

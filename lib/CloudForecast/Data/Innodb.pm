@@ -29,7 +29,7 @@ fetcher {
     }
 
     my $cache_rate = 0;
-    if ($cache_total > 0){
+    if ($cache_total && $cache_total > 0){
         $cache_rate = sprintf("%3.5f", $cache_hit / $cache_total * 100);
     }
 
