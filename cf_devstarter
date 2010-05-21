@@ -70,7 +70,7 @@ sub start_server {
     while (1) {
 
         if ( $pid ) {
-            my $kid = waitpid( $pid, WNOHANG );
+            my $kid = waitpid( $pid, 0 );
             if ( $kid == -1 ) {
                 print STDERR "no server process\n";
                 $pid = undef;
