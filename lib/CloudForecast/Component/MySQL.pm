@@ -35,7 +35,7 @@ sub is5 {
 sub select_row {
     my $self = shift;
     my $query = shift;
-    my @param = shift;
+    my @param = @_;
     my $row = $self->connection->selectrow_arrayref(
         $query,
         undef,
@@ -48,7 +48,7 @@ sub select_row {
 sub select_row {
     my $self = shift;
     my $query = shift;
-    my @param = shift;
+    my @param = @_;
     my $row = $self->connection->selectrow_hashref(
         $query,
         undef,
@@ -58,8 +58,9 @@ sub select_row {
 }
 
 sub select_all {
+    my $self = shift;
     my $query = shift;
-    my @param = shift;
+    my @param = @_;
     my $rows = $self->connection->selectall_arrayref(
         $query,
         { Slice => {} },
