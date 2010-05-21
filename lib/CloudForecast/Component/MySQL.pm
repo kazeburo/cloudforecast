@@ -32,7 +32,7 @@ sub is5 {
     return  ($server_version =~ /^5/) ? 1 : 0;
 }
 
-sub select_row {
+sub select_one {
     my $self = shift;
     my $query = shift;
     my @param = @_;

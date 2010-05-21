@@ -23,6 +23,7 @@ requires 'Parallel::Prefork', 0.08;
 requires 'YAML', 0.71;
 requires 'Starlet', 0.08;
 requires 'Filesys::Notify::Simple';
+requires 'Proc::Daemon';
 #requires 'RRDs'; $ yum install rrdtool-perl
 
 if ( $^O eq 'linux' ) {

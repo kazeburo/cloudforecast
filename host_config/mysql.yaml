@@ -1,7 +1,7 @@
 ---
 components_config:
 resources:
-  - traffic:3:eth1
+  - traffic:2:eth0
   - basic
   - mysql
   - innodb
