@@ -104,7 +104,6 @@ sub run {
     }
 }
 
-
 sub run_host {
     my $self = shift;
     my ( $host_config, $global_config ) = @_;

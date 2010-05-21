@@ -1,0 +1,150 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib";
+use lib "$FindBin::Bin/site-lib";
+use Carp;
+use Proc::Daemon;
+use Getopt::Long;
+use POSIX ":sys_wait_h";
+
+sub usage {
+    print <<"EOT";
+Usage: $0 [options] server-prog server-arg1 server-arg2 ...
+
+Example:
+  $0 -- ./cloudforecast_radar -r -c cloudforecast_dev.yaml -l server_list_dev.yaml
+
+  $0 --daemon -- /path/to/cloudforecast_web -r -p 5001 -c /path/to/cloudforecast_dev.yaml -l /path/to/server_list_dev.yaml
+
+Options:
+
+  --daemon                 run server-prog as daemon process
+  --interval=seconds       minimum interval to respawn the server process
+                           (default: 1)
+
+EOT
+    exit 0;
+}
+
+my ($opt_daemon, $opt_interval, $opt_help, $opt_version);
+
+GetOptions(
+    'daemon'     => \$opt_daemon,
+    'interval=i' => \$opt_interval,
+    help         => \$opt_help,
+) or exit 1;
+usage()
+    if $opt_help;
+
+# validate options
+die "server program not specified\n"
+    unless @ARGV;
+
+start_server(
+    exec => \@ARGV,
+    daemon => $opt_daemon,
+    interval => $opt_interval,
+);
+
+sub start_server {
+    my $opts = @_ == 1 ? shift : { @_ };
+    $opts->{interval} ||= 1;
+
+    croak "mandatory option ``exec'' is missing or is not an arrayref\n"
+        unless $opts->{exec} && ref $opts->{exec} eq 'ARRAY';
+
+    Proc::Daemon::Init if $opts->{daemon};
+
+    my @signals_received;
+    $SIG{$_} = sub {
+        push @signals_received, $_[0];
+    } for (qw/INT TERM HUP/);
+    $SIG{PIPE} = 'IGNORE';
+
+
+    my $pid;
+    my $initial=1;
+    while (1) {
+
+        if ( $pid ) {
+            my $kid = waitpid( $pid, WNOHANG );
+            if ( $kid == -1 ) {
+                print STDERR "no server process\n";
+                $pid = undef;
+            }
+            elsif ( $kid ) {
+                my $status = $? >> 8;
+                print STDERR "server $pid died with status:$status\n";
+                $pid = undef;
+            }
+        }
+
+        if ( grep { $_ ne 'HUP' } @signals_received ) {
+            print STDERR "signals_received: " . join(",",  @signals_received) . "\n";
+            last;
+        }
+
+        while ( my $signals_received = shift @signals_received ) {
+            if ( $pid && $signals_received eq 'HUP' ) {
+                print STDERR "HUP signal received, send TERM server $pid\n";
+                kill 'TERM', $pid;
+                waitpid( $pid, 0 );
+                $pid = undef;
+            }
+        }
+
+        select( undef, undef, undef, $opts->{interval} ) if ! $initial;
+        $initial=0;
+
+        if ( ! defined $pid ) {
+            $pid = fork();
+            die "failed fork: $!" unless defined $pid;
+            next if $pid; #main process
+
+            # child process
+            print STDERR "start server $opts->{exec}->[0]\n";
+            { exec(@{$opts->{exec}}) };
+            print STDERR "failed to exec $opts->{exec}->[0]:$!\n";
+            exit(255);
+        }
+    }  
+
+    if ( $pid ) {
+        kill 'TERM', $pid;
+        waitpid( $pid, 0 );
+    }
+}
+
+__END__
+
+
+=head1 NAME
+
+cf_devstarter - a superdaemon for cloudforecast servers and workers
+
+=head1 SYNOPSIS
+
+  cf_devstarter [options] server-prog server-arg1 server-arg2 ...
+
+=head1 DESCRIPTION
+
+Use --help to find out how to use the script.
+
+=head1 COPYRIGHT
+
+Copyright 2010 Mixi, Inc.
+
+=head1 AUTHOR
+
+Masahiro Nagano E<lt>kazeburo {at} gmail.comE<gt>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+

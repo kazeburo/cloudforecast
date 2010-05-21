@@ -206,7 +206,7 @@ sub watchdog {
     die "failed fork: $!" unless defined $pid;
     return $pid if($pid); # main process
     
-    my $watcher = Filesys::Notify::Simple->new([ "." ]);
+    my $watcher = Filesys::Notify::Simple->new(\@path);
     while (1) {
         $watcher->wait( sub {
             my @path = grep { $_ !~ m![/\\][\._]|\.bak$|~$!  } map { $_->{path} } @_;
