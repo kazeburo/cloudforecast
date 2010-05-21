@@ -153,7 +153,7 @@ sub draw_graph {
     my $period;
     my $xgrid;
     if ( $span eq 'w' ) {
-        $period_title = 'Weelky';
+        $period_title = 'Weekly';
         $period = 60 * 60 * 24 * 8;
         $xgrid = 'DAY:1:DAY:1:DAY:1:86400:%a'
     }
