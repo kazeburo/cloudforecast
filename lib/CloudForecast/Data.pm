@@ -213,7 +213,8 @@ sub draw_graph {
 
     open( my $fh, $tmpfile ) or die "cannot open graph tmpfile: $!";
     my $graph_img = join "", <$fh>;
-    
+    unlink($tmpfile);
+
     die 'something wrong with image' unless $graph_img;
 
     return $graph_img;

@@ -1,16 +1,21 @@
 ---
 config:
-  gearman_enable: 1
+# gearmanを利用する場合、enableを1にして、germandのhost名とportを指定します
+  gearman_enable: 0
   gearman_server:
     host: localhost
     port: 7003
+# rrdのファイルを設置する場所。「/」から始まると絶対パスとなります
   data_dir: data
+# 監視項目の設定ファイルを設置するディレクトリ。「/」から始まると絶対パス
   host_config_dir: host_config
 
 component_config:
+# SNMPでデータを取得する時のオプション。communityとversion
   SNMP:
     community: public
     version: 2
+# MySQLを監視する場合のuser名とパスワード
   MySQL:
     user: root
     password: ""

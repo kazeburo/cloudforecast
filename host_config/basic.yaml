@@ -1,4 +1,8 @@
 ---
+# components_configはこの監視項目の設定内だけで利用されます。
+# 部分的にSNMPのcommunity名が異なる場合などに利用できます
+# resourceには、監視項目を追加してきます。実際の監視内容は、CloudForecast::Data::Foo で定義
+# されています。「:」で区切った値はオプションとして定義モジュールに渡されます
 components_config:
 resources:
   - traffic:2:eth0

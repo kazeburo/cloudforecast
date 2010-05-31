@@ -1,4 +1,7 @@
 --- #Dev
+# --- #Hogeと書くことでサーバ一覧を区切ることができます
+# configはhost_config内の監視項目の設定ファイル名
+# hostsは 「IPアドレス[space]ホスト名[space]コメント」です。コメント内にはスペースがあってもかまいません
 servers:
   - config: basic.yaml
     hosts:
