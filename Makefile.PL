@@ -7,6 +7,7 @@ author_tests 'xt';
 
 test_requires 'Test::More';
 
+requries 'local::lib';
 requires 'Class::Data::Inheritable';
 requires 'Class::Accessor::Fast';
 requires 'Data::Section::Simple';
