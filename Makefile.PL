@@ -27,7 +27,7 @@ requires 'Filesys::Notify::Simple';
 requires 'Proc::Daemon';
 #requires 'RRDs'; $ yum install rrdtool-perl
 
-if ( $^O eq 'linux' ) {
+if ( $^O eq 'linux' && -d "/proc/sys/fs/inotify" ) {
     requires 'Linux::Inotify2';
 }
 
