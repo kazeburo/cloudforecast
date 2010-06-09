@@ -14,8 +14,8 @@ title sub {
 fetcher {
     my $c = shift;
     my $interface = $c->args->[0] || 0;
-
-    my @map = map { [ $_, $interface ] } qw/ifHCInOctets ifHCOutOctets/;
+    my @oids = ( $c->component('SNMP')->config->{version} eq '1' ) ? qw/ifInOctets ifOutOctets/ : qw/ifHCInOctets ifHCOutOctets/;
+    my @map = map { [ $_, $interface ] } @oids;
     $c->component('SNMP')->get_by_int(@map);
 };
 
