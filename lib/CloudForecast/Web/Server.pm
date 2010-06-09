@@ -132,7 +132,7 @@ __DATA__
 <h2><span class="address"><?= $host->{address} ?></span> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></h2>
 
 <? for my $resource ( @graph_list ) { ?>
-<h4><?= $resource->{resource_class} ?></h4>
+<h4><?= $resource->{graph_title} ?></h4>
 <? for my $graph ( @{$resource->{graphs}} ) { ?>
 <nobr />
 <? for my $term ( qw/d w m y/ ) { ?>

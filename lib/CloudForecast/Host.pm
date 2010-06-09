@@ -17,6 +17,7 @@ sub list_graph {
         my $data = $self->load_resource($resource);
         my @graphs = $data->list_graph;
         push @ret, {
+            graph_title => $data->graph_title,
             resource_class => $data->resource_class,
             resource => $resource,
             graphs => \@graphs,

@@ -19,8 +19,9 @@ __PACKAGE__->mk_classdata('rrd_schema');
 __PACKAGE__->mk_classdata('fetcher_func');
 __PACKAGE__->mk_classdata('graph_key_list');
 __PACKAGE__->mk_classdata('graph_defs');
+__PACKAGE__->mk_classdata('title_func');
 
-our @EXPORT = qw/rrds fetcher graphs/;
+our @EXPORT = qw/rrds fetcher graphs title/;
 
 sub import {
     my ($class, $name) = @_;
@@ -108,6 +109,22 @@ sub graphs {
 }
 
 
+sub title {
+    my $class = caller;
+    if ( my $title = $_[0] ) {
+        if ( ! ref $title ) {
+            $class->title_func(sub{ $title });
+        }
+        elsif ( ref $title eq "CODE") {
+            $class->title_func($title);
+        }
+        else {
+            die "title must be coderef or scalar";
+        }
+    }
+    1;
+}
+
 sub new {
     my $class = shift;
     my $args = ref $_[0] ? shift : { @_ };
@@ -132,6 +149,14 @@ sub new {
         _component_instance => {},
     });
     return $self;
+}
+
+sub graph_title {
+    my $self = shift;
+    if ( my $title_func = $self->title_func ) {
+        return $title_func->($self) || $self->resource_class;
+    }
+    return $self->resource_class;
 }
 
 sub list_graph {
