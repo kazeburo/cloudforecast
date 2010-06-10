@@ -22,11 +22,7 @@ fetcher {
     my $c = shift;
     my $mysql = $c->component('MySQL');
     
-    my $query = "show status";
-    if ( $mysql->is5 ) {
-        $query = "show global status";
-    }
-
+    my $query = 'show /*!50002 GLOBAL */ status';
     my %status;
     my $rows = $mysql->select_all($query);
     foreach my $row ( @$rows ) {

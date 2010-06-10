@@ -22,7 +22,7 @@ title sub {
 fetcher {
     my $c = shift;
     
-    my $row = $c->component('MySQL')->select_row('show innodb status');
+    my $row = $c->component('MySQL')->select_row('show /*!50000 ENGINE*/ innodb status');
     my $status = $row->{Status} or die 'could not get innodb status';
 
     my ($insert_row, $update_row, $delete_row, $read_row, $insert_vel, $update_vel, $delete_vel, $read_vel, $cache_hit, $cache_total);

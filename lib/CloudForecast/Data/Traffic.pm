@@ -1,6 +1,7 @@
 package CloudForecast::Data::Traffic;
 
 use CloudForecast::Data -base;
+use CloudForecast::Log;
 
 rrds map { [ $_, 'COUNTER' ] } qw /in out/;
 graphs 'traffic' => 'Throughput';
@@ -16,7 +17,13 @@ fetcher {
     my $interface = $c->args->[0] || 0;
     my @oids = ( $c->component('SNMP')->config->{version} eq '1' ) ? qw/ifInOctets ifOutOctets/ : qw/ifHCInOctets ifHCOutOctets/;
     my @map = map { [ $_, $interface ] } @oids;
-    $c->component('SNMP')->get_by_int(@map);
+    my $ret = $c->component('SNMP')->get_by_int(@map);
+
+    if ( $c->component('SNMP')->config->{version} ne '1' && $ret->[0] eq '' && $ret->[1] eq '' ) {
+        CloudForecast::Log->warn("fall down to 32bit counter");
+        $ret = $c->component('SNMP')->get_by_int( map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/ );
+    }
+    $ret;
 };
 
 __DATA__
