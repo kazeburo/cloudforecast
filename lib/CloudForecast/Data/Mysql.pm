@@ -9,6 +9,15 @@ graphs 'count' => 'MySQL Queries Count';
 graphs 'slow' => 'MySQL Slow Queries';
 graphs 'thread' => 'MySQL Threads';
 
+title sub {
+    my $c = shift;
+    my $title='MySQL';
+    if ( my $port = $c->component('MySQL')->port ) {
+        $title .= " (port=$port)"; 
+    }
+    return $title;
+};
+
 fetcher {
     my $c = shift;
     my $mysql = $c->component('MySQL');

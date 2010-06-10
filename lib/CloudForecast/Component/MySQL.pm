@@ -3,12 +3,17 @@ package CloudForecast::Component::MySQL;
 use CloudForecast::Component -connector;
 use DBI;
 
+sub port {
+    my $self = shift;
+    $self->args->[0] || $self->config->{port};
+}
+
 sub connection {
     my $self = shift;
 
     my $dsn = "DBI:mysql:;hostname=".$self->address;
-    if ( $self->config->{port} ) {
-        $dsn .= ';port='.$self->config->{port}
+    if ( my $port = $self->port ) {
+        $dsn .= ';port='.$port
     }
 
     eval {

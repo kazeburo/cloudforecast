@@ -5,6 +5,15 @@ use CloudForecast::Data -base;
 rrds map { [ $_, 'GAUGE' ] } qw /busy idle/;
 graphs 'http' => 'Apache Status';
 
+title sub {
+    my $c = shift;
+    my $title = "HTTP";
+    if ( my $port = $c->args->[0] ) {
+        $title .= " ($port)";
+    }
+    return $title;
+};
+
 fetcher {
     my $c = shift;
     my $address = $c->address;

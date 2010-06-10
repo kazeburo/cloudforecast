@@ -8,6 +8,15 @@ rrds 'request' => 'COUNTER';
 graphs 'connection' => 'Nginx connections';
 graphs 'request' => 'Nginx request counter';
 
+title sub {
+    my $c = shift;
+    my $title = "Nginx";
+    if ( my $port =$c->args->[0] ) {
+        $title .= " ($port)";
+    }
+    return $title;
+};
+
 fetcher {
     my $c = shift;
     my $address = $c->address;
