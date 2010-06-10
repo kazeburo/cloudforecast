@@ -16,6 +16,7 @@ requires 'Path::Class';
 requires 'URI::Escape';
 requires 'Scalar::Util';
 requires 'Plack', 0.9937;
+requires 'Plack::Middleware::Access';
 requires 'Router::Simple';
 requires 'Text::MicroTemplate';
 requires 'Gearman::Client', 1.10;

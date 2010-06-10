@@ -19,7 +19,9 @@ use CloudForecast::ConfigLoader;
 __PACKAGE__->mk_classdata('_ROUTER');
 __PACKAGE__->mk_accessors(qw/configloader
                              restarter
-                             port/);
+                             port
+                             host
+                             allowfrom/);
 
 our @EXPORT = qw/get post any/;
 
@@ -57,23 +59,35 @@ sub new {
         configloader => $configloader,
         restarter => $args->{restarter},
         port => $args->{port} || 5000,
+        host => $args->{host} || 0,
+        allowfrom => $args->{allowfrom} || [],
     });
 }
 
 sub run {
     my $self = shift;
 
+    my $allowfrom = $self->allowfrom || [];
+
     my $app = $self->build_app;
     $app = builder {
         enable 'Plack::Middleware::Lint';
         enable 'Plack::Middleware::StackTrace';
+        if ( @$allowfrom ) {
+            my @rule;
+            for ( @$allowfrom ) {
+                push @rule, 'allow', $_;
+            }
+            push @rule, 'deny', 'all';
+            enable 'Plack::Middleware::Access', rules => \@rule;
+        }
         $app;
     };
-
 
     my $loader = Plack::Loader->load(
         'Starlet',
         port => $self->port || 5000,
+        host => $self->host || 0,
         max_workers => 2,
     );
 

@@ -13,9 +13,13 @@ my $config = $root_dir . '/cloudforecast.yaml';
 my $server_list = $root_dir .'/server_list.yaml';
 my $restarter = 0;
 my $port = 5000;
+my $host = 0;
+my @allowfrom;
 
 GetOptions(
-    'port=s' => \$port,
+    'o|host=s' => \$host,
+    'p|port=s' => \$port,
+    'allow-from=s' => \@allowfrom,
     'r|restarter' => \$restarter,
     'c|config=s' => \$config,
     'l|server-list=s' => \$server_list,
@@ -25,7 +29,9 @@ die 'config not found' unless $config;
 die 'server_list not found' unless $server_list;
 
 CloudForecast::Web::Server->new({
+    host => $host,
     port => $port,
+    allowfrom => \@allowfrom,
     restarter => $restarter,
     root_dir => $root_dir,
     global_config => $config,
