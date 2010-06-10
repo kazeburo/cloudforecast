@@ -95,7 +95,7 @@ sub load_resource {
         component_config => $self->component_config,
         global_config => $self->global_config,
     });
-    CloudForecast::Log->debug("call_fetch $resource ",
+    CloudForecast::Log->debug("load resource $resource ",
                              join(":", @args), 
                              " ", $self->hostname, "(",$self->address,")" );
     return $data;
