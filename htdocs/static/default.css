@@ -141,13 +141,12 @@ body {
 
 #grouplist ul {
     margin: 0px;
-    padding: 0px;
+    padding: 4px;
     list-style: none;
 }
 
 #grouplist ul li {
-    padding: 4px;
-    margin: 0 0 0 4px;
+    display: inline;
 }
 
 #grouplist ul li a {
