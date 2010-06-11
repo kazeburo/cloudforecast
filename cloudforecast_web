@@ -15,11 +15,13 @@ my $restarter = 0;
 my $port = 5000;
 my $host = 0;
 my @allowfrom;
+my @front_proxy;
 
 GetOptions(
     'o|host=s' => \$host,
     'p|port=s' => \$port,
     'allow-from=s' => \@allowfrom,
+    'front-proxy=s' => \@front_proxy,
     'r|restarter' => \$restarter,
     'c|config=s' => \$config,
     'l|server-list=s' => \$server_list,
@@ -32,6 +34,7 @@ CloudForecast::Web::Server->new({
     host => $host,
     port => $port,
     allowfrom => \@allowfrom,
+    front_proxy => \@front_proxy,
     restarter => $restarter,
     root_dir => $root_dir,
     global_config => $config,

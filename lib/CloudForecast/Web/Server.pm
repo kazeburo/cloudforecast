@@ -86,15 +86,15 @@ __DATA__
 <html>
 <head>
 <title>CloudForecast Server List</title>
-<link rel="stylesheet" type="text/css" href="/static/default.css" />
+<link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
 </head>
 <body>
 <div id="container">
 <div id="header">
-<h1 class="title"><a href="/">CloudForecast : <?= $self->page_title ?></a></h1>
+<h1 class="title"><a href="<?= $req->uri_for('/') ?>">CloudForecast : <?= $self->page_title ?></a></h1>
 <div class="welcome">
 <ul>
-<li><a href="/">TOP</a></li>
+<li><a href="<?= $req->uri_for('/') ?>">TOP</a></li>
 </ul>
 </div>
 </div>
@@ -118,7 +118,7 @@ __DATA__
 <li class="group-name" id="group-<?= $k ?>">&gt;&nbsp;<?= $server->{title} ?></li>
 <ul class="server-ul">
   <? for my $host ( @{$server->{hosts}} ) { ?>
-  <li><a href="/server?address=<?= $host->{address} ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></li>
+  <li><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></li>
   <? } ?>
 </ul>
 <? $k++ } ?>
@@ -134,22 +134,22 @@ __DATA__
 <html>
 <head>
 <title>CloudForecast : <?= $self->page_title ?> : <?= $host->{address} ?></title>
-<link rel="stylesheet" type="text/css" href="/static/default.css" />
+<link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
 </head>
 <body>
 <div id="container">
 <div id="header">
-<h1 class="title"><a href="/">CloudForecast : <?= $self->page_title ?></a></h1>
+<h1 class="title"><a href="<?= $req->uri_for('/') ?>">CloudForecast : <?= $self->page_title ?></a></h1>
 <div class="welcome">
 <ul>
-<li><a href="/">TOP</a></li>
+<li><a href="<?= $req->uri_for('/') ?>">TOP</a></li>
 </ul>
 </div>
 </div>
 
 <div id="content">
 
-<h2 id="ptitle"><a href="/server?address=<?= $host->{address} ?>" class="address"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></h2>
+<h2 id="ptitle"><a href="<? $req->uri_for('/server', [address => $host->{address}]) ?>" class="address"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></h2>
 
 <? for my $resource ( @graph_list ) { ?>
 <h4 class="resource-title"><?= $resource->{graph_title} ?></h4>
@@ -157,7 +157,7 @@ __DATA__
 <? for my $graph ( @{$resource->{graphs}} ) { ?>
 <div class="ngraph">
 <? for my $term ( qw/d w m y/ ) { ?>
-<img src="/graph?span=<?= $term ?>&amp;address=<?= $host->{address} ?>&amp;resource=<?= $resource->{resource} ?>&amp;key=<?= $graph ?>" />
+<img src="<?= $req->uri_for('/graph', [span => $term, address => $host->{address}, resource => $resource->{resource}, key => $graph]) ?>" />
 <? } ?>
 </div>
 <? } ?>

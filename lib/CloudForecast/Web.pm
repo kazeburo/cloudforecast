@@ -13,16 +13,19 @@ use Plack::Response;
 use Router::Simple;
 use Text::MicroTemplate;
 use Data::Section::Simple;
+use CloudForecast::Web::Request;
 use CloudForecast::Log;
 use CloudForecast::ConfigLoader;
 use Path::Class;
+use Net::IP;
 
 __PACKAGE__->mk_classdata('_ROUTER');
 __PACKAGE__->mk_accessors(qw/configloader
                              restarter
                              port
                              host
-                             allowfrom/);
+                             allowfrom
+                             front_proxy/);
 
 our @EXPORT = qw/get post any/;
 
@@ -62,17 +65,40 @@ sub new {
         port => $args->{port} || 5000,
         host => $args->{host} || 0,
         allowfrom => $args->{allowfrom} || [],
+        front_proxy => $args->{front_proxy} || [],
     });
 }
 
 sub run {
     my $self = shift;
     my $allowfrom = $self->allowfrom || [];
+    my $front_proxy = $self->front_proxy || [];
+    my @front_proxies;
+    foreach my $ip ( @$front_proxy ) {
+        my $netip = Net::IP->new($ip)
+            or die "not supported type of rule argument [$ip] or bad ip: " . Net::IP::Error();
+        push @front_proxies, $netip;
+    }
 
     my $app = $self->build_app;
     $app = builder {
         enable 'Plack::Middleware::Lint';
         enable 'Plack::Middleware::StackTrace';
+        if ( @front_proxies ) {
+            enable_if {
+                my $addr = $_[0]->{REMOTE_ADDR};
+                my $netip;
+                if ( defined $addr && ($netip = Net::IP->new($addr)) ) {
+                    for my $proxy ( @front_proxies ) {
+                       my $overlaps = $proxy->overlaps($netip);
+                       if ( $overlaps == $IP_B_IN_A_OVERLAP || $overlaps == $IP_IDENTICAL ) {
+                           return 1;
+                       } 
+                    }
+                }
+                return;
+            } "Plack::Middleware::ReverseProxy";
+        }
         if ( @$allowfrom ) {
             my @rule;
             for ( @$allowfrom ) {
@@ -85,7 +111,6 @@ sub run {
             path => qr{^/(favicon\.ico$|static/)}, root => Path::Class::dir($self->configloader->root_dir, 'htdocs')->stringify;
         $app;
     };
-
     my $loader = Plack::Loader->load(
         'Starlet',
         port => $self->port || 5000,
@@ -115,7 +140,7 @@ sub build_app {
             my $code = delete $p->{action};
             return $self->ise('uri match but no action found') unless $code;
 
-            my $req = Plack::Request->new($env);
+            my $req = CloudForecast::Web::Request->new($env);
             my $res = $code->($self, $req, $p);
 
             my $res_t = ref $res || '';
