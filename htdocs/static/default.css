@@ -243,6 +243,7 @@ body {
 
 #content .resource-graph .ngraph {
     white-space:nowrap;
+    margin-bottom: 3px;
 }
 
 
