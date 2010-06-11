@@ -1,0 +1,11 @@
+a { color: #5555cc;}
+a:link { color: #5555cc;}
+a:visited { color: #5555ee;}
+a:active { color: #999999;  }
+a:hover { color: #999999;  }
+
+ol, ul{
+    list-style-position:inside;
+}
+
+

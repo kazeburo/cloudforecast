@@ -79,12 +79,6 @@ get '/graph' => sub {
     return [ 200, ['Content-Type','image/png'], [$img] ];
 };
 
-get '/default.css' => sub {
-    my ($self, $req) = @_;
-    return [ 200, ['Content-Type','text/css'], [ $self->render('css.mt')] ];
-}; 
-
-
 1;
 
 __DATA__
@@ -92,7 +86,7 @@ __DATA__
 <html>
 <head>
 <title>CloudForecast Server List</title>
-<link rel="stylesheet" type="text/css" href="/default.css" />
+<link rel="stylesheet" type="text/css" href="/static/default.css" />
 </head>
 <body>
 <h1 class="title">CloudForecast : <?= $self->page_title ?> </h1>
@@ -125,7 +119,7 @@ __DATA__
 <html>
 <head>
 <title>CloudForecast : <?= $self->page_title ?> : <?= $host->{address} ?></title>
-<link rel="stylesheet" type="text/css" href="/default.css" />
+<link rel="stylesheet" type="text/css" href="/static/default.css" />
 </head>
 <body>
 <h1 class="title">CloudForecast : <?= $self->page_title ?></h1>
@@ -144,19 +138,6 @@ __DATA__
 
 </body>
 </html>
-
-
-@@ css.mt
-
-a { color: #5555cc;}
-a:link { color: #5555cc;}
-a:visited { color: #555599;}
-a:active { color: #999999;  }
-a:hover { color: #999999;  }
-
-ol, ul{
-    list-style-position:inside;
-}
 
 
 

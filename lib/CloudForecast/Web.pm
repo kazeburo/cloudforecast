@@ -15,6 +15,7 @@ use Text::MicroTemplate;
 use Data::Section::Simple;
 use CloudForecast::Log;
 use CloudForecast::ConfigLoader;
+use Path::Class;
 
 __PACKAGE__->mk_classdata('_ROUTER');
 __PACKAGE__->mk_accessors(qw/configloader
@@ -66,7 +67,6 @@ sub new {
 
 sub run {
     my $self = shift;
-
     my $allowfrom = $self->allowfrom || [];
 
     my $app = $self->build_app;
@@ -81,6 +81,8 @@ sub run {
             push @rule, 'deny', 'all';
             enable 'Plack::Middleware::Access', rules => \@rule;
         }
+        enable 'Plack::Middleware::Static',
+            path => qr{^/(favicon\.ico$|static/)}, root => Path::Class::dir($self->configloader->root_dir, 'htdocs')->stringify;
         $app;
     };
 
