@@ -89,22 +89,34 @@ __DATA__
 <link rel="stylesheet" type="text/css" href="/static/default.css" />
 </head>
 <body>
-<h1 class="title">CloudForecast : <?= $self->page_title ?> </h1>
+<div id="container">
+<div id="header">
+<h1 class="title"><a href="/">CloudForecast : <?= $self->page_title ?></a></h1>
+<div class="welcome">
+<ul>
+<li><a href="/">TOP</a></li>
+</ul>
+</div>
+</div>
 
+<div id="grouplist">
 <ul>
 <? my $i=0 ?>
 <? for my $server ( @{$self->server_list} ) { ?>
 <li><a href="#group-<?= $i ?>"><?= $server->{title} ?></a></li>
 <? $i++ } ?>
 </ul>
+</div>
 
-<hr>
+<div id="content">
 
-<ul>
+<h2 id="ptitle">SERVER LIST</h2>
+
+<ul id="group-ul">
 <? my $k=0 ?>
 <? for my $server ( @{$self->server_list} ) { ?>
-<li id="group-<?= $k ?>"><?= $server->{title} ?></li>
-<ul>
+<li class="group-name" id="group-<?= $k ?>">&gt;&nbsp;<?= $server->{title} ?></li>
+<ul class="server-ul">
   <? for my $host ( @{$server->{hosts}} ) { ?>
   <li><a href="/server?address=<?= $host->{address} ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></li>
   <? } ?>
@@ -112,6 +124,9 @@ __DATA__
 <? $k++ } ?>
 </ul>
 
+</div>
+
+</div>
 </body>
 </html>
 
@@ -122,20 +137,37 @@ __DATA__
 <link rel="stylesheet" type="text/css" href="/static/default.css" />
 </head>
 <body>
-<h1 class="title">CloudForecast : <?= $self->page_title ?></h1>
-<h2><span class="address"><?= $host->{address} ?></span> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></h2>
+<div id="container">
+<div id="header">
+<h1 class="title"><a href="/">CloudForecast : <?= $self->page_title ?></a></h1>
+<div class="welcome">
+<ul>
+<li><a href="/">TOP</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+
+<h2 id="ptitle"><a href="/server?address=<?= $host->{address} ?>" class="address"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></h2>
 
 <? for my $resource ( @graph_list ) { ?>
-<h4><?= $resource->{graph_title} ?></h4>
+<h4 class="resource-title"><?= $resource->{graph_title} ?></h4>
+<div class="resource-graph">
 <? for my $graph ( @{$resource->{graphs}} ) { ?>
-<nobr />
+<div class="ngraph">
 <? for my $term ( qw/d w m y/ ) { ?>
 <img src="/graph?span=<?= $term ?>&amp;address=<?= $host->{address} ?>&amp;resource=<?= $resource->{resource} ?>&amp;key=<?= $graph ?>" />
 <? } ?>
-<br />
+</div>
 <? } ?>
+</div>
 <? } ?>
 
+
+</div>
+
+</div>
 </body>
 </html>
 
