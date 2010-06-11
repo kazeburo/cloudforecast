@@ -87,6 +87,7 @@ __DATA__
 <head>
 <title>CloudForecast Server List</title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
+<script src="<?= $req->uri_for('/static/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
 </head>
 <body>
 <div id="container">
@@ -135,6 +136,7 @@ __DATA__
 <head>
 <title>CloudForecast : <?= $self->page_title ?> : <?= $host->{address} ?></title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
+<script src="<?= $req->uri_for('/static/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
 </head>
 <body>
 <div id="container">
