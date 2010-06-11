@@ -44,7 +44,7 @@ get '/' => sub {
 
 get '/server' => sub {
     my ($self, $req, $p ) = @_;
-
+    my $daterange;
     my $address = $req->param('address');
     return $self->not_found('Address Not Found') unless $address;
 
@@ -54,6 +54,10 @@ get '/server' => sub {
     my $host_instance = $self->get_host($host);
     my @graph_list = $host_instance->list_graph;
 
+    if ( $req->param('mode') && $req->param('mode') eq 'range' ) {
+        $daterange = 1;
+    }
+    my $today = Date::Simple->new->format("%Y%m%d");
     return $self->render('server.mt');
 };
 
@@ -73,7 +77,7 @@ get '/graph' => sub {
     return $self->not_found('Host Not Found') unless $host;
 
     my $host_instance = $self->get_host($host);
-    my ($img,$err) = $host_instance->draw_graph($resource,$key, $span);
+    my ($img,$err) = $host_instance->draw_graph($resource,$key, $span, $req->param('from_date'), $req->param('to_date') );
 
     return $self->ise($err) unless $img;
     return [ 200, ['Content-Type','image/png'], [$img] ];
@@ -87,7 +91,7 @@ __DATA__
 <head>
 <title>CloudForecast Server List</title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
-<script src="<?= $req->uri_for('/static/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
+<link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
 </head>
 <body>
 <div id="container">
@@ -128,6 +132,7 @@ __DATA__
 </div>
 
 </div>
+<script src="<?= $req->uri_for('/static/js/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
 </body>
 </html>
 
@@ -136,7 +141,7 @@ __DATA__
 <head>
 <title>CloudForecast : <?= $self->page_title ?> : <?= $host->{address} ?></title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
-<script src="<?= $req->uri_for('/static/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
+<link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
 </head>
 <body>
 <div id="container">
@@ -151,25 +156,60 @@ __DATA__
 
 <div id="content">
 
-<h2 id="ptitle"><a href="<? $req->uri_for('/server', [address => $host->{address}]) ?>" class="address"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></h2>
+<h2 id="ptitle"><a href="<? $req->uri_for('/server', [address => $host->{address}]) ?>" class="address"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></h2>
+
+<div id="display-control">
+<? if ( $daterange ) { ?>
+<a href="<?= $req->uri_for('/server', [ address => $host->{address} ]) ?>">Disply Latest Graph</a>
+<? } else { ?>
+<a href="<?= $req->uri_for('/server', [ address => $host->{address}, displaymy => $req->param('displaymy') ? 0 : 1 ]) ?>"><?= $req->param('displaymy') ? 'Hide' : 'Display' ?>  Monthly and Yearly Graph</a>
+<? } ?>
+|
+<form id="pickdate" method="get" action="<?= $req->uri_for('/server') ?>">
+Date Range:
+<label for="from_date">From</label>
+<input type="text" id="from_date" name="from_date" value="<?= $req->param('from_date') || $today ?>" />
+<label for="to_date">To</label>
+<input type="text" id="to_date" name="to_date" value="<?= $req->param('to_date') || $req->param('from_date') || $today ?>" />
+<input type="hidden" name="address" value="<?= $host->{address} ?>" />
+<input type="hidden" name="mode" value="range" />
+<span>ex: 20040523</span>
+<input type="submit" id="pickdate_submit" value="Display">
+</form>
+</div>
 
 <? for my $resource ( @graph_list ) { ?>
 <h4 class="resource-title"><?= $resource->{graph_title} ?></h4>
 <div class="resource-graph">
 <? for my $graph ( @{$resource->{graphs}} ) { ?>
 <div class="ngraph">
-<? for my $term ( qw/d w m y/ ) { ?>
+<? if ( $daterange ) { ?>
+<img src="<?= $req->uri_for('/graph', [span => 'c', from_date => $req->param('from_date'), to_date => $req->param('to_date'), address => $host->{address}, resource => $resource->{resource}, key => $graph]) ?>" />
+<? } else { ?>
+<? for my $term ( $req->param('displaymy') ? qw/d w m y/ : qw/d w/) { ?>
 <img src="<?= $req->uri_for('/graph', [span => $term, address => $host->{address}, resource => $resource->{resource}, key => $graph]) ?>" />
 <? } ?>
-</div>
 <? } ?>
 </div>
 <? } ?>
-
+</div>
+<? } ?>
 
 </div>
 
 </div>
+<script src="<?= $req->uri_for('/static/js/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
+<script src="<?= $req->uri_for('/static/js/jquery-ui-1.8.2.custom.min.js') ?>" type="text/javascript"></script>
+<script type="text/javascript">
+$(function() {
+    $.datepicker.setDefaults({
+        dateFormat: 'yymmdd'
+    });
+    $("#from_date").datepicker();
+    $("#to_date").datepicker();
+    var date = $.datepicker.formatDate( 'yymmdd', new Date());
+});
+</script>
 </body>
 </html>
 

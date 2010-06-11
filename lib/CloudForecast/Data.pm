@@ -10,6 +10,7 @@ use UNIVERSAL::require;
 use Path::Class qw//;
 use File::Path qw//;
 use URI::Escape qw//;
+use Date::Simple;
 use RRDs;
 
 __PACKAGE__->mk_accessors(qw/hostname address details args
@@ -167,7 +168,7 @@ sub list_graph {
 
 sub draw_graph {
     my $self = shift;
-    my ($key, $span ) = @_;
+    my ($key, $span, $from, $to ) = @_;
     die 'key no defined' unless $key;
     $span ||= 'd';
 
@@ -176,25 +177,51 @@ sub draw_graph {
 
     my $period_title;
     my $period;
+    my $end = 'now';
     my $xgrid;
-    if ( $span eq 'w' ) {
+    if ( $span eq 'c' ) {
+        my $from_date = Date::Simple->new($from);
+        die "invalid from date: $from" unless $from_date;
+        my $to_date = $to ? Date::Simple->new($to) : Date::Simple->new;
+        die "invalid to date: $to" unless $to_date;
+        $to_date = $to_date + 1;
+        die "from($from) is newer than to($to)" if $from_date > $to_date;
+
+        $period_title = "Custom Range: $from to $to" ;
+        $period = $from_date->format('%Y%m%d');
+        $end = $to_date->format('%Y%m%d');
+        my $diff = $to_date - $from_date;
+        if ( $diff < 2 ) {
+            $xgrid = 'HOUR:1:HOUR:1:HOUR:2:0:%H';
+        }
+        elsif ( $diff < 14 ) {
+            $xgrid = 'DAY:1:DAY:1:DAY:1:86400:%a';
+        }
+        elsif ( $diff < 45 ) {
+            $xgrid = 'WEEK:1:WEEK:1:WEEK:1:604800:Week %W';
+        }
+        else {
+            $xgrid = 'MONTH:1:MONTH:1:MONTH:1:2592000:%b';
+        }
+    }
+    elsif ( $span eq 'w' ) {
         $period_title = 'Weekly';
-        $period = 60 * 60 * 24 * 8;
+        $period = -1 * 60 * 60 * 24 * 8;
         $xgrid = 'DAY:1:DAY:1:DAY:1:86400:%a'
     }
     elsif ( $span eq 'm' ) {
         $period_title = 'Monthly';
-        $period = 60 * 60 * 24 * 35;
+        $period = -1 * 60 * 60 * 24 * 35;
         $xgrid = 'WEEK:1:WEEK:1:WEEK:1:604800:Week %W'
     }
     elsif ( $span eq 'y' ) {
         $period_title = 'Yearly';
-        $period = 60 * 60 * 24 * 400;
+        $period = -1 * 60 * 60 * 24 * 400;
         $xgrid = 'MONTH:1:MONTH:1:MONTH:1:2592000:%b'
     }
     else {
         $period_title = 'Daily';
-        $period = 60 * 60 * 33; # 33 hours
+        $period = -1 * 60 * 60 * 33; # 33 hours
         $xgrid = 'HOUR:1:HOUR:1:HOUR:2:0:%H';
     }
     
@@ -214,7 +241,8 @@ sub draw_graph {
         '-u', 2, #maximum
         '-v', $graph_def->{title},
         '-x', $xgrid,
-        '-s', -1 * $period
+        '-s', $period,
+        '-e', $end,
     );
 
     my $rrd_path = "".$self->rrd_path;

@@ -176,6 +176,28 @@ body {
     color: #999;
 }
 
+#content #display-control {
+    margin: 20px 0px 10px 0px;
+}
+
+#content #display-control a {
+    text-decoration: underline;
+    padding: 3px 6px;
+    color: #fff;
+    background-color: #ccc;
+    -webkit-border-radius: 3px;   /* Safari、Google Chrome */
+    -moz-border-radius: 3px;  /* Firefox */
+}
+
+#content #display-control form {
+    display: inline;
+}
+
+#content #display-control form label,
+#content #display-control form span {
+    color: #666;
+}
+
 #content #group-ul {
 }
 
@@ -222,5 +244,7 @@ body {
 #content .resource-graph .ngraph {
     white-space:nowrap;
 }
+
+
 
 
