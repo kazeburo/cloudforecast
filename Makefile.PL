@@ -3,7 +3,7 @@ name 'CloudForecast';
 all_from 'lib/CloudForecast.pm';
 
 tests 't/*.t';
-author_tests 'xt';
+#author_tests 'xt';
 
 test_requires 'Test::More';
 
