@@ -57,7 +57,10 @@ get '/server' => sub {
     if ( $req->param('mode') && $req->param('mode') eq 'range' ) {
         $daterange = 1;
     }
-    my $today = Date::Simple->new->format("%Y%m%d");
+    my @today = localtime;
+    my $today =  sprintf("%04d-%02d-%02d 00:00:00", $today[5]+1900, $today[4]+1, $today[3]);
+    my @yesterday = localtime( time - 24* 60 * 60 );
+    my $yesterday = sprintf("%04d-%02d-%02d 00:00:00", $yesterday[5]+1900, $yesterday[4]+1, $yesterday[3]);
     return $self->render('server.mt');
 };
 
@@ -137,11 +140,13 @@ __DATA__
 </html>
 
 @@ server.mt
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
 <html>
 <head>
 <title>CloudForecast : <?= $self->page_title ?> : <?= $host->{address} ?></title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
 <link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/css/anytimec.css') ?>" />
 </head>
 <body>
 <div id="container">
@@ -159,21 +164,21 @@ __DATA__
 <h2 id="ptitle"><a href="<? $req->uri_for('/server', [address => $host->{address}]) ?>" class="address"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></h2>
 
 <div id="display-control">
+<form id="pickdate" method="get" action="<?= $req->uri_for('/server') ?>">
 <? if ( $daterange ) { ?>
 <a href="<?= $req->uri_for('/server', [ address => $host->{address} ]) ?>">Disply Latest Graph</a>
 <? } else { ?>
-<a href="<?= $req->uri_for('/server', [ address => $host->{address}, displaymy => $req->param('displaymy') ? 0 : 1 ]) ?>"><?= $req->param('displaymy') ? 'Hide' : 'Display' ?>  Monthly and Yearly Graph</a>
+<a href="<?= $req->uri_for('/server', [ address => $host->{address}, displaymy => $req->param('displaymy') ? 0 : 1 ]) ?>"><?= $req->param('displaymy') ? 'Hide' : 'Show' ?>  Monthly Graph</a>
 <? } ?>
 |
-<form id="pickdate" method="get" action="<?= $req->uri_for('/server') ?>">
 Date Range:
 <label for="from_date">From</label>
-<input type="text" id="from_date" name="from_date" value="<?= $req->param('from_date') || $today ?>" />
+<input type="text" id="from_date" name="from_date" value="<?= $req->param('from_date') || $yesterday ?>" size="21" />
 <label for="to_date">To</label>
-<input type="text" id="to_date" name="to_date" value="<?= $req->param('to_date') || $req->param('from_date') || $today ?>" />
+<input type="text" id="to_date" name="to_date" value="<?= $req->param('to_date') || $req->param('from_date') || $today ?>" size="21" />
 <input type="hidden" name="address" value="<?= $host->{address} ?>" />
 <input type="hidden" name="mode" value="range" />
-<span>ex: 20040523</span>
+<span>ex: 2004-05-23 12:00:00</span>
 <input type="submit" id="pickdate_submit" value="Display">
 </form>
 </div>
@@ -200,14 +205,13 @@ Date Range:
 </div>
 <script src="<?= $req->uri_for('/static/js/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
 <script src="<?= $req->uri_for('/static/js/jquery-ui-1.8.2.custom.min.js') ?>" type="text/javascript"></script>
+<script src="<?= $req->uri_for('/static/js/anytimec.js') ?>" type="text/javascript"></script>
 <script type="text/javascript">
 $(function() {
-    $.datepicker.setDefaults({
-        dateFormat: 'yymmdd'
-    });
-    $("#from_date").datepicker();
-    $("#to_date").datepicker();
-    var date = $.datepicker.formatDate( 'yymmdd', new Date());
+     $("#from_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
+                                       monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
+     $("#to_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
+                                    monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
 });
 </script>
 </body>

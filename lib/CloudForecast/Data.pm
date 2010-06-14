@@ -10,7 +10,7 @@ use UNIVERSAL::require;
 use Path::Class qw//;
 use File::Path qw//;
 use URI::Escape qw//;
-use Date::Simple;
+use HTTP::Date qw//;
 use RRDs;
 
 __PACKAGE__->mk_accessors(qw/hostname address details args
@@ -180,24 +180,27 @@ sub draw_graph {
     my $end = 'now';
     my $xgrid;
     if ( $span eq 'c' ) {
-        my $from_date = Date::Simple->new($from);
-        die "invalid from date: $from" unless $from_date;
-        my $to_date = $to ? Date::Simple->new($to) : Date::Simple->new;
-        die "invalid to date: $to" unless $to_date;
-        $to_date = $to_date + 1;
-        die "from($from) is newer than to($to)" if $from_date > $to_date;
+        my $from_time = HTTP::Date::str2time($from);  
+        die "invalid from date: $from" unless $from_time;
+        my $to_time = $to ? HTTP::Date::str2time($to) : time;
+        die "invalid to date: $to" unless $to_time;
+        die "from($from) is newer than to($to)" if $from_time > $to_time;
 
-        $period_title = "Custom Range: $from to $to" ;
-        $period = $from_date->format('%Y%m%d');
-        $end = $to_date->format('%Y%m%d');
-        my $diff = $to_date - $from_date;
-        if ( $diff < 2 ) {
+        $period_title = "$from to $to" ;
+        $period = $from_time;
+        $end = $to_time;
+        my $diff = $to_time - $from_time;
+warn $diff;
+        if ( $diff < 3 * 60 * 60 ) {
+            $xgrid = 'MINUTE:10:MINUTE:10:MINUTE:10:0:%M';
+        }
+        elsif ( $diff < 2 * 24 * 60 * 60 ) {
             $xgrid = 'HOUR:1:HOUR:1:HOUR:2:0:%H';
         }
-        elsif ( $diff < 14 ) {
+        elsif ( $diff < 14 * 24 * 60 * 60) {
             $xgrid = 'DAY:1:DAY:1:DAY:1:86400:%a';
         }
-        elsif ( $diff < 45 ) {
+        elsif ( $diff < 45 * 24 * 60 * 60) {
             $xgrid = 'WEEK:1:WEEK:1:WEEK:1:604800:Week %W';
         }
         else {
