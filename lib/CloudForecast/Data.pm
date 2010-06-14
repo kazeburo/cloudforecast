@@ -190,7 +190,6 @@ sub draw_graph {
         $period = $from_time;
         $end = $to_time;
         my $diff = $to_time - $from_time;
-warn $diff;
         if ( $diff < 3 * 60 * 60 ) {
             $xgrid = 'MINUTE:10:MINUTE:10:MINUTE:10:0:%M';
         }
