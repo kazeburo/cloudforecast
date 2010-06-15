@@ -32,7 +32,7 @@ fetcher {
 # SQUID-MIB::cacheHttpHitSvcTime.5 = INTEGER: 0  HTTP hit service time 1.3.6.1.4.1.3495.1.3.2.2.1.5.5
 # SQUID-MIB::cacheRequestHitRatio.5 = INTEGER: 75 Request Hit Ratios 1.3.6.1.4.1.3495.1.3.2.2.1.9.5
 
-    my @oid = qw/
+    my @oid = map { [$_] } qw/
         .1.3.6.1.4.1.3495.1.3.2.1.1
         .1.3.6.1.4.1.3495.1.3.2.1.2
         .1.3.6.1.4.1.3495.1.3.2.1.3
