@@ -7,9 +7,9 @@ use SNMP;
 rrds map { [ $_, 'COUNTER' ] } qw /request httphit httperror/;
 rrds map { [ $_, 'GAUGE' ] } qw/allsvc misssvc nmsvc hitsvc hitratio/;
 
-graphs 'request' => 'Squid request counter';
-graphs 'ratio' => 'Squid cache hit ratio';
-graphs 'svc' => 'Squid response time ';
+graphs 'request' => 'number of request';
+graphs 'ratio' => 'cache hit ratio';
+graphs 'svc' => 'response time (msec)';
 
 fetcher {
     my $c = shift;
@@ -57,17 +57,17 @@ __DATA__
 DEF:my1=<%RRD%>:request:AVERAGE
 DEF:my2=<%RRD%>:httphit:AVERAGE
 DEF:my3=<%RRD%>:httperror:AVERAGE
-LINE1:my1#000080:Request  
+LINE1:my1#000080:Request     
 GPRINT:my1:LAST:Cur\: %4.1lf
 GPRINT:my1:AVERAGE:Ave\: %4.1lf
 GPRINT:my1:MAX:Max\: %4.1lf
 GPRINT:my1:MIN:Min\: %4.1lf\l
-LINE1:my2#008080:Hit Request  
+LINE1:my2#008080:Hit Request 
 GPRINT:my2:LAST:Cur\: %4.1lf
 GPRINT:my2:AVERAGE:Ave\: %4.1lf
 GPRINT:my2:MAX:Max\: %4.1lf
 GPRINT:my2:MIN:Min\: %4.1lf\l
-LINE1:my3#CC0000:Err Request  
+LINE1:my3#CC0000:Err Request 
 GPRINT:my3:LAST:Cur\: %4.1lf
 GPRINT:my3:AVERAGE:Ave\: %4.1lf
 GPRINT:my3:MAX:Max\: %4.1lf
@@ -86,26 +86,26 @@ DEF:my1=<%RRD%>:allsvc:AVERAGE
 DEF:my2=<%RRD%>:misssvc:AVERAGE
 DEF:my3=<%RRD%>:nmsvc:AVERAGE
 DEF:my4=<%RRD%>:hitsvc:AVERAGE
-LINE1:my1#CC0000:All
-GPRINT:my1:LAST:Cur\: %6.1lf msec
-GPRINT:my1:AVERAGE:Ave\: %6.1lf msec
-GPRINT:my1:MAX:Max\: %6.1lf msec
-GPRINT:my1:MIN:Min\: %6.1lf msec\l
-LINE1:my2#000080:Miss
-GPRINT:my2:LAST:Cur\: %6.1lf msec
-GPRINT:my2:AVERAGE:Ave\: %6.1lf msec
-GPRINT:my2:MAX:Max\: %6.1lf msec
-GPRINT:my2:MIN:Min\: %6.1lf msec\l
-LINE1:my3#008080:NotModified
-GPRINT:my3:LAST:Cur\: %6.1lf msec
-GPRINT:my3:AVERAGE:Ave\: %6.1lf msec
-GPRINT:my3:MAX:Max\: %6.1lf msec
-GPRINT:my3:MIN:Min\: %6.1lf msec\l
-LINE1:my4#800080:Hit  
-GPRINT:my4:LAST:Cur\: %6.1lf msec
-GPRINT:my4:AVERAGE:Ave\: %6.1lf msec
-GPRINT:my4:MAX:Max\: %6.1lf msec
-GPRINT:my4:MIN:Min\: %6.1lf msec\l
+LINE1:my1#CC0000:All   
+GPRINT:my1:LAST:Cur\: %4.1lf
+GPRINT:my1:AVERAGE:Ave\: %4.1lf
+GPRINT:my1:MAX:Max\: %4.1lf
+GPRINT:my1:MIN:Min\: %4.1lf\l
+LINE1:my2#000080:Miss  
+GPRINT:my2:LAST:Cur\: %4.1lf
+GPRINT:my2:AVERAGE:Ave\: %4.1lf
+GPRINT:my2:MAX:Max\: %4.1lf
+GPRINT:my2:MIN:Min\: %4.1lf\l
+LINE1:my3#008080:NotModified 
+GPRINT:my3:LAST:Cur\: %4.1lf
+GPRINT:my3:AVERAGE:Ave\: %4.1lf
+GPRINT:my3:MAX:Max\: %4.1lf
+GPRINT:my3:MIN:Min\: %4.1lf\l
+LINE1:my4#800080:Hit   
+GPRINT:my4:LAST:Cur\: %4.1lf
+GPRINT:my4:AVERAGE:Ave\: %4.1lf
+GPRINT:my4:MAX:Max\: %4.1lf
+GPRINT:my4:MIN:Min\: %4.1lf\l
 
 
 
