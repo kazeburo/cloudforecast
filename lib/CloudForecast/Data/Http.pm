@@ -18,9 +18,10 @@ fetcher {
     my $c = shift;
     my $address = $c->address;
     my $port = $c->args->[0] || 80;
+    my $path = $c->args->[1] || '/server-status?auto';
     
     my $ua = $c->component('LWP');
-    my $response = $ua->get("http://${address}:$port/server-status?auto");
+    my $response = $ua->get("http://${address}:$port$path");
     die "server-status failed: " .$response->status_line
         unless $response->is_success;
     my $content = $response->content;
