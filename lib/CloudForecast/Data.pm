@@ -316,7 +316,7 @@ sub rrd_path {
 
     my $filename = sprintf "%s_%s.rrd",
         URI::Escape::uri_escape( $self->address ),
-        join( "-", @{$self->args});
+        join( "-", map { URI::Escape::uri_escape($_) } @{$self->args});
     return Path::Class::file(
         $self->global_config->{data_dir},
         $self->resource_name,
