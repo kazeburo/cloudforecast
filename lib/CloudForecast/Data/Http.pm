@@ -1,6 +1,7 @@
 package CloudForecast::Data::Http;
 
 use CloudForecast::Data -base;
+use HTTP::Request;
 
 rrds map { [ $_, 'GAUGE' ] } qw /busy idle/;
 graphs 'http' => 'Apache Status';
@@ -19,9 +20,12 @@ fetcher {
     my $address = $c->address;
     my $port = $c->args->[0] || 80;
     my $path = $c->args->[1] || '/server-status?auto';
-    
+    my $host = $c->args->[2];
+
     my $ua = $c->component('LWP');
-    my $response = $ua->get("http://${address}:$port$path");
+    my $req = HTTP::Request->new( GET => "http://${address}:$port$path" );
+    $req->header('Host', $host ) if $host;
+    my $response = $ua->request($req);
     die "server-status failed: " .$response->status_line
         unless $response->is_success;
     my $content = $response->content;

@@ -1,6 +1,7 @@
 package CloudForecast::Data::Nginx;
 
 use CloudForecast::Data -base;
+use HTTP::Request;
 
 rrds map { [ $_, 'GAUGE' ] } qw /read write wait/;
 rrds 'request' => 'COUNTER';
@@ -22,9 +23,12 @@ fetcher {
     my $address = $c->address;
     my $port = $c->args->[0] || 80;
     my $path = $c->args->[1] || '/nginx_status';
+    my $host = $c->args->[2];
 
     my $ua = $c->component('LWP');
-    my $response = $ua->get("http://${address}:$port$path");
+    my $request = HTTP::Request->new( GET => "http://${address}:$port$path" );
+    $request->header( 'Host', $host ) if $host;
+    my $response = $ua->request($request);
     die "server-status failed: " .$response->status_line
         unless $response->is_success;
 
