@@ -15,6 +15,10 @@ servers:
     hosts:
       - 192.168.51.10 web1 web memcached
       - 192.168.51.11 web2 web memcached
+  - config: httpd8080.yaml
+    hosts:
+      - 192.168.51.12 web3 mobile web
+      - 192.168.51.13 web4 mobile web
   - config: mysql.yaml
     label: DB
     hosts:
