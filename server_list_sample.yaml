@@ -1,7 +1,7 @@
 --- #Dev
-# --- #Hoge$B$H=q$/$3$H$G%5!<%P0lMw$r6h@Z$k$3$H$,$G$-$^$9(B
-# config$B$O(Bhost_config$BFb$N4F;k9`L\$N@_Dj%U%!%$%kL>(B
-# hosts$B$O(B $B!V(BIP$B%"%I%l%9(B[space]$B%[%9%HL>(B[space]$B%3%a%s%H!W$G$9!#%3%a%s%HFb$K$O%9%Z!<%9$,$"$C$F$b$+$^$$$^$;$s(B
+# --- #Hogeと書くことでサーバ一覧を区切ることができます
+# configはhost_config内の監視項目の設定ファイル名
+# hostsは 「IPアドレス[space]ホスト名[space]コメント」です。コメント内にはスペースがあってもかまいません
 servers:
   - config: basic.yaml
     hosts:

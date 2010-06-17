@@ -1,21 +1,21 @@
 ---
 config:
-# gearman$B$rMxMQ$9$k>l9g!"(Benable$B$r(B1$B$K$7$F!"(Bgermand$B$N(Bhost$BL>$H(Bport$B$r;XDj$7$^$9(B
+# gearmanを利用する場合、enableを1にして、germandのhost名とportを指定します
   gearman_enable: 0
   gearman_server:
     host: localhost
     port: 7003
-# rrd$B$N%U%!%$%k$r@_CV$9$k>l=j!#!V(B/$B!W$+$i;O$^$k$H@dBP%Q%9$H$J$j$^$9(B
+# rrdのファイルを設置する場所。「/」から始まると絶対パスとなります
   data_dir: data
-# $B4F;k9`L\$N@_Dj%U%!%$%k$r@_CV$9$k%G%#%l%/%H%j!#!V(B/$B!W$+$i;O$^$k$H@dBP%Q%9(B
+# 監視項目の設定ファイルを設置するディレクトリ。「/」から始まると絶対パス
   host_config_dir: host_config
 
 component_config:
-# SNMP$B$G%G!<%?$r<hF@$9$k;~$N%*%W%7%g%s!#(Bcommunity$B$H(Bversion
+# SNMPでデータを取得する時のオプション。communityとversion
   SNMP:
     community: public
     version: 2
-# MySQL$B$r4F;k$9$k>l9g$N(Buser$BL>$H%Q%9%o!<%I(B
+# MySQLを監視する場合のuser名とパスワード
   MySQL:
     user: root
     password: ""

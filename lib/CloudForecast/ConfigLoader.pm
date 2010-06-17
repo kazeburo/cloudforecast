@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw/Class::Accessor::Fast/;
 use Path::Class qw//;
-use YAML qw//;
+use YAML::Syck qw//;
 use Cwd;
 use Filesys::Notify::Simple;
 use CloudForecast::Log;
@@ -41,10 +41,10 @@ sub load_yaml {
     my @data;
     eval {
         if ( ref $file ) {
-            @data = YAML::Load($$file);
+            @data = YAML::Syck::Load($$file);
         }
         else {
-            @data = YAML::LoadFile($file);
+            @data = YAML::Syck::LoadFile($file);
         }
         die "no yaml data in $file" unless @data;
     };
