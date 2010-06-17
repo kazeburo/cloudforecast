@@ -92,7 +92,7 @@ __DATA__
 @@ index.mt
 <html>
 <head>
-<title>CloudForecast Server List</title>
+<title>CloudForecast SERVER LIST: <?= $self->page_title ?></title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
 <link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
 </head>
@@ -125,9 +125,10 @@ __DATA__
 <? for my $server ( @{$self->server_list} ) { ?>
 <li class="group-name" id="group-<?= $k ?>">&gt;&nbsp;<?= $server->{title} ?></li>
 <ul class="server-ul">
-  <? for my $host ( @{$server->{hosts}} ) { ?>
-  <li><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></li>
-  <? } ?>
+<? for my $host ( @{$server->{hosts}} ) { ?>
+<? if ( $host->{label} ) { ?><li class="server-label">&gt;&nbsp;<?= $host->{label} ?></li><? } ?>
+<li><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></li>
+<? } ?>
 </ul>
 <? $k++ } ?>
 </ul>

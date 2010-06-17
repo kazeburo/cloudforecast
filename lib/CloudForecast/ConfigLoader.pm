@@ -117,9 +117,13 @@ sub load_server_list {
 
             my $host_config = $server->{config}
                 or die "cannot find config in $group_titles[$i] (# $server_count)";
+            my $label = $server->{label} || '';
             my $hosts = $server->{hosts} || [];
+            my $check=0;
             for my $host_line ( @$hosts ) {
                 my $host = $self->parse_host( $host_line, $host_config );
+                $host->{label} = $label if ! $check;
+                $check++;
                 push @group_hosts, $host;
                 $all_hosts{$host->{address}} = $host;                    
             }

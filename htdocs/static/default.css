@@ -227,8 +227,9 @@ body {
 }
 
 #content #group-ul li.group-name {
-    background-color: #eee;
+    background-color: #ccc;
     border-top: 1px #999 solid;
+    border-bottom: 1px #999 solid;
     font-size: 1.2em;
     font-weight: bold;
     padding: 3px;
@@ -241,8 +242,14 @@ body {
 #content #group-ul ul.server-ul li {
     font-size: 1.2em;
     line-height: 1.3em;
-    border-bottom: 1px #eee solid;
-    padding: 4px 2px ;
+    border-bottom: 1px #ccc solid;
+    padding: 4px 12px ;
+}
+
+#content #group-ul ul.server-ul li.server-label {
+    background-color: #eee;
+    font-weight: bold;
+    padding: 2px 8px;
 }
 
 #content #group-ul ul.server-ul li a {
