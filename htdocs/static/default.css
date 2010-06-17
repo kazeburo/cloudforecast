@@ -241,9 +241,8 @@ body {
 
 #content #group-ul ul.server-ul li {
     font-size: 1.2em;
-    line-height: 1.3em;
     border-bottom: 1px #ccc solid;
-    padding: 4px 12px ;
+    padding: 3px 12px ;
 }
 
 #content #group-ul ul.server-ul li.server-label {
