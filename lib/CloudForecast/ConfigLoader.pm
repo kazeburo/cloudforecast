@@ -112,28 +112,31 @@ sub load_server_list {
     foreach my $group ( @groups ) {
 
         my @group_hosts;
+        my @sub_groups;
         my $server_count=0;
-        foreach my $server ( @{$group->{servers}} ) {
+        foreach my $sub_group ( @{$group->{servers}} ) {
 
-            my $host_config = $server->{config}
+            my $host_config = $sub_group->{config}
                 or die "cannot find config in $group_titles[$i] (# $server_count)";
-            my $label = $server->{label} || '';
-            my $hosts = $server->{hosts} || [];
-            my $check=0;
+            my $hosts = $sub_group->{hosts} || [];
+            my @sub_group_hosts;
             for my $host_line ( @$hosts ) {
                 my $host = $self->parse_host( $host_line, $host_config );
-                $host->{label} = $label if ! $check;
-                $check++;
                 push @group_hosts, $host;
+                push @sub_group_hosts, $host;
                 $all_hosts{$host->{address}} = $host;                    
             }
-
+            push @sub_groups, {
+                label => $sub_group->{label} || '',
+                hosts => \@sub_group_hosts,
+            };
             $server_count++;
         }
 
         push @hosts_by_group, {
             title => $group_titles[$i],
             hosts => \@group_hosts,
+            sub_groups => \@sub_groups,
         };
         $i++;
     }

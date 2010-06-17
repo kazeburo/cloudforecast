@@ -82,13 +82,14 @@ sub run {
             next if $pid; #main process
 
             # child process
-            foreach my $server ( @$server_list ) {
-                my $hosts = $server->{hosts};
-                foreach my $host ( @$hosts ) {
-                    $self->run_host($host, $global_config);
+            foreach my $group ( @$server_list ) {
+                foreach my $sub_group ( @{$group->{sub_groups}} ) {
+                    my $hosts = $sub_group->{hosts};
+                    foreach my $host ( @$hosts ) {
+                        $self->run_host($host, $global_config);
+                    }
                 }
             }
-            
             exit 0;
         }
     }

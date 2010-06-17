@@ -120,14 +120,18 @@ __DATA__
 
 <h2 id="ptitle">SERVER LIST</h2>
 
-<ul id="group-ul">
+<ul id="serverlist-ul">
 <? my $k=0 ?>
-<? for my $server ( @{$self->server_list} ) { ?>
-<li class="group-name" id="group-<?= $k ?>">&gt;&nbsp;<?= $server->{title} ?></li>
-<ul class="server-ul">
-<? for my $host ( @{$server->{hosts}} ) { ?>
-<? if ( $host->{label} ) { ?><li class="server-label">&gt;&nbsp;<?= $host->{label} ?></li><? } ?>
-<li><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></a></li>
+<? for my $group ( @{$self->server_list} ) { ?>
+<li class="group-name" id="group-<?= $k ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?></li>
+<ul class="group-ul">
+<? for my $sub_group ( @{$group->{sub_groups}} ) { ?>
+<? if ( $sub_group->{label} ) { ?><li class="server-label"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $sub_group->{label} ?></li><? } ?>
+<ul class="host-ul">
+<? for my $host ( @{$sub_group->{hosts}} ) { ?>
+<li><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></li>
+<? } ?>
+</ul>
 <? } ?>
 </ul>
 <? $k++ } ?>
@@ -141,7 +145,6 @@ __DATA__
 </html>
 
 @@ server.mt
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
 <html>
 <head>
 <title>CloudForecast : <?= $self->page_title ?> : <?= $host->{address} ?></title>

@@ -223,42 +223,51 @@ body {
     color: #999;
 }
 
-#content #group-ul {
+#content #serverlist-ul {
 }
 
-#content #group-ul li.group-name {
+#content #serverlist-ul li.group-name {
     background-color: #ccc;
     border-top: 1px #999 solid;
     border-bottom: 1px #999 solid;
     font-size: 1.2em;
     font-weight: bold;
-    padding: 3px;
+    padding: 2px 1px;;
 }
 
-#content #group-ul ul.server-ul {
-    margin-bottom: 20px;   
+#content #serverlist-ul ul.group-ul {
+    margin: 0px 0px 20px 0px;
 }
 
-#content #group-ul ul.server-ul li {
+#content #serverlist-ul ul.group-ul li {
+}
+
+#content #serverlist-ul ul.group-ul li.server-label {
     font-size: 1.2em;
     border-bottom: 1px #ccc solid;
-    padding: 3px 12px ;
-}
-
-#content #group-ul ul.server-ul li.server-label {
     background-color: #eee;
     font-weight: bold;
-    padding: 2px 8px;
+    padding: 2px 6px;
 }
 
-#content #group-ul ul.server-ul li a {
+#content #serverlist-ul ul.group-ul ul.host-ul {
+    margin: 0px;
+    padding: 0px;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li {
+    font-size: 1.2em;
+    border-bottom: 1px #ccc solid;
+    padding: 4px 12px ;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li a {
     text-decoration: none;
 }
 
-#content #group-ul ul.server-ul li span.details {
+#content #serverlist-ul ul.group-ul ul.host-ul li span.details {
     color: #666;
 }
-
 
 #content .resource-title {
     background-color: #eee;
