@@ -261,8 +261,9 @@ body {
 #content #serverlist-ul li.group-name-off,
 #content #serverlist-ul ul.group-ul li.group-name-off {
   color: #666;
-  -moz-box-shadow: 0 2px 1px #333;
-  -webkit-box-shadow: 0 2px 1px #333;
+  -moz-box-shadow: 0 0 2px #333;
+  -webkit-box-shadow: 0 0 2px #333;
+  margin-bottom: 2px;
 }
 
 
