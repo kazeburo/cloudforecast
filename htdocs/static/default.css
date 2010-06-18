@@ -232,7 +232,8 @@ body {
     border-bottom: 1px #999 solid;
     font-size: 1.2em;
     font-weight: bold;
-    padding: 2px 1px;;
+    cursor: pointer;
+    padding: 1px 1px;
 }
 
 #content #serverlist-ul ul.group-ul {
@@ -247,7 +248,8 @@ body {
     border-bottom: 1px #ccc solid;
     background-color: #eee;
     font-weight: bold;
-    padding: 2px 6px;
+    cursor: pointer;
+    padding: 1px 8px;
 }
 
 #content #serverlist-ul ul.group-ul ul.host-ul {
@@ -258,7 +260,7 @@ body {
 #content #serverlist-ul ul.group-ul ul.host-ul li {
     font-size: 1.2em;
     border-bottom: 1px #ccc solid;
-    padding: 4px 12px ;
+    padding: 4px 18px ;
 }
 
 #content #serverlist-ul ul.group-ul ul.host-ul li a {
