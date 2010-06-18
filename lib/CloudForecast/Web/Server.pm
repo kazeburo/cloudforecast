@@ -109,10 +109,9 @@ __DATA__
 
 <div id="grouplist">
 <ul>
-<? my $i=0 ?>
-<? for my $server ( @{$self->server_list} ) { ?>
-<li><a href="#group-<?= $i ?>"><?= $server->{title} ?></a></li>
-<? $i++ } ?>
+<? for my $group ( @{$self->server_list} ) { ?>
+<li><a href="#group-<?= $group->{title_key} ?>"><?= $group->{title} ?></a></li>
+<? } ?>
 </ul>
 </div>
 
@@ -121,26 +120,60 @@ __DATA__
 <h2 id="ptitle">SERVER LIST</h2>
 
 <ul id="serverlist-ul">
-<? my $k=0 ?>
 <? for my $group ( @{$self->server_list} ) { ?>
-<li class="group-name" id="group-<?= $k ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?></li>
-<ul class="group-ul">
+<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?></li>
+<ul class="group-ul" id="ul-group-<?= $group->{title_key} ?>">
 <? for my $sub_group ( @{$group->{sub_groups}} ) { ?>
-<? if ( $sub_group->{label} ) { ?><li class="server-label"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $sub_group->{label} ?></li><? } ?>
-<ul class="host-ul">
+<? if ( $sub_group->{label} ) { ?><li id="sub-group-<?= $sub_group->{label_key} ?>" class="sub-group-name"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $sub_group->{label} ?></li><? } ?>
+<ul class="host-ul" id="ul-sub-group-<?= $sub_group->{label_key} ?>">
 <? for my $host ( @{$sub_group->{hosts}} ) { ?>
 <li><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></li>
 <? } ?>
 </ul>
 <? } ?>
 </ul>
-<? $k++ } ?>
+<? } ?>
 </ul>
 
 </div>
 
 </div>
 <script src="<?= $req->uri_for('/static/js/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
+<script src="<?= $req->uri_for('/static/js/jquery-ui-1.8.2.custom.min.js') ?>" type="text/javascript"></script>
+<script src="<?= $req->uri_for('/static/js/jstorage.js') ?>" type="text/javascript"></script>
+<script type="text/javascript">
+$(function() {
+    $("li.group-name").dblclick(function(){
+        var li_group = this;
+        $("#ul-" + li_group.id).toggle(100, function(){
+            $(li_group).toggleClass('group-name-off');
+            $(li_group).children().first().toggleClass('ui-icon-triangle-1-s','ui-icon-triangle-1-e');
+            $(li_group).children().first().toggleClass('ui-icon-triangle-1-e','ui-icon-triangle-1-s');
+            $.jStorage.set( "display-" + li_group.id, $(this).css('display') );   
+        } );
+    });
+    $("li.sub-group-name").dblclick(function(){
+        var li_sub_group = this;
+        $("#ul-" + li_sub_group.id).toggle(010, function(){
+            $(li_sub_group).toggleClass('group-name-off');
+            $(li_sub_group).children().first().toggleClass('ui-icon-triangle-1-s','ui-icon-triangle-1-e');
+            $(li_sub_group).children().first().toggleClass('ui-icon-triangle-1-e','ui-icon-triangle-1-s');
+            $.jStorage.set( "display-" + li_sub_group.id, $(this).css('display') );
+        });
+    });
+    
+    $("li.group-name, li.sub-group-name").map(function(){
+        var li_group = this;
+        var disp = $.jStorage.get( "display-" + this.id );
+        if ( disp == 'none' ) {
+            $("#ul-" + li_group.id).hide();
+            $(li_group).toggleClass('group-name-off');
+            $(li_group).children().first().removeClass('ui-icon-triangle-1-s');
+            $(li_group).children().first().addClass('ui-icon-triangle-1-e');
+        }
+    });
+})
+</script>
 </body>
 </html>
 

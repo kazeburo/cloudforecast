@@ -224,6 +224,7 @@ body {
 }
 
 #content #serverlist-ul {
+    padding: 1px;
 }
 
 #content #serverlist-ul li.group-name {
@@ -234,23 +235,36 @@ body {
     font-weight: bold;
     cursor: pointer;
     padding: 1px 1px;
+    margin-top: 20px;
+}
+
+#content #serverlist-ul li:first-child {
+    margin-top: 0px;
 }
 
 #content #serverlist-ul ul.group-ul {
-    margin: 0px 0px 20px 0px;
+    margin: 0px 0px 0px 0px;
 }
 
 #content #serverlist-ul ul.group-ul li {
 }
 
-#content #serverlist-ul ul.group-ul li.server-label {
+#content #serverlist-ul ul.group-ul li.sub-group-name {
     font-size: 1.2em;
     border-bottom: 1px #ccc solid;
     background-color: #eee;
     font-weight: bold;
     cursor: pointer;
-    padding: 1px 8px;
+    padding: 2px 8px;
 }
+
+#content #serverlist-ul li.group-name-off,
+#content #serverlist-ul ul.group-ul li.group-name-off {
+  color: #666;
+  -moz-box-shadow: 0 2px 1px #333;
+  -webkit-box-shadow: 0 2px 1px #333;
+}
+
 
 #content #serverlist-ul ul.group-ul ul.host-ul {
     margin: 0px;
