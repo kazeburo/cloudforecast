@@ -143,7 +143,7 @@ __DATA__
 <script src="<?= $req->uri_for('/static/js/jstorage.js') ?>" type="text/javascript"></script>
 <script type="text/javascript">
 $(function() {
-    $("li.group-name").dblclick(function(){
+    $("li.group-name").click(function(){
         var li_group = this;
         $("#ul-" + li_group.id).toggle(100, function(){
             $(li_group).toggleClass('group-name-off');
@@ -152,7 +152,7 @@ $(function() {
             $.jStorage.set( "display-" + li_group.id, $(this).css('display') );   
         } );
     });
-    $("li.sub-group-name").dblclick(function(){
+    $("li.sub-group-name").click(function(){
         var li_sub_group = this;
         $("#ul-" + li_sub_group.id).toggle(010, function(){
             $(li_sub_group).toggleClass('group-name-off');

@@ -231,11 +231,11 @@ body {
     background-color: #ccc;
     border-top: 1px #999 solid;
     border-bottom: 1px #999 solid;
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: bold;
     cursor: pointer;
     padding: 1px 1px;
-    margin-top: 20px;
+    margin-top: 14px;
 }
 
 #content #serverlist-ul li:first-child {
@@ -250,12 +250,12 @@ body {
 }
 
 #content #serverlist-ul ul.group-ul li.sub-group-name {
-    font-size: 1.2em;
+    font-size: 1.1em;
     border-bottom: 1px #ccc solid;
     background-color: #eee;
     font-weight: bold;
     cursor: pointer;
-    padding: 2px 8px;
+    padding: 1px 8px;
 }
 
 #content #serverlist-ul li.group-name-off,
