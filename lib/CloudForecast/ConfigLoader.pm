@@ -116,17 +116,19 @@ sub load_server_list {
     foreach my $group ( @groups ) {
 
         my @sub_groups;
-        my %sub_groups;
+        my %sub_group_label;
         my $server_count=0;
         foreach my $sub_group ( @{$group->{servers}} ) {
 
             my $host_config = $sub_group->{config}
                 or die "cannot find config in $group_titles[$i] (# $server_count)";
+            $server_count++;
+
             my $hosts = $sub_group->{hosts} || [];
             if ( $sub_group->{label} ) {
                 die "duplicated label found in $group_titles[$i] : $sub_group->{label}"
-                    if exists $sub_groups{$sub_group->{label}};
-                $sub_groups{$sub_group->{label}}=1;
+                    if exists $sub_group_label{$sub_group->{label}};
+                $sub_group_label{$sub_group->{label}}=1;
             }
             my @sub_group_hosts;
             for my $host_line ( @$hosts ) {
@@ -134,13 +136,18 @@ sub load_server_list {
                 push @sub_group_hosts, $host;
                 $all_hosts{$host->{address}} = $host;                    
             }
+            
+            if ( @sub_groups && ! $sub_group->{label} ) {
+                push @{$sub_groups[-1]->{hosts}}, @sub_group_hosts;
+                next;
+            }
+
             my $label = $sub_group->{label} ? $sub_group->{label} : Digest::MD5::md5_hex($$ . $sub_group . rand(1000) );
             push @sub_groups, {
                 label => $sub_group->{label} || '',
                 label_key => substr(Digest::MD5::md5_hex( $group_titles[$i] . '\0' . $label),0,12),
                 hosts => \@sub_group_hosts,
             };
-            $server_count++;
         }
 
         push @hosts_by_group, {
