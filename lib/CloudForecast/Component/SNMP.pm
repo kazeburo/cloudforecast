@@ -42,6 +42,30 @@ sub get_by_int {
     return [ map { $_ =~ /^[0-9\.]+$/ ? $_ : '' } @$ret ];
 }
 
+sub walk {
+    my $self = shift;
+    my @ids = @_;
+    my $count = @ids;
+    my $max = $self->config->{max_bulkwalk} || 10;
+    my @ret = $self->session->bulkwalk( 0, $max, SNMP::VarList->new(map { [$_] } @ids) );
+
+    if ( $self->session->{ErrorStr} ) {
+        CloudForecast::Log->warn($self->session->{ErrorStr});
+        return;
+    }
+
+    my $data_count = @{$ret[0]};
+    my @data;
+    for my $i ( 0..($data_count - 1) ) {
+        my %hash;
+        map {
+            $hash{$ids[$_]} = $ret[$_]->[$i]->val
+        }  0..($count-1);
+        push @data,\%hash; 
+    }
+    return \@data;
+}
+
 
 1;
 
