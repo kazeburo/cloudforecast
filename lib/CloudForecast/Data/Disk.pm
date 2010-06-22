@@ -7,6 +7,12 @@ use List::Util qw//;
 rrds map { [ $_, 'GAUGE' ] } qw /total used/;
 graphs 'disk' => 'Disk Usage';
 
+title sub {
+    my $c = shift;
+    my $partition = $c->args->[1] || $c->args->[0] || '0';
+    return "Disk ($partition)";
+};
+
 fetcher {
     my $c = shift;
     my $interface = $c->args->[0] || 0;
@@ -36,7 +42,7 @@ DEF:my2=<%RRD%>:used:AVERAGE
 CDEF:my1b=my1,1000,*
 CDEF:my2b=my2,1000,*
 AREA:my1b#ff99ff:Total 
-GPRINT:my1b:LAST:Current\: %4.1lf%sB
+GPRINT:my1b:LAST:Current\: %3.2lf %sB
 AREA:my2b#cc00ff:Used 
-GPRINT:my2b:LAST:Current\: %4.1lf%sB
+GPRINT:my2b:LAST:Current\: %3.2lf %sB
 

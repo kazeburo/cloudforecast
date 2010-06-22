@@ -15,10 +15,22 @@ title sub {
 fetcher {
     my $c = shift;
     my $interface = $c->args->[0] || 0;
+    if ( $interface !~ /^\d+$/ ) {
+        my $ifs = $c->component('SNMP')->walk(qw/ifIndex ifName/);
+        my $if = List::Util::first { $_->{ifName} eq $interface } @$ifs;
+        if ( !$if ) {
+            CloudForecast::Log->warn("couldnot find network interface '$interface'");
+        }
+        else {
+            CloudForecast::Log->debug("found network interface '$interface' with ifIndex: $if->{ifIndex}");
+            $interface = $if->{ifIndex};
+        }
+    }
+
     my @oids = ( $c->component('SNMP')->config->{version} eq '1' ) ? qw/ifInOctets ifOutOctets/ : qw/ifHCInOctets ifHCOutOctets/;
     my @map = map { [ $_, $interface ] } @oids;
     my $ret = $c->component('SNMP')->get_by_int(@map);
-
+    
     if ( $c->component('SNMP')->config->{version} ne '1' && $ret->[0] eq '' && $ret->[1] eq '' ) {
         CloudForecast::Log->warn("fall down to 32bit counter");
         $ret = $c->component('SNMP')->get_by_int( map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/ );
