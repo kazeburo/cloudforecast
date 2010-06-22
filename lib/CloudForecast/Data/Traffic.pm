@@ -15,27 +15,34 @@ title sub {
 fetcher {
     my $c = shift;
     my $interface = $c->args->[0] || 0;
+
     if ( $interface !~ /^\d+$/ ) {
-        my $ifs = $c->component('SNMP')->walk(qw/ifIndex ifDescr/);
-        my $if = List::Util::first { $_->{ifDescr} eq $interface } @$ifs;
+        my $ifs = $c->component('SNMP')->table("ifTable");
+        if ( !$ifs ) {
+            CloudForecast::Log->warn("couldnot get iftable");
+            return;
+        }
+        my $if = List::Util::first { $_->{ifDescr} eq $interface } values %{$ifs};
         if ( !$if ) {
             CloudForecast::Log->warn("couldnot find network interface '$interface'");
+            return;
         }
-        else {
-            CloudForecast::Log->debug("found network interface '$interface' with ifIndex: $if->{ifIndex}");
-            $interface = $if->{ifIndex};
-        }
+        
+        my $in_oct = exists $if->{ifHCInOctets} ? $if->{ifHCInOctets} : $if->{ifInOctets};
+        my $out_oct = exists $if->{ifHCOutOctets} ? $if->{ifHCOutOctets} : $if->{ifOutOctets};
+        return [$in_oct, $out_oct];
     }
 
-    my @oids = ( $c->component('SNMP')->config->{version} eq '1' ) ? qw/ifInOctets ifOutOctets/ : qw/ifHCInOctets ifHCOutOctets/;
-    my @map = map { [ $_, $interface ] } @oids;
+    my @map = map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/;
+    push @map, map { [ $_, $interface] } qw/ifHCInOctets ifHCOutOctets/
+        if $c->component('SNMP')->config->{version} eq '2';
     my $ret = $c->component('SNMP')->get_by_int(@map);
-    
-    if ( $c->component('SNMP')->config->{version} ne '1' && $ret->[0] eq '' && $ret->[1] eq '' ) {
-        CloudForecast::Log->warn("falldown to 32bit counter");
-        $ret = $c->component('SNMP')->get_by_int( map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/ );
+
+    if ( $c->component('SNMP')->config->{version} eq '2' && $ret->[2] ne '' && $ret->[3] ne '' ) {
+        return [ $ret->[2], $ret->[3] ];
     }
-    $ret;
+    CloudForecast::Log->debug("use 32bit Traffic counter");
+    return [ $ret->[0], $ret->[1] ];
 };
 
 __DATA__

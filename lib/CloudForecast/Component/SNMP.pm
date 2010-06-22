@@ -42,6 +42,15 @@ sub get_by_int {
     return [ map { $_ =~ /^[0-9\.]+$/ ? $_ : '' } @$ret ];
 }
 
+sub table {
+    my $self = shift;
+    my $table = shift;
+    my $ret = $self->session->gettable($table);
+    CloudForecast::Log->warn($self->session->{ErrorStr})
+            if $self->session->{ErrorStr};
+    $ret;
+}
+
 sub walk {
     my $self = shift;
     my @ids = @_;

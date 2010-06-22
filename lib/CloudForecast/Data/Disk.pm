@@ -16,23 +16,23 @@ title sub {
 fetcher {
     my $c = shift;
     my $interface = $c->args->[0] || 0;
-    if ( $interface =~ /^\d+$/ ) {
-        my @map = map { [ $_, $interface ] } qw/dskTotal dskUsed/;
-        return $c->component('SNMP')->get_by_int(@map);
+
+    if ( $interface !~ /^\d+$/ ) {
+        my $disks = $c->component('SNMP')->table("dskTable");
+        if ( !$disks ) {
+            CloudForecast::Log->warn("couldnot get dskTable");
+            return;
+        }
+        my $disk = List::Util::first { $_->{dskPath} eq $interface } values %{$disks};
+        if ( !$disk ) {
+            CloudForecast::Log->warn("couldnot find disk partition '$interface'");
+            return;
+        }
+        return [ $disk->{dskTotal}, $disk->{dskUsed} ];
     }
 
-    my $ret = $c->component('SNMP')->walk(qw/dskPath dskTotal dskUsed/);
-    if ( !$ret ) {
-        CloudForecast::Log->warn('disk usage buldwalk failed');
-        return;
-    }
-
-    my $disk = List::Util::first { $_->{dskPath} eq $interface } @$ret;
-    if ( !$disk ) {
-        CloudForecast::Log->warn("couldnot find partition '$interface'");
-        return;
-    }
-    return [ $disk->{dskTotal}, $disk->{dskUsed} ];
+    my @map = map { [ $_, $interface ] } qw/dskTotal dskUsed/;
+    return $c->component('SNMP')->get_by_int(@map);
 };
 
 __DATA__
