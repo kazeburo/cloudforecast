@@ -233,7 +233,7 @@ sub draw_graph {
         die 'invalid template' unless $template;
     }
 
-    my ($tmpfh, $tmpfile) = File::Temp::tempfile(UNLINK => 1, SUFFIX => ".png");
+    my ($tmpfh, $tmpfile) = File::Temp::tempfile(UNLINK => 0, SUFFIX => ".png");
 
     my @args = (
         $tmpfile,
