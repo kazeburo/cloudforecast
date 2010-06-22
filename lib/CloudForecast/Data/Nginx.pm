@@ -73,7 +73,7 @@ GPRINT:my3:MAX:Max\: %6.1lf
 GPRINT:my3:MIN:Min\: %6.1lf\l
 
 @@ request
-DEF:my1=<%RRD%>:request:AVERAGE
+DEF:my1t=<%RRD%>:request:AVERAGE
 CDEF:my1=my1t,0,100000,LIMIT
 LINE1:my1#00C000:Request  
 GPRINT:my1:LAST:Cur\: %4.1lf
