@@ -55,10 +55,13 @@ DEF:my2=<%RRD%>:nice:AVERAGE
 DEF:my3=<%RRD%>:system:AVERAGE
 DEF:my4=<%RRD%>:idle:AVERAGE
 DEF:my5t=<%RRD%>:wait:AVERAGE
-DEF:my6=<%RRD%>:kernel:AVERAGE
-DEF:my7=<%RRD%>:interrupt:AVERAGE
+DEF:my6t=<%RRD%>:kernel:AVERAGE
+DEF:my7t=<%RRD%>:interrupt:AVERAGE
 
 CDEF:my5=my5t,UN,0,my5t,IF
+CDEF:my6=my6t,UN,0,my6t,IF
+CDEF:my7=my7t,UN,0,my7t,IF
+
 CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my6,+,my7,+
 CDEF:my1r=my1,total,/,100,*,0,100,LIMIT
 CDEF:my2r=my2,total,/,100,*,0,100,LIMIT
