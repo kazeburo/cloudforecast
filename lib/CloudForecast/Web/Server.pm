@@ -180,7 +180,7 @@ $(function() {
 @@ server.mt
 <html>
 <head>
-<title><?= $host->{address} ?> : <?= $self->page_title ?> : CloudForecast</title>
+<title><?= $host->{hostname} ?> <?= $host->{address} ?> : <?= $self->page_title ?> : CloudForecast</title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
 <link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/css/anytimec.css') ?>" />
