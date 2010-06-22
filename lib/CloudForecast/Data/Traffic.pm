@@ -28,9 +28,8 @@ fetcher {
             return;
         }
         
-        my $in_oct = exists $if->{ifHCInOctets} ? $if->{ifHCInOctets} : $if->{ifInOctets};
-        my $out_oct = exists $if->{ifHCOutOctets} ? $if->{ifHCOutOctets} : $if->{ifOutOctets};
-        return [$in_oct, $out_oct];
+        CloudForecast::Log->debug("found network interface '$interface' with ifIndex:$if->{ifIndex}");
+        $interface = $if->{ifIndex};
     }
 
     my @map = map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/;
