@@ -92,7 +92,7 @@ __DATA__
 @@ index.mt
 <html>
 <head>
-<title>CloudForecast SERVER LIST: <?= $self->page_title ?></title>
+<title> SERVER LIST : <?= $self->page_title ?> : CloudForecast</title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
 <link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
 </head>
@@ -180,7 +180,7 @@ $(function() {
 @@ server.mt
 <html>
 <head>
-<title>CloudForecast : <?= $self->page_title ?> : <?= $host->{address} ?></title>
+<title><?= $host->{address} ?> : <?= $self->page_title ?> : CloudForecast</title>
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
 <link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/css/anytimec.css') ?>" />
