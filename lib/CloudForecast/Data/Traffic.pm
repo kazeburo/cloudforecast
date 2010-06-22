@@ -16,8 +16,8 @@ fetcher {
     my $c = shift;
     my $interface = $c->args->[0] || 0;
     if ( $interface !~ /^\d+$/ ) {
-        my $ifs = $c->component('SNMP')->walk(qw/ifIndex ifName/);
-        my $if = List::Util::first { $_->{ifName} eq $interface } @$ifs;
+        my $ifs = $c->component('SNMP')->walk(qw/ifIndex ifDescr/);
+        my $if = List::Util::first { $_->{ifDescr} eq $interface } @$ifs;
         if ( !$if ) {
             CloudForecast::Log->warn("couldnot find network interface '$interface'");
         }
@@ -32,7 +32,7 @@ fetcher {
     my $ret = $c->component('SNMP')->get_by_int(@map);
     
     if ( $c->component('SNMP')->config->{version} ne '1' && $ret->[0] eq '' && $ret->[1] eq '' ) {
-        CloudForecast::Log->warn("fall down to 32bit counter");
+        CloudForecast::Log->warn("falldown to 32bit counter");
         $ret = $c->component('SNMP')->get_by_int( map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/ );
     }
     $ret;
