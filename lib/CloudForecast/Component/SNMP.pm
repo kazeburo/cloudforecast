@@ -44,8 +44,7 @@ sub get_by_int {
 
 sub table {
     my $self = shift;
-    my $table = shift;
-    my $ret = $self->session->gettable($table);
+    my $ret = $self->session->gettable(@_);
     CloudForecast::Log->warn($self->session->{ErrorStr})
             if $self->session->{ErrorStr};
     $ret;

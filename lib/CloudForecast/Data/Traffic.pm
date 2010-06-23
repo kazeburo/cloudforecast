@@ -17,19 +17,22 @@ fetcher {
     my $interface = $c->args->[0] || 0;
 
     if ( $interface !~ /^\d+$/ ) {
-        my $ifs = $c->component('SNMP')->table("ifTable");
+        my $ifs = $c->component('SNMP')->table("ifTable",
+            columns => [qw/ifIndex ifDescr ifHCOutOctets ifOutOctets ifHCInOctets ifInOctets/] );
         if ( !$ifs ) {
             CloudForecast::Log->warn("couldnot get iftable");
-            return;
+            return [-1, -1];
         }
         my $if = List::Util::first { $_->{ifDescr} eq $interface } values %{$ifs};
         if ( !$if ) {
             CloudForecast::Log->warn("couldnot find network interface '$interface'");
-            return;
+            return [-1, -1];
         }
         
         CloudForecast::Log->debug("found network interface '$interface' with ifIndex:$if->{ifIndex}");
-        $interface = $if->{ifIndex};
+        my $in = exists $if->{ifHCInOctets} ? $if->{ifHCInOctets} : $if->{ifInOctets};
+        my $out = exists $if->{ifHCOutOctets} ? $if->{ifHCOutOctets} : $if->{ifOutOctets};
+        return [$in, $out];
     }
 
     my @map = map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/;

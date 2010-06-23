@@ -18,16 +18,18 @@ fetcher {
     my $interface = $c->args->[0] || 0;
 
     if ( $interface !~ /^\d+$/ ) {
-        my $disks = $c->component('SNMP')->table("dskTable");
+        my $disks = $c->component('SNMP')->table("dskTable", 
+            columns => [qw/dskIndex dskPath dskTotal dskUsed/] );
         if ( !$disks ) {
             CloudForecast::Log->warn("couldnot get dskTable");
-            return;
+            return [-1, -1];
         }
         my $disk = List::Util::first { $_->{dskPath} eq $interface } values %{$disks};
         if ( !$disk ) {
             CloudForecast::Log->warn("couldnot find disk partition '$interface'");
-            return;
+            return [-1, -1];
         }
+        CloudForecast::Log->debug("found partition '$interface' with dskIndex:$disk->{dskIndex}");
         return [ $disk->{dskTotal}, $disk->{dskUsed} ];
     }
 
