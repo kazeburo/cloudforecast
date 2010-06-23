@@ -54,9 +54,12 @@ fetcher {
 
 __DATA__
 @@ request
-DEF:my1=<%RRD%>:request:AVERAGE
-DEF:my2=<%RRD%>:httphit:AVERAGE
-DEF:my3=<%RRD%>:httperror:AVERAGE
+DEF:my1a=<%RRD%>:request:AVERAGE
+DEF:my2a=<%RRD%>:httphit:AVERAGE
+DEF:my3a=<%RRD%>:httperror:AVERAGE
+CDEF:my1=my1a,0,25000,LIMIT
+CDEF:my2=my2a,0,25000,LIMIT
+CDEF:my3=my3a,0,25000,LIMIT
 LINE1:my1#000080:Request     
 GPRINT:my1:LAST:Cur\: %4.1lf
 GPRINT:my1:AVERAGE:Ave\: %4.1lf
