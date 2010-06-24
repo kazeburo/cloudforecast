@@ -83,6 +83,7 @@ GPRINT:my1:LAST:Cur\: %4.1lf[%%]
 GPRINT:my1:AVERAGE:Ave\: %4.1lf[%%]
 GPRINT:my1:MAX:Max\: %4.1lf[%%]
 GPRINT:my1:MIN:Min\: %4.1lf[%%]\l
+LINE:100
 
 @@ svc
 DEF:my1=<%RRD%>:allsvc:AVERAGE

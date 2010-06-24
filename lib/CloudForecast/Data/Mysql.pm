@@ -108,10 +108,10 @@ GPRINT:my5:MIN:Min\: %6.1lf\l
 @@ slow
 DEF:my1=<%RRD%>:sq:AVERAGE
 AREA:my1#00c000:Slow Queries  
-GPRINT:my1:LAST:Cur\: %4.1lf
-GPRINT:my1:AVERAGE:Ave\: %4.1lf
-GPRINT:my1:MAX:Max\: %4.1lf
-GPRINT:my1:MIN:Min\: %4.1lf\c
+GPRINT:my1:LAST:Cur\: %4.2lf
+GPRINT:my1:AVERAGE:Ave\: %4.2lf
+GPRINT:my1:MAX:Max\: %4.2lf
+GPRINT:my1:MIN:Min\: %4.2lf\c
 
 @@ thread
 DEF:my1=<%RRD%>:cac:AVERAGE

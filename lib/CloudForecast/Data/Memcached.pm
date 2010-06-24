@@ -69,17 +69,16 @@ __DATA__
 @@ usage
 DEF:my1=<%RRD%>:used:AVERAGE
 DEF:my2=<%RRD%>:max:AVERAGE
-AREA:my1#00C000:Used  
+AREA:my1#eaaf00:Used 
 GPRINT:my1:LAST:Cur\: %2.2lf%sB
 GPRINT:my1:AVERAGE:Ave\: %2.2lf%sB
 GPRINT:my1:MAX:Max\: %2.2lf%sB
 GPRINT:my1:MIN:Min\: %2.2lf%sB\c
-LINE:my2#0000C0:Max  
-GPRINT:my2:LAST:Cur\: %2.2lf%sB
-GPRINT:my2:AVERAGE:Ave\: %2.2lf%sB
-GPRINT:my2:MAX:Max\: %2.2lf%sB
+LINE:my2#333333:Max 
+GPRINT:my2:LAST:Cur\: %2.2lf%sB 
+GPRINT:my2:AVERAGE:Ave\: %2.2lf%sB 
+GPRINT:my2:MAX:Max\: %2.2lf%sB 
 GPRINT:my2:MIN:Min\: %2.2lf%sB\c
-
 
 @@ count
 DEF:my1a=<%RRD%>:cmdset:AVERAGE
@@ -100,10 +99,10 @@ GPRINT:my2:MIN:Min\: %6.1lf\c
 
 @@ rate
 DEF:my1=<%RRD%>:rate:AVERAGE
-AREA:my1#00C000:RATE  
+CDEF:my2=my1,100,GT,UNKN,100,IF
+AREA:my1#990000:RATE  
 GPRINT:my1:LAST:Cur\: %4.2lf%s
 GPRINT:my1:AVERAGE:Ave\: %4.2lf%s
 GPRINT:my1:MAX:Max\: %4.2lf%s
 GPRINT:my1:MIN:Min\: %4.2lf%s\c
-
-
+LINE:100
