@@ -98,11 +98,13 @@ GPRINT:my2:MIN:Min\: %6.1lf\c
 
 
 @@ rate
-DEF:my1=<%RRD%>:rate:AVERAGE
-CDEF:my2=my1,100,GT,UNKN,100,IF
-AREA:my1#990000:RATE  
-GPRINT:my1:LAST:Cur\: %4.2lf%s
-GPRINT:my1:AVERAGE:Ave\: %4.2lf%s
-GPRINT:my1:MAX:Max\: %4.2lf%s
-GPRINT:my1:MIN:Min\: %4.2lf%s\c
+DEF:hits=<%RRD%>:gethits:AVERAGE
+DEF:misses=<%RRD%>:getmisses:AVERAGE
+CDEF:total=hits,misses,+
+CDEF:rate=hits,total,/,100,*,0,100,LIMIT
+AREA:rate#990000:RATE  
+GPRINT:rate:LAST:Cur\: %4.2lf%s
+GPRINT:rate:AVERAGE:Ave\: %4.2lf%s
+GPRINT:rate:MAX:Max\: %4.2lf%s
+GPRINT:rate:MIN:Min\: %4.2lf%s\c
 LINE:100
