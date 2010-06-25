@@ -10,6 +10,11 @@ use Parallel::Prefork::SpareWorkers;
 use CloudForecast::Log;
 use CloudForecast::ConfigLoader;
 use CloudForecast::Gearman::Scoreboard;
+use CloudForecast::Ledge;
+
+#preload
+require CloudForecast::Data;
+
 
 __PACKAGE__->mk_accessors(qw/configloader
                              restarter
@@ -79,6 +84,16 @@ sub load_resource {
     return $resource;
 }
 
+sub load_ledge {
+    my $self = shift;
+    return $self->{_ledge} if $self->{_ledge};
+    $self->{_ledge} = CloudForecast::Ledge->new(
+        data_dir => $self->configloader->global_config->{data_dir},
+        db_name => $self->configloader->global_config->{db_name},
+    );
+    $self->{_ledge};
+}
+
 sub fetcher_worker {
     my $self = shift;
 
@@ -121,6 +136,54 @@ sub updater_worker {
         CloudForecast::Log->warn("fetcher failed: $@") if $@;
         1;
     });
+
+    $worker->register_function('ledge', sub {
+        my $job = shift;
+        my $ret = {
+            error => 0,
+        };
+
+        eval {
+            my $method;
+            my @args;
+            eval {
+                my $args = Storable::thaw($job->arg);
+                $args or die 'invalid arg';
+                @args = @$args;
+                $method = shift @args;
+                $method or die 'no method';
+                $method =~ m!^(set|add|get|delete|expire)$! or die "invalid method: $method";
+            };
+            die "failed thaw: $@" if $@;
+
+            my $ledge = $self->load_ledge();
+            if ( $method =~ m!^(set|add|delete|expire)! ) {
+                eval {
+                    $ret->{status} = $ledge->can($method)->($ledge, @args);
+                };
+                if ( $@ ) {
+                    $ret->{error} = 1;
+                    $ret->{errorstr} = $@;
+                } 
+            }
+            else {
+                eval {
+                    ( $ret->{data}, $ret->{csum} ) = $ledge->get(@args);
+                };
+                if ( $@ ) {
+                    $ret->{error} = 1;
+                    $ret->{errorstr} = $@;
+                }
+            }
+        };
+        if ( $@ ) {
+            CloudForecast::Log->warn("ledge failed: $@");
+            $ret->{error} = 1;
+            $ret->{errorstr} = $@;
+        }
+        Storable::nfreeze($ret);
+    });
+
     $self->run_worker(@_);
 }
 

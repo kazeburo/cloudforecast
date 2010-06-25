@@ -80,7 +80,8 @@ get '/graph' => sub {
     return $self->not_found('Host Not Found') unless $host;
 
     my $host_instance = $self->get_host($host);
-    my ($img,$err) = $host_instance->draw_graph($resource,$key, $span, $req->param('from_date'), $req->param('to_date') );
+    my ($img,$err) = $host_instance->draw_graph($resource,$key, $span,
+        $req->param('from_date'), $req->param('to_date') );
 
     return $self->ise($err) unless $img;
     return [ 200, ['Content-Type','image/png'], [$img] ];

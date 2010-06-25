@@ -5,6 +5,7 @@ use warnings;
 use Carp qw//;
 use base qw/Class::Data::Inheritable Class::Accessor::Fast/;
 use CloudForecast::Gearman;
+use CloudForecast::Ledge;
 use Data::Section::Simple;
 use UNIVERSAL::require;
 use Path::Class qw//;
@@ -411,6 +412,35 @@ sub call_updater {
         $self->exec_updater($ret);
     }
 }
+
+sub _ledge {
+    my $self = shift;
+    my $method = shift;
+    my @args = @_;
+
+    ### Webインターフェイスからのアクセスセスは直接DBにアクセス
+    if ( !$self->global_config->{__do_web} && $self->global_config->{gearman_enable} ) {
+        my $gearman = CloudForecast::Gearman->new({
+            host => $self->global_config->{gearman_server}->{host},
+            port => $self->global_config->{gearman_server}->{port},
+        });
+        $gearman->can( 'ledge_' . $method )->( $gearman, $self->resource_class, $self->address, @_  );
+    }
+    else {
+        $self->{_ledge} ||= CloudForecast::Ledge->new({
+            data_dir => $self->global_config->{data_dir},
+            db_name  => $self->global_config->{db_name}
+        });
+        $self->{_ledge}->can($method)->( $self->{_ledge}, $self->resource_class, $self->address, @_  );
+    }
+}
+
+sub ledge_add { shift->_ledge('add', @_ ) }
+sub ledge_set { shift->_ledge('set', @_ ) }
+sub ledge_delete { shift->_ledge('delete', @_ ) }
+sub ledge_expire { shift->_ledge('expire', @_ ) }
+sub ledge_get { shift->_ledge('get', @_ ) }
+
 
 sub init_rrd {
     my $self = shift;

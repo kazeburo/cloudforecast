@@ -8,6 +8,9 @@ use CloudForecast::Host;
 use CloudForecast::Log;
 use POSIX ":sys_wait_h";
 
+# preload
+require CloudForecast::Data;
+
 __PACKAGE__->mk_accessors(qw/restarter
                              root_dir
                              global_config

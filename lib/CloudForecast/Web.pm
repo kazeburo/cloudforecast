@@ -58,6 +58,8 @@ sub new {
         server_list => $args->{server_list},
     });
     $configloader->load_all();
+    # Webインターフェイス経由であることのマーク
+    $configloader->global_config->{__do_web} = 1;
 
     $class->SUPER::new({
         configloader => $configloader,

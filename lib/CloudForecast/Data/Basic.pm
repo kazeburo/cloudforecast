@@ -30,6 +30,7 @@ fetcher {
     #$c->hostname $c->address $c->detail $c->components->{SNMP}->..
     #$c->log
     #$c->args->[0]...
+    #$c->ledge_(get|add|set|delete)..
 
     #cpu
     my @map = map { [ $_, 0 ] } qw/ssCpuRawUser ssCpuRawNice ssCpuRawSystem

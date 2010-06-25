@@ -59,5 +59,38 @@ sub updater {
     );
 }
 
-1
+sub _ledge_update {
+    my $self = shift;
+    my @args = @_;
+    my $freeze = $self->gearman_client->do_task(
+        'ledge',
+        Storable::nfreeze(\@args),
+        { high_priority => 1 },
+    );
+    my $ret = Storable::thaw($freeze);
+    die $ret->{errorstr} if $ret->{error};
+    $ret->{status};
+}
+
+
+sub ledge_add { shift->_ledge_update('add', @_ ) }
+sub ledge_set { shift->_ledge_update('set', @_ ) }
+sub ledge_delete { shift->_ledge_update('delete', @_ ) }
+sub ledge_expire { shift->_ledge_update('expire', @_ ) }
+
+sub ledge_get {
+    my $self = shift;
+    my @args = @_;
+    unshift @args, 'get';
+    my $freeze = $self->gearman_client->do_task(
+        'ledge',
+        Storable::nfreeze(\@args),
+    );
+    my $ret = Storable::thaw($freeze);
+    die $ret->{errorstr} if $ret->{error};
+    wantarray ? ( $ret->{data}, $ret->{csum} ) : $ret->{data};
+}
+
+1;
+
 
