@@ -9,7 +9,7 @@ rrds 'request' => 'COUNTER';
 graphs 'connection' => 'Nginx connections';
 graphs 'request' => 'Nginx request counter';
 
-title sub {
+title {
     my $c = shift;
     my $title = "Nginx";
     if ( my $port =$c->args->[0] ) {

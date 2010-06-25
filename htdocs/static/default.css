@@ -261,7 +261,8 @@ body {
 #content #serverlist-ul li.group-name-off,
 #content #serverlist-ul ul.group-ul li.group-name-off {
   color: #666;
-  background-image: -webkit-gradient( linear, left top, left bottom, from(rgba(153,153,153,0.6)), color-stop(0.3, rgba(204,204,204,0.2)), to(rgba(204,204,204,0.2)) ); 
+  background-image: -webkit-gradient( linear, left top, left bottom,
+       from(rgba(153,153,153,0.6)), color-stop(0.3, rgba(204,204,204,0.2)), to(rgba(204,204,204,0.2)) );
   background-image: -moz-linear-gradient(top, rgba(153,153,153,0.6), rgba(204,204,204,0.2) 30%, rgba(204,204,204,0.2));
 /*  -moz-box-shadow: inset 0px 0px 3px #333;
   -webkit-box-shadow: inset 0px 0px 3px #333;
@@ -289,13 +290,64 @@ body {
     color: #666;
 }
 
-#content .resource-title {
-    background-color: #eee;
+#content ul#resource-list {
+}
+
+#content ul#resource-list li {
+    padding: 0px 5px;
+    display: inline;
+    list-style: none;
+    font-size: 1em;
+    border-left: 1px #999 solid;
+}
+
+#content ul#resource-list li:first-child {
+    border-left: none;
+}
+
+#content ul#resource-list li a {
+    text-decoration: none;
+}
+
+#content h4.resource-title {
+    background-color: #ccc;
     border-top: 1px #999 solid;
     font-size: 1.2em;
     font-weight: bold;
     padding: 3px;
+    margin: 0px 0px 3px 0px;
 }
+
+#content div.resource-sysinfo {
+    margin: 6px 0px 7px 0px;
+    font-size: 0.8em;
+}
+
+#content div.resource-sysinfo:after {
+    content:".";
+    display:block;
+    height: 0;
+    vivsivility: hidden;
+    clear : left;
+}
+
+#content div.resource-sysinfo div {
+    padding-right: 5px;
+    white-space:nowrap;
+    float:left;
+    margin: 5px 0px;
+}
+
+#content div.resource-sysinfo div span {
+    padding: 3px;
+    color: #666;
+    background-color: #eee;
+    border: 1px #999 solid;
+    font-weight: bold;
+    -webkit-border-radius: 3px;   /* Safari、Google Chrome */
+    -moz-border-radius: 3px;  /* Firefox */
+}
+
 
 #content .resource-graph {
     margin-bottom: 20px;

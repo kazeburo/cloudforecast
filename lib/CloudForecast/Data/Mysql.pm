@@ -9,13 +9,33 @@ graphs 'count' => 'MySQL Queries Count';
 graphs 'slow' => 'MySQL Slow Queries';
 graphs 'thread' => 'MySQL Threads';
 
-title sub {
+title {
     my $c = shift;
     my $title='MySQL';
     if ( my $port = $c->component('MySQL')->port ) {
         $title .= " (port=$port)"; 
     }
     return $title;
+};
+
+sysinfo {
+    my $c = shift;
+    my @sysinfo;
+    if ( my $sysinfo = $c->ledge_get('sysinfo') ) {
+        push @sysinfo, 'version', $sysinfo->{version} if $sysinfo->{version};
+
+        if ( my $uptime = $sysinfo->{uptime} ) {
+            my $day = int( $uptime /86400 );
+            my $hour = int( ( $uptime % 86400 ) / 3600 );
+            my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
+            push @sysinfo, 'uptime', sprintf("up %d days, %2d:%02d", $day, $hour, $min);
+        }
+
+        map { push @sysinfo, $_, $sysinfo->{$_} } grep { exists $sysinfo->{$_} } 
+            qw/max_connections log_slow_queries slow_launch_time log_queries_not_using_indexes/;
+        
+    }
+    return \@sysinfo;
 };
 
 fetcher {
@@ -28,6 +48,22 @@ fetcher {
     foreach my $row ( @$rows ) {
         $status{$row->{Variable_name}} = $row->{Value};
     }
+
+    my %variable;
+    my $varible_rows = $mysql->select_all(q!show variables!);
+    foreach my $variable_row ( @$varible_rows ) {
+        $variable{$variable_row->{Variable_name}} = $variable_row->{Value};
+    }
+    
+    my $uptime = $status{Uptime} || 0;
+    my $version = $mysql->version;
+    $c->ledge_set('sysinfo', {
+        uptime => $uptime, version => $version,
+        log_slow_queries => $variable{log_slow_queries},
+        log_queries_not_using_indexes => $variable{log_queries_not_using_indexes},
+        slow_launch_time => $variable{slow_launch_time},
+        max_connections => $variable{max_connections},
+    } );
 
     return [ map { $status{$_} } qw/Com_delete Com_insert Com_replace Com_select Com_update Slow_queries
                                     Threads_cached Threads_connected Threads_running/ ]; 

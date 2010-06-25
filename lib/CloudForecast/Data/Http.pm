@@ -6,7 +6,7 @@ use HTTP::Request;
 rrds map { [ $_, 'GAUGE' ] } qw /busy idle/;
 graphs 'http' => 'Apache Status';
 
-title sub {
+title {
     my $c = shift;
     my $title = "HTTP";
     if ( my $port = $c->args->[0] ) {

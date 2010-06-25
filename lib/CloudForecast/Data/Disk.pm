@@ -7,7 +7,7 @@ use List::Util qw//;
 rrds map { [ $_, 'GAUGE' ] } qw /total used/;
 graphs 'disk' => 'Disk Usage';
 
-title sub {
+title {
     my $c = shift;
     my $partition = $c->args->[1] || $c->args->[0] || '0';
     return "Disk ($partition)";

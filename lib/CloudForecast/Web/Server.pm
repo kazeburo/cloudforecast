@@ -221,8 +221,27 @@ Date Range:
 </form>
 </div>
 
+
+<? if ( @graph_list > 1 ) { ?>
+<ul id="resource-list">
 <? for my $resource ( @graph_list ) { ?>
-<h4 class="resource-title"><?= $resource->{graph_title} ?></h4>
+<li><a href="#resource-<?= $resource->{graph_title} ?>"><?= $resource->{graph_title} ?></a></li>
+<? } ?>
+</ul>
+<? } ?>
+
+<? for my $resource ( @graph_list ) { ?>
+<h4 class="resource-title" id="resource-<?= $resource->{graph_title} ?>"><?= $resource->{graph_title} ?></h4>
+<? if ( @{$resource->{sysinfo}} ) { ?>
+<div class="resource-sysinfo">
+<? while ( my $sysinfo  = shift @{$resource->{sysinfo}} ) { ?>
+<div>
+<span><?= $sysinfo ?></span>
+<?= shift @{$resource->{sysinfo}} ?>
+</div>
+<? } ?>
+</div>
+<? } ?>
 <div class="resource-graph">
 <? for my $graph ( @{$resource->{graphs}} ) { ?>
 <div class="ngraph">

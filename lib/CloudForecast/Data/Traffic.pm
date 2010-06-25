@@ -6,7 +6,7 @@ use CloudForecast::Log;
 rrds map { [ $_, 'COUNTER' ] } qw /in out/;
 graphs 'traffic' => 'Throughput';
 
-title sub {
+title {
     my $c = shift;
     my $ifname = $c->args->[1] || $c->args->[0] || '0';
     return "Traffic ($ifname)";

@@ -31,10 +31,9 @@ sub connection {
     $self->{connection};
 }
 
-sub is5 {
+sub version {
     my $self = shift;
-    my $server_version = $self->connection->get_info(18); # SQL_DBMS_VER
-    return  ($server_version =~ /^5/) ? 1 : 0;
+    return $self->connection->get_info(18); # SQL_DBMS_VER
 }
 
 sub select_one {

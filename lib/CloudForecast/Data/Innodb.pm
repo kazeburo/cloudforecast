@@ -9,7 +9,7 @@ graphs 'row_count', 'ROW OPERATIONS Count';
 graphs 'row_speed', 'ROW OPERATIONS Speed';
 graphs 'cache', 'Cache Hit Ratio';
 
-title sub {
+title {
     my $c = shift;
     my $title='MySQL InnoDB';
     if ( my $port = $c->component('MySQL')->port ) {

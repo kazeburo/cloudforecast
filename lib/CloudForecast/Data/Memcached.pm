@@ -9,7 +9,7 @@ graphs 'usage' => 'memcached usage';
 graphs 'count' => 'memcached request count';
 graphs 'rate' => 'memcached hit rate';
 
-title sub {
+title {
     my $c = shift;
     my $title = "memcached";
     if ( my $port = $c->args->[0] ) {

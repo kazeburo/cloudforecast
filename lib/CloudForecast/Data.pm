@@ -22,8 +22,9 @@ __PACKAGE__->mk_classdata('fetcher_func');
 __PACKAGE__->mk_classdata('graph_key_list');
 __PACKAGE__->mk_classdata('graph_defs');
 __PACKAGE__->mk_classdata('title_func');
+__PACKAGE__->mk_classdata('sysinfo_func');
 
-our @EXPORT = qw/rrds fetcher graphs title/;
+our @EXPORT = qw/rrds fetcher graphs title sysinfo/;
 
 sub import {
     my ($class, $name) = @_;
@@ -111,7 +112,7 @@ sub graphs {
 }
 
 
-sub title {
+sub title(&) {
     my $class = caller;
     if ( my $title = $_[0] ) {
         if ( ! ref $title ) {
@@ -126,6 +127,12 @@ sub title {
     }
     1;
 }
+
+sub sysinfo(&) {
+    my $class = caller;
+    $class->sysinfo_func(shift);
+}
+
 
 sub new {
     my $class = shift;
@@ -159,6 +166,14 @@ sub graph_title {
         return $title_func->($self) || $self->resource_class;
     }
     return $self->resource_class;
+}
+
+sub graph_sysinfo {
+    my $self = shift;
+    if ( my $sysinfo_func = $self->sysinfo_func ) {
+        return $sysinfo_func->($self) || [];
+    }
+    return [];
 }
 
 sub list_graph {

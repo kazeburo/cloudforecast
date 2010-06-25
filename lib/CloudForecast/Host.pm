@@ -21,6 +21,7 @@ sub list_graph {
             resource_class => $data->resource_class,
             resource => $resource,
             graphs => \@graphs,
+            sysinfo => $data->graph_sysinfo,
         };
     }
     return @ret;
