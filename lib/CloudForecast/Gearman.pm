@@ -67,7 +67,7 @@ sub _ledge_update {
         Storable::nfreeze(\@args),
         { high_priority => 1 },
     );
-    my $ret = Storable::thaw($freeze);
+    my $ret = Storable::thaw($$freeze);
     die $ret->{errorstr} if $ret->{error};
     $ret->{status};
 }
@@ -86,7 +86,7 @@ sub ledge_get {
         'ledge',
         Storable::nfreeze(\@args),
     );
-    my $ret = Storable::thaw($freeze);
+    my $ret = Storable::thaw($$freeze);
     die $ret->{errorstr} if $ret->{error};
     wantarray ? ( $ret->{data}, $ret->{csum} ) : $ret->{data};
 }
