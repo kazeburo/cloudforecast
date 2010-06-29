@@ -11,6 +11,11 @@ graphs 'request' => 'number of request';
 graphs 'ratio' => 'cache hit ratio';
 graphs 'svc' => 'response time (msec)';
 
+sysinfo {
+    my $c = shift;
+    $c->ledge_get('sysinfo') || [];
+};
+
 fetcher {
     my $c = shift;
     my $port = $c->args->[0] || 3401;
@@ -41,11 +46,16 @@ fetcher {
         .1.3.6.1.4.1.3495.1.3.2.2.1.4.5
         .1.3.6.1.4.1.3495.1.3.2.2.1.5.5
         .1.3.6.1.4.1.3495.1.3.2.2.1.9.5
+        .1.3.6.1.4.1.3495.1.2.3.0
+        .1.3.6.1.4.1.3495.1.1.3.0
     /;
     
     my @ret = $sess->get( SNMP::VarList->new(@oid) );
     CloudForecast::Log->warn($sess->{ErrorStr})
         if $sess->{ErrorStr};
+    my $version = pop @ret;
+    my $uptime = pop @ret;
+    $c->ledge_set('sysinfo', [ version => $version, uptime => $uptime ] );
 
     return \@ret;
 };
