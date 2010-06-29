@@ -18,6 +18,11 @@ title {
     return $title;
 };
 
+sysinfo {
+    my $c = shift;
+    $c->ledge_get('sysinfo') || [];
+};
+
 fetcher {
     my $c = shift;
     my $address = $c->address;
@@ -31,6 +36,11 @@ fetcher {
     my $response = $ua->request($request);
     die "server-status failed: " .$response->status_line
         unless $response->is_success;
+
+    if ( my $server_version = $response->header('Server') ) {
+        my $version = ( $server_version =~ m!/(.+)$! ) ? $1 : '-';
+        $c->ledge_set('sysinfo', [ version => $version ] );
+    }
 
     my $read = -1;
     my $write = -1;

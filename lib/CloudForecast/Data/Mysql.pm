@@ -32,7 +32,7 @@ sysinfo {
         }
 
         map { push @sysinfo, $_, $sysinfo->{$_} } grep { exists $sysinfo->{$_} } 
-            qw/max_connections log_slow_queries slow_launch_time log_queries_not_using_indexes/;
+            qw/max_connections thread_cache_size log_slow_queries slow_launch_time log_queries_not_using_indexes/;
         
     }
     return \@sysinfo;
@@ -54,16 +54,13 @@ fetcher {
     foreach my $variable_row ( @$varible_rows ) {
         $variable{$variable_row->{Variable_name}} = $variable_row->{Value};
     }
-    
-    my $uptime = $status{Uptime} || 0;
-    my $version = $mysql->version;
-    $c->ledge_set('sysinfo', {
-        uptime => $uptime, version => $version,
-        log_slow_queries => $variable{log_slow_queries},
-        log_queries_not_using_indexes => $variable{log_queries_not_using_indexes},
-        slow_launch_time => $variable{slow_launch_time},
-        max_connections => $variable{max_connections},
-    } );
+
+    my %sysinfo;   
+    $sysinfo{uptime} = $status{Uptime} || 0;
+    $sysinfo{version} = $mysql->version;
+    map { $sysinfo{$_} = $variable{$_} } grep { exists $variable{$_} }
+        qw/log_slow_queries slow_launch_time log_queries_not_using_indexes max_connections thread_cache_size/;
+    $c->ledge_set('sysinfo', \%sysinfo );
 
     return [ map { $status{$_} } qw/Com_delete Com_insert Com_replace Com_select Com_update Slow_queries
                                     Threads_cached Threads_connected Threads_running/ ]; 
