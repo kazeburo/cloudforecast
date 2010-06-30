@@ -56,6 +56,7 @@ fetcher {
     my $version = pop @ret;
     my $uptime;
     if ( $uptime = pop @ret ) {
+        $uptime = $uptime / 100;
         my $day = int( $uptime /86400 );
         my $hour = int( ( $uptime % 86400 ) / 3600 );
         my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
