@@ -46,15 +46,22 @@ fetcher {
         .1.3.6.1.4.1.3495.1.3.2.2.1.4.5
         .1.3.6.1.4.1.3495.1.3.2.2.1.5.5
         .1.3.6.1.4.1.3495.1.3.2.2.1.9.5
-        .1.3.6.1.4.1.3495.1.2.3.0
         .1.3.6.1.4.1.3495.1.1.3.0
+        .1.3.6.1.4.1.3495.1.2.3.0
     /;
     
     my @ret = $sess->get( SNMP::VarList->new(@oid) );
     CloudForecast::Log->warn($sess->{ErrorStr})
         if $sess->{ErrorStr};
     my $version = pop @ret;
-    my $uptime = pop @ret;
+    my $uptime;
+    if ( $uptime = pop @ret ) {
+        my $day = int( $uptime /86400 );
+        my $hour = int( ( $uptime % 86400 ) / 3600 );
+        my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
+        $uptime = sprintf("up %d days, %2d:%02d", $day, $hour, $min);
+    }
+
     $c->ledge_set('sysinfo', [ version => $version, uptime => $uptime ] );
 
     return \@ret;
