@@ -65,7 +65,7 @@ fetcher {
 
     my %stats;
     foreach my $line ( split /\r?\n/, $raw_stats ) {
-        if ( $line =~ /^STAT\s([^ ]+)\s(\d+)$/ ) {
+        if ( $line =~ /^STAT\s([^ ]+)\s(.+)$/ ) {
             $stats{$1} = $2;
         }
     }
