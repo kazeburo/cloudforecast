@@ -23,6 +23,12 @@ graphs 'tcpestab' => 'number of TCP Established' => 'tcpestab.def',  sub {
     return $template;
 };
 
+# 補助情報を出せます。[ key => value, key => value ]な配列のリファレンスで返します
+sysinfo {
+    my $c = shift;
+    $c->ledge_get('sysinfo') || [];
+};
+
 # データを取得してくるところ
 # initで定義した順番で、配列のリファレンスで返す
 fetcher {
@@ -43,8 +49,12 @@ fetcher {
     # tcp established
     push @map, [ 'tcpCurrEstab', 0 ];
 
+    my $sysdescr = $c->component('SNMP')->get( [ 'sysDescr', 0 ] );
+    $c->ledge_set('sysinfo', [ system => $sysdescr->[0] ] );
+
     # $c->snmpは componetで提供。配列のリファレンスが最終的に戻る
-    $c->component('SNMP')->get_by_int(@map);
+    my $ret = $c->component('SNMP')->get_by_int(@map);
+    return $ret;
 };
 
 
