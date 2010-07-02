@@ -18,6 +18,10 @@ title {
     return $title;
 };
 
+sysinfo {
+    my $c = shift;
+    $c->ledge_get('sysinfo') || [];
+};
 
 fetcher {
     my $c = shift;
@@ -42,6 +46,29 @@ fetcher {
     if ($cache_total && $cache_total > 0){
         $cache_rate = sprintf("%3.5f", $cache_hit / $cache_total * 100);
     }
+
+
+    my %variable;
+    my $varible_rows = $c->component('MySQL')->select_all(q!show variables!);
+    foreach my $variable_row ( @$varible_rows ) {
+        $variable{$variable_row->{Variable_name}} = $variable_row->{Value};
+    }
+    
+    $variable{innodb_buffer_pool_size} = int $variable{innodb_buffer_pool_size} / (1024*1024);
+    while($variable{innodb_buffer_pool_size} =~ s/(.*\d)(\d\d\d)/$1,$2/){} ;
+    $variable{innodb_buffer_pool_size} .= "MB";
+    $variable{innodb_flush_method} ||= 'fdatasync';
+
+    my @sysinfo;
+    map { my $key = $_; $key =~ s/^innodb_//; push @sysinfo, $key, $variable{$_} } grep { exists $variable{$_} } qw/
+        innodb_version
+        innodb_buffer_pool_size
+        innodb_flush_method
+        innodb_support_xa
+        innodb_flush_log_at_trx_commit
+        innodb_file_per_table
+        innodb_file_format/;
+    $c->ledge_set('sysinfo', \@sysinfo);
 
     return [$insert_row, $update_row, $delete_row, $read_row, 
             $insert_vel, $update_vel, $delete_vel, $read_vel, $cache_rate];
