@@ -3,6 +3,24 @@ package CloudForecast::Data::Memcached;
 use CloudForecast::Data -base;
 use IO::Socket::INET;
 
+=head1 NAME
+
+CloudForecast::Data::Memcached - memcached resource monitor
+
+=head1 SYNOPSIS
+
+  host_config)
+
+    resources:
+      - memcached[[:port]:title]]
+
+  eg)
+    - memcached  # memcachedを11211で動かしている場合
+    - memcached:11212 # ほかのportで起動
+    - memcached:1978:tokyotyrant # tokyotyrantを関する場合
+
+=cut
+
 rrds map { [$_,'COUNTER'] } qw/cmdget cmdset gethits getmisses/;
 rrds map { [$_,'GAUGE'] } qw/rate used max/;
 graphs 'usage' => 'memcached usage';
@@ -11,13 +29,17 @@ graphs 'rate' => 'memcached hit rate';
 
 title {
     my $c = shift;
-    my $title = "memcached";
+    my $title = $c->args->[1] || "memcached";
     if ( my $port = $c->args->[0] ) {
         $title .= " ($port)";
     }
     return $title;
 };
 
+sysinfo {
+    my $c = shift;
+    $c->ledge_get('sysinfo') || [];
+};
 
 fetcher {
     my $c = shift;
@@ -32,7 +54,7 @@ fetcher {
     );
     my $fbits = '';
     vec($fbits, fileno($sock), 1) = 1;
-    my $found = select( undef, $fbits, undef, 0.5 );
+    my $found = select( undef, $fbits, undef, 3.5 );
 
     die "could not connecet to $host:$port" unless $found;
 
@@ -41,27 +63,27 @@ fetcher {
     my $raw_stats;
     $sock->sysread( $raw_stats, 8192 );
 
-    my $cmd_get = 0;
-    my $cmd_set = 0;
-    my $get_hits = 0;
-    my $get_misses = 0;
-    my $used = 0;
-    my $max  = 0;
+    my %stats;
     foreach my $line ( split /\r?\n/, $raw_stats ) {
-        if ( $line =~ /^STAT\scmd_get\s(\d+)$/ )    { $cmd_get = $1 }
-        if ( $line =~ /^STAT\scmd_set\s(\d+)$/ )    { $cmd_set = $1 }
-        if ( $line =~ /^STAT\s(?:cmd_)?get_hits\s(\d+)$/ )   { $get_hits = $1 }
-        if ( $line =~ /^STAT\s(?:cmd_)?get_misses\s(\d+)$/ ) { $get_misses = $1 }
-        if ( $line =~ /^STAT\sbytes\s(\d+)$/ )      { $used = $1 }
-        if ( $line =~ /^STAT\slimit_maxbytes\s(\d+)$/ ) { $max = $1 }
+        if ( $line =~ /^STAT\s([^ ]+)\s(\d+)$/ ) {
+            $stats{$1} = $2;
+        }
     }
-
-    my $rate = 0;
-    eval {
-        $rate = int($get_hits * 100 / ($get_hits+$get_misses))
-    };
     
-    return [ $cmd_get, $cmd_set, $get_hits, $get_misses, $rate, $used, $max ];
+    my @sysinfo;
+    if ( $stats{version} ) {
+        push @sysinfo, 'version' => $stats{version};
+    }
+    if ( my $uptime = $stats{uptime} ) {
+        my $day = int( $uptime /86400 );
+        my $hour = int( ( $uptime % 86400 ) / 3600 );
+        my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
+        push @sysinfo, 'uptime' =>  sprintf("up %d days, %2d:%02d", $day, $hour, $min);
+    }
+    $c->ledge( 'sysinfo', \@sysinfo );
+
+    return [ $stats{cmd_get}, $stats{cmd_set}, $stats{get_hits}, $stats{get_misses},
+             -1, $stats{bytes}, $stats{limit_maxbytes} ];
 };
 
 
