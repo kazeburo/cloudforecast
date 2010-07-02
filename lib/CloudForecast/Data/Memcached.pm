@@ -80,7 +80,7 @@ fetcher {
         my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
         push @sysinfo, 'uptime' =>  sprintf("up %d days, %2d:%02d", $day, $hour, $min);
     }
-    $c->ledge( 'sysinfo', \@sysinfo );
+    $c->ledge_set( 'sysinfo', \@sysinfo );
 
     return [ $stats{cmd_get}, $stats{cmd_set}, $stats{get_hits}, $stats{get_misses},
              -1, $stats{bytes}, $stats{limit_maxbytes} ];
