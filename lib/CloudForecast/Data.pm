@@ -433,20 +433,24 @@ sub _ledge {
     my $method = shift;
     my @args = @_;
 
+    my $address = sprintf "%s_%s",
+        $self->address,
+        join( "-", map { URI::Escape::uri_escape($_) } @{$self->args});
+
     ### Webインターフェイスからのアクセスセスは直接DBにアクセス
     if ( !$self->global_config->{__do_web} && $self->global_config->{gearman_enable} ) {
         my $gearman = CloudForecast::Gearman->new({
             host => $self->global_config->{gearman_server}->{host},
             port => $self->global_config->{gearman_server}->{port},
         });
-        $gearman->can( 'ledge_' . $method )->( $gearman, $self->resource_class, $self->address, @_  );
+        $gearman->can( 'ledge_' . $method )->( $gearman, $self->resource_class, $address, @_  );
     }
     else {
         $self->{_ledge} ||= CloudForecast::Ledge->new({
             data_dir => $self->global_config->{data_dir},
             db_name  => $self->global_config->{db_name}
         });
-        $self->{_ledge}->can($method)->( $self->{_ledge}, $self->resource_class, $self->address, @_  );
+        $self->{_ledge}->can($method)->( $self->{_ledge}, $self->resource_class, $address, @_  );
     }
 }
 
