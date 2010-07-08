@@ -176,7 +176,7 @@ $(function() {
         clearTimeout($(this).data('ctimer'));
         var match = $(this).attr('href').match(/([0-9a-z]+)$/);
         $(this).data('dblc', false);
-        location.href = $('#group-'+match[0]+' a. ui-icon-arrowthick-1-ne').attr('href');
+        location.href = $('#group-'+match[0]+' a.ui-icon-arrowthick-1-ne').attr('href');
         return false;
     });
     $("#grouplist > ul > li > a").button( { icons: {primary:'ui-icon-document-b' }});
