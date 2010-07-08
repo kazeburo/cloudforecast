@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use CloudForecast::Web -base;
 use CloudForecast::Host;
+use List::Util;
 
 sub get_host {
     my ( $self, $host ) = @_;
@@ -40,6 +41,16 @@ sub server_list {
 get '/' => sub {
     my ( $self, $req, $p )  = @_;
     return $self->render('index.mt');
+};
+
+get '/group' => sub {
+    my ( $self, $req, $p )  = @_;
+    return $self->not_found('Not Found') unless $req->param('id');
+    my $group = List::Util::first { $_->{title_key} eq $req->param('id') }
+        @{$self->server_list};
+    return $self->not_found('Group Not Found') unless $group;
+
+    return $self->render('group.mt');
 };
 
 get '/server' => sub {
@@ -120,15 +131,20 @@ __DATA__
 
 <h2 id="ptitle">SERVER LIST</h2>
 
+<div id="display-control">
+<input type="checkbox" id="open_target" /><label for="open_target">open in current window</label>
+
+</div>
+
 <ul id="serverlist-ul">
 <? for my $group ( @{$self->server_list} ) { ?>
-<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?></li>
+<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?><a href="<?= $req->uri_for('/group',[id => $group->{title_key}]) ?>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
 <ul class="group-ul" id="ul-group-<?= $group->{title_key} ?>">
 <? for my $sub_group ( @{$group->{sub_groups}} ) { ?>
 <? if ( $sub_group->{label} ) { ?><li id="sub-group-<?= $sub_group->{label_key} ?>" class="sub-group-name"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $sub_group->{label} ?></li><? } ?>
 <ul class="host-ul" id="ul-sub-group-<?= $sub_group->{label_key} ?>">
 <? for my $host ( @{$sub_group->{hosts}} ) { ?>
-<li><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></li>
+<li class="host-li"><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></li>
 <? } ?>
 </ul>
 <? } ?>
@@ -144,6 +160,33 @@ __DATA__
 <script src="<?= $req->uri_for('/static/js/jstorage.js') ?>" type="text/javascript"></script>
 <script type="text/javascript">
 $(function() {
+    $("#grouplist > ul > li > a").button({ icons: {primary:'ui-icon-document-b' }});
+
+    var opentarget = $.jStorage.get( "open_target" );
+    if ( opentarget == true ) {
+        $("#open_target").attr("checked", true );
+    }
+    $("#open_target").button({ icons: {primary:'ui-icon-newwin' }});
+    $("#open_target").change(function(){
+        $.jStorage.set( "open_target", $(this).attr("checked") );
+        if ( $(this).attr("checked") ) {
+            $(".host-li a:first").attr("target","_blank");
+            $(this).button({ label: "open in new window"});
+        }
+        else {
+            $(".host-li a:first").attr("target","_self");
+            $(this).button({ label: "open in currnet window"});
+        }
+    });
+    if ( $("#open_target").attr("checked") ) {
+        $(".host-li a:first").attr("target","_blank");
+        $("#open_target").button({ label: "open in new window"});
+    }
+    else {
+        $(".host-li a:first").attr("target","_self");
+        $("#open_target").button({ label: "open in current window"});
+    }
+
     $("li.group-name").click(function(){
         var li_group = this;
         $("#ul-" + li_group.id).toggle(100, function(){
@@ -178,6 +221,116 @@ $(function() {
 </body>
 </html>
 
+@@ group.mt
+<html>
+<head>
+<title> <?= $group->{title} ?> : SERVER LIST : <?= $self->page_title ?> : CloudForecast</title>
+<link rel="stylesheet" type="text/css" href="<?= $req->uri_for('/static/default.css') ?>" />
+<link type="text/css" href="<?= $req->uri_for('/static/css/ui-lightness/jquery-ui-1.8.2.custom.css') ?>" rel="stylesheet" />
+</head>
+<body>
+<div id="container">
+<div id="header">
+<h1 class="title"><a href="<?= $req->uri_for('/') ?>">CloudForecast : <?= $self->page_title ?></a></h1>
+<div class="welcome">
+<ul>
+<li><a href="<?= $req->uri_for('/') ?>">TOP</a></li>
+</ul>
+</div>
+</div>
+
+<div id="grouplist">
+<ul>
+<? for my $group ( @{$self->server_list} ) { ?>
+<li><a href="<?= $req->uri_for('/group',[ id => $group->{title_key} ]) ?>"><?= $group->{title} ?></a></li>
+<? } ?>
+</ul>
+</div>
+
+<div id="content">
+
+<h2 id="ptitle">SERVER LIST &gt; <?= $group->{title} ?></h2>
+
+<div id="display-control">
+<input type="checkbox" id="open_target" /><label for="open_target">open in current window</label>
+</div>
+
+<ul id="serverlist-ul">
+<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?><a href="<?= $req->uri_for('/group',[id => $group->{title_key}]) ?>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
+<ul class="group-ul" id="ul-group-<?= $group->{title_key} ?>">
+<? for my $sub_group ( @{$group->{sub_groups}} ) { ?>
+<? if ( $sub_group->{label} ) { ?><li id="sub-group-<?= $sub_group->{label_key} ?>" class="sub-group-name"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $sub_group->{label} ?></li><? } ?>
+<ul class="host-ul" id="ul-sub-group-<?= $sub_group->{label_key} ?>">
+<? for my $host ( @{$sub_group->{hosts}} ) { ?>
+<li class="host-li"><a href="<?= $req->uri_for('/server',[address => $host->{address} ]) ?>"><?= $host->{address} ?></a> <strong><?= $host->{hostname} ?></strong> <span class="details"><?= $host->{details} ?></li>
+<? } ?>
+</ul>
+<? } ?>
+</ul>
+</ul>
+
+
+</div>
+
+</div>
+<script src="<?= $req->uri_for('/static/js/jquery-1.4.2.min.js') ?>" type="text/javascript"></script>
+<script src="<?= $req->uri_for('/static/js/jquery-ui-1.8.2.custom.min.js') ?>" type="text/javascript"></script>
+<script src="<?= $req->uri_for('/static/js/jstorage.js') ?>" type="text/javascript"></script>
+<script type="text/javascript">
+$(function() {
+    $("#grouplist > ul > li > a").button({ icons: {primary:'ui-icon-document-b' }});
+
+    var opentarget = $.jStorage.get( "open_target" );
+    if ( opentarget == true ) {
+        $("#open_target").attr("checked", true );
+    }
+    $("#open_target").button({ icons: {primary:'ui-icon-newwin' }});
+    $("#open_target").change(function(){
+        $.jStorage.set( "open_target", $(this).attr("checked") );
+        if ( $(this).attr("checked") ) {
+            $(".host-li a:first").attr("target","_blank");
+            $(this).button({ label: "open in new window"});
+        }
+        else {
+            $(".host-li a:first").attr("target","_self");
+            $(this).button({ label: "open in currnet window"});
+        }
+    });
+    if ( $("#open_target").attr("checked") ) {
+        $(".host-li a:first").attr("target","_blank");
+        $("#open_target").button({ label: "open in new window"});
+    }
+    else {
+        $(".host-li a:first").attr("target","_self");
+        $("#open_target").button({ label: "open in current window"});
+    }
+
+    $("li.sub-group-name").click(function(){
+        var li_sub_group = this;
+        $("#ul-" + li_sub_group.id).toggle(010, function(){
+            $(li_sub_group).toggleClass('group-name-off');
+            $(li_sub_group).children().first().toggleClass('ui-icon-triangle-1-s','ui-icon-triangle-1-e');
+            $(li_sub_group).children().first().toggleClass('ui-icon-triangle-1-e','ui-icon-triangle-1-s');
+            $.jStorage.set( "display-" + li_sub_group.id, $(this).css('display') );
+        });
+    });
+    
+    $("li.sub-group-name").map(function(){
+        var li_group = this;
+        var disp = $.jStorage.get( "display-" + this.id );
+        if ( disp == 'none' ) {
+            $("#ul-" + li_group.id).hide();
+            $(li_group).toggleClass('group-name-off');
+            $(li_group).children().first().removeClass('ui-icon-triangle-1-s');
+            $(li_group).children().first().addClass('ui-icon-triangle-1-e');
+        }
+    });
+})
+</script>
+</body>
+</html>
+
+
 @@ server.mt
 <html>
 <head>
@@ -208,8 +361,7 @@ $(function() {
 <? } else { ?>
 <a href="<?= $req->uri_for('/server', [ address => $host->{address}, displaymy => $req->param('displaymy') ? 0 : 1 ]) ?>"><?= $req->param('displaymy') ? 'Hide' : 'Show' ?>  Monthly Graph</a>
 <? } ?>
-|
-Date Range:
+<span>Date Range:</span>
 <label for="from_date">From</label>
 <input type="text" id="from_date" name="from_date" value="<?= $req->param('from_date') || $yesterday ?>" size="21" />
 <label for="to_date">To</label>
@@ -265,6 +417,8 @@ Date Range:
 <script src="<?= $req->uri_for('/static/js/anytimec.js') ?>" type="text/javascript"></script>
 <script type="text/javascript">
 $(function() {
+     $("#display-control a:first").button({ icons: {primary:'ui-icon-transfer-e-w' }});
+     $("#pickdate_submit").button();
      $("#from_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
                                        monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
      $("#to_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",

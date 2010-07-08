@@ -33,12 +33,6 @@ a img {
     border: 0;
 }
 
-a { color: #5555cc;}
-a:link { color: #5555cc;}
-a:visited { color: #5555ee;}
-a:active { color: #999999;  }
-a:hover { color: #999999;  }
-
 h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
@@ -137,6 +131,7 @@ body {
     background-color: #eee;
     padding: 3px 6px;
     margin: 0px 0px 5px;
+    font-size: 0.9em;
 }
 
 #grouplist ul {
@@ -149,18 +144,18 @@ body {
     display: inline;
 }
 
-#grouplist ul li a {
-    padding: 3px 6px;
-    color: #666;
-    text-decoration: none;
-    background-color: #ccc;
-    -webkit-border-radius: 3px;   /* Safari、Google Chrome */
-    -moz-border-radius: 3px;  /* Firefox */
-}
 
 #content {
     padding: 10px 10px 10px;
 }
+
+/*
+#content a { color: #5555cc;}
+#content a:link { color: #5555cc;}
+#content a:visited { color: #5555ee;}
+#content a:active { color: #999999;  }
+#content a:hover { color: #999999;  }
+*/
 
 #content h2#ptitle {
     font-size: 1.4em;
@@ -177,16 +172,11 @@ body {
 }
 
 #content #display-control {
+    text-align: right;
     margin: 10px 0px 20px 0px;
+    padding: 4px;
     font-size: 0.9em;
-}
-
-#content #display-control a {
-    text-decoration: none;
-    padding: 3px 6px;
-    color: #fff;
-    border: 1px #666 solid;
-    background-color: #999;
+    background-color: #eee;
     -webkit-border-radius: 3px;   /* Safari、Google Chrome */
     -moz-border-radius: 3px;  /* Firefox */
 }
@@ -197,29 +187,24 @@ body {
 #content #display-control form #from_date,
 #content #display-control form #to_date {
     padding: 3px 3px;
-    border: 1px #888 solid;
+    border: 1px #ccc solid;
     color: #888;
     font-size: 0.9em;
-    width: 12em;
-    background-color: #eee;
+    width: 13em;
+    background-color: #f6f6f6;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
+    -moz-box-shadow: inset 0px 0px 3px #666;
+    -webkit-box-shadow: inset 0px 0px 3px #666;
     text-align: center;
 }
 
 #content #display-control form #pickdate_submit {
-    padding: 3px 6px;
-    border: 1px #666 solid;
-    color: #fff;
-    font-size: 0.9em;
-    background-color: #999;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    text-align: center;
 }
 
-#content #display-control form label,
-#content #display-control form span {
+#content #display-control form > label,
+#content #display-control form > span {
+    font-size: 0.9em;
     color: #999;
 }
 
