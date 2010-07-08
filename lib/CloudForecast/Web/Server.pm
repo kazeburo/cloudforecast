@@ -129,7 +129,7 @@ __DATA__
 
 <div id="content">
 
-<h2 id="ptitle">SERVER LIST</h2>
+<h2 id="ptitle"><a href="<?= $req->uri_for('/') ?>">SERVER LIST</a></h2>
 
 <div id="display-control">
 <input type="checkbox" id="open_target" /><label for="open_target">open in current window</label>
@@ -138,7 +138,7 @@ __DATA__
 
 <ul id="serverlist-ul">
 <? for my $group ( @{$self->server_list} ) { ?>
-<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?><a href="<?= $req->uri_for('/group',[id => $group->{title_key}]) ?>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
+<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?><a href="#" class="ui-icon ui-icon-arrowthick-1-n" style="float:right">↑</a><a href="<?= $req->uri_for('/group',[id => $group->{title_key}]) ?>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
 <ul class="group-ul" id="ul-group-<?= $group->{title_key} ?>">
 <? for my $sub_group ( @{$group->{sub_groups}} ) { ?>
 <? if ( $sub_group->{label} ) { ?><li id="sub-group-<?= $sub_group->{label_key} ?>" class="sub-group-name"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $sub_group->{label} ?></li><? } ?>
@@ -176,7 +176,7 @@ $(function() {
         clearTimeout($(this).data('ctimer'));
         var match = $(this).attr('href').match(/([0-9a-z]+)$/);
         $(this).data('dblc', false);
-        location.href = $('#group-'+match[0]+' a:last-child').attr('href');
+        location.href = $('#group-'+match[0]+' a. ui-icon-arrowthick-1-ne').attr('href');
         return false;
     });
     $("#grouplist > ul > li > a").button( { icons: {primary:'ui-icon-document-b' }});
@@ -224,10 +224,10 @@ $(function() {
     $("li.group-name").dblclick(function(){
         clearTimeout( $(this).data('ctimer') );
         $(this).data('dblc', false);
-        location.href = $(this).children("a:last").attr('href');
+        location.href = $(this).children("a.ui-icon-arrowthick-1-ne").attr('href');
         return false;
     });
-    $("li.group-name a:last-child").click(function(){
+    $("li.group-name a.ui-icon-arrowthick-1-ne, li.group-name a.ui-icon-arrowthick-1-n").click(function(){
         location.href = $(this).attr('href');
         return false;
     });
@@ -284,7 +284,7 @@ $(function() {
 
 <div id="content">
 
-<h2 id="ptitle">SERVER LIST &gt; <?= $group->{title} ?></h2>
+<h2 id="ptitle"><a href="<?= $req->uri_for('/') ?>">SERVER LIST</a> &gt; <?= $group->{title} ?></h2>
 
 <div id="display-control">
 <input type="checkbox" id="open_target" /><label for="open_target">open in current window</label>

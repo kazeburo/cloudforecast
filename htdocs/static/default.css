@@ -165,10 +165,11 @@ body {
 
 #content h2#ptitle a {
     text-decoration: none;
+    color: #333;
 }
 
 #content h2#ptitle span.details {
-    color: #999;
+    color: #666;
 }
 
 #content #display-control {
