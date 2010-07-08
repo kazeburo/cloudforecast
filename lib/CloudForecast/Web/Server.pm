@@ -160,7 +160,26 @@ __DATA__
 <script src="<?= $req->uri_for('/static/js/jstorage.js') ?>" type="text/javascript"></script>
 <script type="text/javascript">
 $(function() {
-    $("#grouplist > ul > li > a").button({ icons: {primary:'ui-icon-document-b' }});
+    $("#grouplist > ul > li > a").click( function(){
+        if ( $(this).data('dblc') == true ) return false;
+        var tag = this;
+        var id = setTimeout( function(){
+            var match = $(tag).attr('href').match(/([0-9a-z]+)$/);
+             $(tag).data('dblc', false);
+            location.hash = '#group-'+match[0];
+        }, 300 );
+        $(this).data('dblc',true);
+        $(this).data('ctimer', id );
+        return false;
+    });
+    $("#grouplist > ul > li > a").dblclick( function(){
+        clearTimeout($(this).data('ctimer'));
+        var match = $(this).attr('href').match(/([0-9a-z]+)$/);
+        $(this).data('dblc', false);
+        location.href = $('#group-'+match[0]+' a:last-child').attr('href');
+        return false;
+    });
+    $("#grouplist > ul > li > a").button( { icons: {primary:'ui-icon-document-b' }});
 
     var opentarget = $.jStorage.get( "open_target" );
     if ( opentarget == true ) {
@@ -188,13 +207,29 @@ $(function() {
     }
 
     $("li.group-name").click(function(){
+        if ( $(this).data('dblc') == true ) return false;
+        $(this).data('dblc', true );
         var li_group = this;
-        $("#ul-" + li_group.id).toggle(100, function(){
-            $(li_group).toggleClass('group-name-off');
-            $(li_group).children().first().toggleClass('ui-icon-triangle-1-s','ui-icon-triangle-1-e');
-            $(li_group).children().first().toggleClass('ui-icon-triangle-1-e','ui-icon-triangle-1-s');
-            $.jStorage.set( "display-" + li_group.id, $(this).css('display') );   
-        } );
+        var id = setTimeout(function(){ $("#ul-" + li_group.id).toggle(100, function(){
+                $(li_group).toggleClass('group-name-off');
+                $(li_group).children().first().toggleClass('ui-icon-triangle-1-s','ui-icon-triangle-1-e');
+                $(li_group).children().first().toggleClass('ui-icon-triangle-1-e','ui-icon-triangle-1-s');
+                $.jStorage.set( "display-" + li_group.id, $(this).css('display') );
+            }); 
+            $(li_group).data('dblc', false ); } ,
+            300 );
+        $(this).data('ctimer', id );
+        return false;
+    });
+    $("li.group-name").dblclick(function(){
+        clearTimeout( $(this).data('ctimer') );
+        $(this).data('dblc', false);
+        location.href = $(this).children("a:last").attr('href');
+        return false;
+    });
+    $("li.group-name a:last-child").click(function(){
+        location.href = $(this).attr('href');
+        return false;
     });
     $("li.sub-group-name").click(function(){
         var li_sub_group = this;
@@ -256,7 +291,7 @@ $(function() {
 </div>
 
 <ul id="serverlist-ul">
-<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $group->{title} ?><a href="<?= $req->uri_for('/group',[id => $group->{title_key}]) ?>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
+<li class="group-name" id="group-<?= $group->{title_key} ?>"><span class="ui-icon ui-icon-stop" style="float:left"></span><?= $group->{title} ?></li>
 <ul class="group-ul" id="ul-group-<?= $group->{title_key} ?>">
 <? for my $sub_group ( @{$group->{sub_groups}} ) { ?>
 <? if ( $sub_group->{label} ) { ?><li id="sub-group-<?= $sub_group->{label_key} ?>" class="sub-group-name"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><?= $sub_group->{label} ?></li><? } ?>
