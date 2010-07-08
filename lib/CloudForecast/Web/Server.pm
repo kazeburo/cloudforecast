@@ -170,20 +170,20 @@ $(function() {
     $("#open_target").change(function(){
         $.jStorage.set( "open_target", $(this).attr("checked") );
         if ( $(this).attr("checked") ) {
-            $(".host-li a:first").attr("target","_blank");
+            $(".host-li a").attr("target","_blank");
             $(this).button({ label: "open in new window"});
         }
         else {
-            $(".host-li a:first").attr("target","_self");
+            $(".host-li a").attr("target","_self");
             $(this).button({ label: "open in currnet window"});
         }
     });
     if ( $("#open_target").attr("checked") ) {
-        $(".host-li a:first").attr("target","_blank");
+        $(".host-li a").attr("target","_blank");
         $("#open_target").button({ label: "open in new window"});
     }
     else {
-        $(".host-li a:first").attr("target","_self");
+        $(".host-li a").attr("target","_self");
         $("#open_target").button({ label: "open in current window"});
     }
 
@@ -288,20 +288,20 @@ $(function() {
     $("#open_target").change(function(){
         $.jStorage.set( "open_target", $(this).attr("checked") );
         if ( $(this).attr("checked") ) {
-            $(".host-li a:first").attr("target","_blank");
+            $(".host-li a").attr("target","_blank");
             $(this).button({ label: "open in new window"});
         }
         else {
-            $(".host-li a:first").attr("target","_self");
+            $(".host-li a").attr("target","_self");
             $(this).button({ label: "open in currnet window"});
         }
     });
     if ( $("#open_target").attr("checked") ) {
-        $(".host-li a:first").attr("target","_blank");
+        $(".host-li a").attr("target","_blank");
         $("#open_target").button({ label: "open in new window"});
     }
     else {
-        $(".host-li a:first").attr("target","_self");
+        $(".host-li a").attr("target","_self");
         $("#open_target").button({ label: "open in current window"});
     }
 
