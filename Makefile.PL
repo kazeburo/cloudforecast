@@ -28,6 +28,7 @@ requires 'YAML::Syck', 1.10;
 requires 'Starlet', 0.08;
 requires 'Filesys::Notify::Simple';
 requires 'Proc::Daemon';
+requires 'PadWalker';
 #requires 'RRDs'; $ yum install rrdtool-perl
 
 if ( $^O eq 'linux' && -d "/proc/sys/fs/inotify" ) {

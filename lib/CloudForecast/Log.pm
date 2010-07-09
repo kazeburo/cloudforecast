@@ -31,15 +31,20 @@ sub _log {
 
     my %info;
     my $h = PadWalker::peek_my(2);
-    my @caller = caller(2);
+    my @caller = caller(1);
     while (my ($key, $val) = each %$h) {
         if ( ref $val eq 'REF' && ref($$val) =~ m!CloudForecast\:\:ConfigLoader! ) {
             $root_dir = $$val->root_dir;
         }
-        if ( ref $val eq 'REF' && ref($$val) =~ m!^CloudForecast\:\:Data\:\:(.+)$! ) {
+        if ( ref $val eq 'REF' && ref($$val) =~ m!^CloudForecast\:\:Host! ) {
             $info{ad} = $$val->address;
             $info{h} = $$val->hostname;
-            $info{as} = join ":", @{$$val->args};
+            $info{c} = "Host";
+        }
+        elsif ( ref $val eq 'REF' && ref($$val) =~ m!^CloudForecast\:\:Data\:\:(.+)$! ) {
+            $info{ad} = $$val->address;
+            $info{h} = $$val->hostname;
+            $info{as} = join ":", @{$$val->args} if @{$$val->args};
             $info{c} = "Data::$1";
         }
         elsif ( ref $val eq 'REF' && ref($$val) =~ m!^CloudForecast\:\:Component\:\:(.+)$! ) {
@@ -47,11 +52,6 @@ sub _log {
             $info{h} = $$val->hostname;
             $info{as} = join ":", @{$$val->args};
             $info{c} = "Component::$1";
-        }
-        elsif ( ref $val eq 'REF' && ref($$val) =~ m!^CloudForecast\:\:Host! ) {
-            $info{ad} = $$val->address;
-            $info{h} = $$val->hostname;
-            $info{c} = "Host";
         }
     }
     my $info = ( keys %info ) ? join(",", map { "$_:$info{$_}" } keys %info) . " " : ""; 
