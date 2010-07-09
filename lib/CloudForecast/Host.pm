@@ -34,8 +34,7 @@ sub find_resource {
     my %resources_hash = map { $_ => $_  } @{$self->resources};
     my $resource = $resources_hash{$key};
 
-    CloudForecast::Log->warn("find_resource $key failed in ",
-                             $self->hostname, "(",$self->address,")" ) unless $resource;
+    CloudForecast::Log->warn("find_resource $key failed") unless $resource;
     return unless $resource;
     my $data = $self->load_resource($resource);
     return $data;
@@ -52,8 +51,7 @@ sub draw_graph {
         $img = $data->draw_graph( $key, $span, $from, $to );
     };
     my $err = $@;
-    CloudForecast::Log->warn("draw_graph $resource failed: $@ in ",
-                             $self->hostname, "(",$self->address,")" ) if $@;
+    CloudForecast::Log->warn("draw_graph $resource failed: $@") if $@;
     return ($img,$err);
 }
 
@@ -66,8 +64,7 @@ sub run {
             my $data = $self->load_resource($resource);
             $data->call_fetch();
         };
-        CloudForecast::Log->warn("run_resource $resource failed: $@ in ",
-                                 $self->hostname, "(",$self->address,")" ) if $@;
+        CloudForecast::Log->warn("run_resource $resource failed: $@") if $@;
     }
 }
 
@@ -96,9 +93,7 @@ sub load_resource {
         component_config => $self->component_config,
         global_config => $self->global_config,
     });
-    CloudForecast::Log->debug("load resource $resource ",
-                             join(":", @args), 
-                             " ", $self->hostname, "(",$self->address,")" );
+    CloudForecast::Log->debug("load resource $resource");
     return $data;
 }
 

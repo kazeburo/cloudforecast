@@ -346,8 +346,7 @@ sub do_fetch {
     die 'fetcher result undefind value' unless $ret;
     die 'fetcher result value isnot array ref'
         if ( !ref($ret) || ref($ret) ne 'ARRAY' );
-    CloudForecast::Log->debug(
-        'fetcher ',$self->resource_class ,' result [', join(",", @$ret), '] ', $self->hostname, '(', $self->address, ')' );
+    CloudForecast::Log->debug( 'fetcher result [' . join(",", @$ret) . ']');
 
     my $schema = $self->rrd_schema;
     die 'schema and result values is no match' if ( scalar @$ret != scalar @$schema );
@@ -356,9 +355,7 @@ sub do_fetch {
 
 sub exec_fetch {
     my $self = shift;
-    CloudForecast::Log->debug(
-        'fetcher ',$self->resource_class, ' start ',
-        $self->hostname, '(', $self->address, ')' );
+    CloudForecast::Log->debug('fetcher start');
     my $ret = $self->do_fetch();
     $self->call_updater($ret);
 }
@@ -368,10 +365,7 @@ sub call_fetch {
 
     if ( $self->global_config->{gearman_enable} ) {
         # gearmanに渡す処理
-        CloudForecast::Log->debug(
-            'dispath gearman fetcher ',$self->resource_class, ' ',
-            $self->hostname, '(', $self->address, ')' );
-
+        CloudForecast::Log->debug('dispath gearman fetcher');
         my $gearman = CloudForecast::Gearman->new({
             host => $self->global_config->{gearman_server}->{host},
             port => $self->global_config->{gearman_server}->{port},
@@ -393,9 +387,7 @@ sub call_fetch {
 
 sub exec_updater {
     my ($self, $ret) = @_;
-    CloudForecast::Log->debug(
-        'updater ',$self->resource_class, ' start ',
-        $self->hostname, '(', $self->address, ')' );
+    CloudForecast::Log->debug('updater start');
     $self->init_rrd();
     $self->update_rrd($ret);
 }
@@ -404,9 +396,7 @@ sub call_updater {
     my ($self, $ret) = @_;
     if ( $self->global_config->{gearman_enable} ) {
         # gearmanに渡す処理
-        CloudForecast::Log->debug(
-            'dispath gearman updater ',$self->resource_class, ' ',
-            $self->hostname, '(', $self->address, ')' );
+        CloudForecast::Log->debug('dispath gearman updater');
 
         my $gearman = CloudForecast::Gearman->new({
             host => $self->global_config->{gearman_server}->{host},
@@ -467,11 +457,11 @@ sub init_rrd {
     return if -f $file;
     
     #init
-    CloudForecast::Log->debug('mkdir :', $file->dir);
+    CloudForecast::Log->debug('mkdir:' . $file->dir);
     File::Path::mkpath("".$file->dir);
     my @ds = map { sprintf "DS:%s:%s:600:0:U", $_->[0], $_->[1] } @{$self->rrd_schema};
     
-    CloudForecast::Log->debug('create rrd file: ', $file);
+    CloudForecast::Log->debug('create rrd file:' . $file);
     eval {
         RRDs::create(
             $file,
@@ -499,7 +489,7 @@ sub update_rrd {
     # update
     my $ds = join ":", map { sprintf "%s", $_->[0] } @{$self->rrd_schema};
     my $data= join ":", "N", @$ret;
-    CloudForecast::Log->debug('update rrd file :', $file);
+    CloudForecast::Log->debug('update rrd file:'. $file);
     eval {
         RRDs::update(
             $file,
