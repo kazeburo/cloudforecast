@@ -33,8 +33,7 @@ sysinfo {
 # initで定義した順番で、配列のリファレンスで返す
 fetcher {
     my $c = shift;
-    #$c->hostname $c->address $c->detail $c->components->{SNMP}->..
-    #$c->log
+    #$c->hostname $c->address $c->detail $c->component(SNMP)->..
     #$c->args->[0]...
     #$c->ledge_(get|add|set|delete)..
 

@@ -35,9 +35,9 @@ sub import {
             if ( ! $caller->isa($class) && $caller ne 'main' ) {
                 push @{"$caller\::ISA"}, $class;
             }
-        }
-        for my $func (@EXPORT) {
-            *{"$caller\::$func"} = \&$func;
+            for my $func (@EXPORT) {
+                *{"$caller\::$func"} = \&$func;
+            }
         }
     }
 

@@ -5,5 +5,5 @@
 # されています。「:」で区切った値はオプションとして定義モジュールに渡されます
 component_config:
 resources:
-  - traffic:2:eth0
+  - traffic:eth0
   - basic
