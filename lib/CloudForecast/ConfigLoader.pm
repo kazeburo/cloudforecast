@@ -235,7 +235,7 @@ sub watchdog {
         $watcher->wait( sub {
             my @path = grep { $_ !~ m![/\\][\._]|\.bak$|~$!  } map { $_->{path} } @_;
             return if ! @path;
-            CloudForecast::Log->warn( "File updates: " , join(",", @path) );
+            CloudForecast::Log->warn( "File updates: " . join(",", @path) );
             sleep 1;
             kill 'TERM', $parent_pid;
         } );
@@ -243,5 +243,6 @@ sub watchdog {
 }
 
 1;
+
 
 

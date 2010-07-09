@@ -34,7 +34,7 @@ fetcher {
     }
 
     my @map = map { [ $_, $interface ] } qw/dskTotal dskUsed/;
-    return $c->component('SNMP')->get_by_int(@map);
+    return $c->component('SNMP')->get(@map);
 };
 
 __DATA__

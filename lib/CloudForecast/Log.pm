@@ -50,7 +50,7 @@ sub _log {
         elsif ( ref $val eq 'REF' && ref($$val) =~ m!^CloudForecast\:\:Component\:\:(.+)$! ) {
             $info{ad} = $$val->address;
             $info{h} = $$val->hostname;
-            $info{as} = join ":", @{$$val->args};
+            $info{as} = join ":", @{$$val->args} if @{$$val->args};
             $info{c} = "Component::$1";
         }
     }

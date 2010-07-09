@@ -38,7 +38,7 @@ fetcher {
     my @map = map { [ $_, $interface ] } qw/ifInOctets ifOutOctets/;
     push @map, map { [ $_, $interface] } qw/ifHCInOctets ifHCOutOctets/
         if $c->component('SNMP')->config->{version} eq '2';
-    my $ret = $c->component('SNMP')->get_by_int(@map);
+    my $ret = $c->component('SNMP')->get(@map);
 
     if ( $c->component('SNMP')->config->{version} eq '2' && $ret->[2] ne '' && $ret->[3] ne '' ) {
         return [ $ret->[2], $ret->[3] ];

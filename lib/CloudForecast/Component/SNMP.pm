@@ -36,12 +36,6 @@ sub get {
     return \@ret;
 }
 
-sub get_by_int {
-    my $self = shift;
-    my $ret = $self->get(@_);
-    return [ map { $_ =~ /^[0-9\.]+$/ ? $_ : '' } @$ret ];
-}
-
 sub table {
     my $self = shift;
     my $ret = $self->session->gettable(@_);

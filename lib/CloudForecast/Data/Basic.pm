@@ -52,7 +52,7 @@ fetcher {
     $c->ledge_set('sysinfo', [ system => $sysdescr->[0] ] );
 
     # $c->snmpは componetで提供。配列のリファレンスが最終的に戻る
-    my $ret = $c->component('SNMP')->get_by_int(@map);
+    my $ret = $c->component('SNMP')->get(@map);
     return $ret;
 };
 

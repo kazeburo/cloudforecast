@@ -9,7 +9,7 @@ graphs 'count' => 'DiskIO Count';
 fetcher {
     my $c = shift;
     my @map = map { [ $_, 17 ] } qw/diskIONWritten diskIONRead diskIOWrites diskIOReads/;
-    $c->component('SNMP')->get_by_int(@map);
+    $c->component('SNMP')->get(@map);
 };
 
 __DATA__
