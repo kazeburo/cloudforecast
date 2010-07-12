@@ -42,6 +42,7 @@ sub get {
             else {
                 push @filtered_ret, $ret;
             }
+            $i++;
         }
 
         @ret = @filtered_ret;
