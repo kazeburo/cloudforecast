@@ -39,8 +39,8 @@ fetcher {
     }
 
     my $content = $response->content;
-    my $busy = -1;
-    my $idle = -1;
+    my $busy;
+    my $idle;
     foreach my $line ( split /[\r\n]+/, $content ) {
         if ( $line =~ /^Busy.+: (\d+)/ ) {
             $busy = $1;

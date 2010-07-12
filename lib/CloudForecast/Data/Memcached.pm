@@ -83,7 +83,7 @@ fetcher {
     $c->ledge_set( 'sysinfo', \@sysinfo );
 
     return [ $stats{cmd_get}, $stats{cmd_set}, $stats{get_hits}, $stats{get_misses},
-             -1, $stats{bytes}, $stats{limit_maxbytes} ];
+             undef, $stats{bytes}, $stats{limit_maxbytes} ];
 };
 
 

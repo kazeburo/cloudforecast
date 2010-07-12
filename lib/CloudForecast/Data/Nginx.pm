@@ -42,10 +42,10 @@ fetcher {
         $c->ledge_set('sysinfo', [ version => $version ] );
     }
 
-    my $read = -1;
-    my $write = -1;
-    my $wait = -1;
-    my $req = -1;
+    my $read;
+    my $write;
+    my $wait;
+    my $req;
     my $body = $response->content;
 
     if ( $body =~ /Reading: (\d+) Writing: (\d+) Waiting: (\d+)/ ) {
