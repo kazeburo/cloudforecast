@@ -235,7 +235,7 @@ sub run_worker {
 
     while ( $pm->signal_received ne 'TERM' ) {
         $pm->start and next;
-
+        $0 = "$0 (worker)";
         my $i = 0;
         $worker->work(
             on_start => sub {

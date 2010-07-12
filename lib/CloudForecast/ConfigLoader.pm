@@ -231,7 +231,8 @@ sub watchdog {
     my $pid = fork();
     die "failed fork: $!" unless defined $pid;
     return $pid if($pid); # main process
-    
+
+    $0 = "$0 (restarter)";
     my $watcher = Filesys::Notify::Simple->new(\@path);
     while (1) {
         $watcher->wait( sub {
