@@ -30,7 +30,7 @@ sub run {
     my $global_config = $configloader->global_config;
     my $server_list = $configloader->server_list;
 
-    CloudForecast::Log->debug("finished parse yaml");
+    CloudForecast::Log->debug("finished load config");
     
     my @watchdog_pid;
     if ( $self->restarter ) {

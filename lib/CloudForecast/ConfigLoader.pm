@@ -79,6 +79,7 @@ sub load_global_config {
             $self->root_dir,
             $data_dir );
     }
+    CloudForecast::Log->debug( "Load global_config done: " . $self->global_config_yaml );
 }
 
 sub load_server_list {
@@ -160,6 +161,7 @@ sub load_server_list {
 
     $self->server_list( \@hosts_by_group );
     $self->all_hosts( \%all_hosts );
+    CloudForecast::Log->debug( "Load server list done: $file");
 }
 
 sub load_host_config {

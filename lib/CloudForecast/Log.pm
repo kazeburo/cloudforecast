@@ -58,7 +58,10 @@ sub _log {
     my $file = $caller[1];
     $file =~ s!$root_dir/!!;
 
-    CORE::warn "$time [$tag] $info" . join(" ", @_) . " {$file#$caller[2]}\n";
+    my @messages = @_;
+    map { $_ =~ s!$root_dir/!!g } @messages;
+
+    CORE::warn "$time [$tag] $info" . join(" ", @messages) . " {$file#$caller[2]}\n";
 }
 
 1;

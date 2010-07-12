@@ -489,7 +489,7 @@ sub update_rrd {
     # update
     my $ds = join ":", map { sprintf "%s", $_->[0] } @{$self->rrd_schema};
     my $data= join ":", "N", map { ! defined $_ ? 'U' : $_ } @$ret;
-    CloudForecast::Log->debug('update rrd file:'. $file);
+    CloudForecast::Log->debug('update rrd file: '. $file. " -t $ds $data");
     eval {
         RRDs::update(
             $file,
