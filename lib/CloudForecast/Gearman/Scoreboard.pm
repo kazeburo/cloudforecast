@@ -7,6 +7,7 @@ use Fcntl qw(:DEFAULT :flock);
 use File::Temp qw();
 use POSIX qw(SEEK_SET);
 use Scope::Guard;
+use CloudForecast::Log;
 
 use constant STATUS_NEXIST => '.';
 use constant STATUS_IDLE   => '_';
@@ -39,7 +40,7 @@ sub new {
     sysopen my $fh, $filename, O_RDWR | O_CREAT
         or die "failed to create scoreboard file:$filename:$!";
     my $wlen = syswrite $fh, $EMPTY_SLOT x $max_workers;
-warn $filename;
+    CloudForecast::Log->debug("scoreboard: $filename");
     my $self = bless {
         filename    => $filename,
         fh          => $fh,
