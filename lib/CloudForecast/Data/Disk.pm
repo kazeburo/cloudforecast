@@ -22,12 +22,12 @@ fetcher {
             columns => [qw/dskIndex dskPath dskTotal dskUsed/] );
         if ( !$disks ) {
             CloudForecast::Log->warn("couldnot get dskTable");
-            return [-1, -1];
+            return [undef, undef];
         }
         my $disk = List::Util::first { $_->{dskPath} eq $interface } values %{$disks};
         if ( !$disk ) {
             CloudForecast::Log->warn("couldnot find disk partition '$interface'");
-            return [-1, -1];
+            return [undef, undef];
         }
         CloudForecast::Log->debug("found partition '$interface' with dskIndex:$disk->{dskIndex}");
         return [ $disk->{dskTotal}, $disk->{dskUsed} ];

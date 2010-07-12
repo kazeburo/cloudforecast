@@ -48,11 +48,16 @@ fetcher {
     # tcp established
     push @map, [ 'tcpCurrEstab', 0 ];
 
-    my $sysdescr = $c->component('SNMP')->get( [ 'sysDescr', 0 ] );
-    $c->ledge_set('sysinfo', [ system => $sysdescr->[0] ] );
+    # sysinfo
+    push @map, [ 'sysDescr', 0];
 
-    # $c->snmpは componetで提供。配列のリファレンスが最終的に戻る
+    # SNMP->get 配列のリファレンスが最終的に戻る
     my $ret = $c->component('SNMP')->get(@map);
+
+    #sysinfo
+    my $sysdescr = pop @$ret;
+    $c->ledge_set('sysinfo', [ system => $sysdescr ] );
+
     return $ret;
 };
 
@@ -130,10 +135,12 @@ DEF:my1=<%RRD%>:totalswap:AVERAGE
 DEF:my2=<%RRD%>:totalreal:AVERAGE
 DEF:my3=<%RRD%>:availreal:AVERAGE
 DEF:my4=<%RRD%>:totalfree:AVERAGE
-DEF:my5=<%RRD%>:shared:AVERAGE
+DEF:my5t=<%RRD%>:shared:AVERAGE
 DEF:my6=<%RRD%>:buffer:AVERAGE
 DEF:my7=<%RRD%>:cached:AVERAGE
 DEF:my8=<%RRD%>:availswap:AVERAGE
+
+CDEF:my5=my5t,UN,0,my5t,IF
 
 # used
 CDEF:myelse=my2,my3,-,my7,-,my6,-,my5,-,1024,*,0,34359738368,LIMIT

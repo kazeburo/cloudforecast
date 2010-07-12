@@ -346,7 +346,7 @@ sub do_fetch {
     die 'fetcher result undefind value' unless $ret;
     die 'fetcher result value isnot array ref'
         if ( !ref($ret) || ref($ret) ne 'ARRAY' );
-    CloudForecast::Log->debug( 'fetcher result [' . join(",", @$ret) . ']');
+    CloudForecast::Log->debug( 'fetcher result [' . join(",", map { !defined $_ ? 'U' : $_ } @$ret) . ']');
 
     my $schema = $self->rrd_schema;
     die 'schema and result values is no match' if ( scalar @$ret != scalar @$schema );
@@ -488,7 +488,7 @@ sub update_rrd {
 
     # update
     my $ds = join ":", map { sprintf "%s", $_->[0] } @{$self->rrd_schema};
-    my $data= join ":", "N", @$ret;
+    my $data= join ":", "N", map { ! defined $_ ? 'U' : $_ } @$ret;
     CloudForecast::Log->debug('update rrd file:'. $file);
     eval {
         RRDs::update(

@@ -21,12 +21,12 @@ fetcher {
             columns => [qw/ifIndex ifDescr ifHCOutOctets ifOutOctets ifHCInOctets ifInOctets/] );
         if ( !$ifs ) {
             CloudForecast::Log->warn("couldnot get iftable");
-            return [-1, -1];
+            return [undef, undef];
         }
         my $if = List::Util::first { $_->{ifDescr} eq $interface } values %{$ifs};
         if ( !$if ) {
             CloudForecast::Log->warn("couldnot find network interface '$interface'");
-            return [-1, -1];
+            return [undef, undef];
         }
         
         CloudForecast::Log->debug("found network interface '$interface' with ifIndex:$if->{ifIndex}");

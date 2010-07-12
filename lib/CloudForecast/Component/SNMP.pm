@@ -22,8 +22,9 @@ sub get {
     if ( $self->config->{version} eq '1' ) {
         for my $id ( @ids ) {
             my $val = $self->session->get( $id );
-            CloudForecast::Log->warn("SNMP get failed : " . join(".",@$id)  . " : " . $self->session->{ErrorStr})
+            CloudForecast::Log->warn("SNMP get failed : " . join(".",@$id)  . " error: " . $self->session->{ErrorStr})
                 if $self->session->{ErrorStr};
+            $val = undef if $self->session->{ErrorStr} =~ m!\(noSuchName!i;
             push @ret, $val;
         }
     }
@@ -31,7 +32,19 @@ sub get {
         @ret = $self->session->get( SNMP::VarList->new(@ids) );
         CloudForecast::Log->warn($self->session->{ErrorStr})
             if $self->session->{ErrorStr};
+        my $i=0;
+        my @filtered_ret;
+        for my $ret ( @ret ) {
+            if ( ! defined $ret || $ret eq 'NOSUCHOBJECT' ) {
+                CloudForecast::Log->warn("SNMP get failed: " . join(".", @{$ids[$i]}) . " error: NOSUCHOBJECT");
+                push @filtered_ret, undef;
+            }
+            else {
+                push @filtered_ret, $ret;
+            }
+        }
 
+        @ret = @filtered_ret;
     }
     return \@ret;
 }
