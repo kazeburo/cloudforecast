@@ -58,8 +58,13 @@ sub _log {
     my $file = $caller[1];
     $file =~ s!$root_dir/!!;
 
-    my @messages = @_;
-    map { $_ =~ s!$root_dir/!!g } @messages;
+    my @messages;
+    foreach ( @_ ) {
+        my $message = $_; # avoid Modification of a read-only value
+        $message =~ s!$root_dir/!!g;
+        $message =~ s![\n\r]!!g;
+        push @messages, $message;
+    }
 
     CORE::warn "$time [$tag] $info" . join(" ", @messages) . " {$file#$caller[2]}\n";
 }
