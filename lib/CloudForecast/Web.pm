@@ -146,6 +146,20 @@ get '/server' => sub {
     my $host = $self->configloader->all_hosts->{$address};
     return $c->res->not_found('Host Not Found') unless $host;
 
+    my $group_title;
+    my $group_key;
+    SEARCH_GROUP: for my $main_group ( @{$self->configloader->server_list} ) {
+        for my $sub_group ( @{$main_group->{sub_groups}} ) {
+            for my $group_host ( @{$sub_group->{hosts}} ) {
+                if ( $group_host->{address} eq $address ) {
+                    $group_title = $main_group->{title};
+                    $group_key   = $main_group->{title_key};
+                    last SEARCH_GROUP;
+                }
+            }
+        }
+    }
+
     my $host_instance = $self->get_host($host);
     my @graph_list = $host_instance->list_graph;
 
@@ -160,6 +174,8 @@ get '/server' => sub {
     return $c->render(
         'server',
         host => $host,
+        group_title => $group_title,
+        group_key   => $group_key,
         graph_list => \@graph_list,
         daterange => $daterange,
         today => $today,
@@ -216,7 +232,11 @@ __DATA__
 
 <div id="content">
 
-<h2 id="ptitle"><: block ptitle -> { } :></h2>
+<h2 id="ptitle">
+: block ptitle -> {
+<a href="<: $c.req.uri_for('/') :>">SERVER LIST</a>
+: }
+</h2>
 
 <div id="display-control">
 : block displaycontrol -> {
@@ -253,10 +273,6 @@ SERVER LIST «
   : }
 </ul>
 </div>
-: }
-
-: around ptitle -> {
-SERVER LIST » 
 : }
 
 : around content -> {
@@ -476,7 +492,7 @@ $(function() {
 : } 
 
 : around ptitle -> {
-<a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $hosthostname :></strong> <span class="details"><: $host.details :>
+<a href="<: $c.req.uri_for('/group', [id => $group_key]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :>
 : }
 
 : around displaycontrol -> {
