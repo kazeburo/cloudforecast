@@ -5,7 +5,7 @@ use lib "$FindBin::Bin/lib";
 use lib "$FindBin::Bin/extlib/lib/perl5";
 use local::lib "$FindBin::Bin/extlib";
 use lib "$FindBin::Bin/site-lib";
-use CloudForecast::Web::Server;
+use CloudForecast::Web;
 use Getopt::Long;
 
 my $root_dir = $FindBin::Bin;
@@ -30,7 +30,7 @@ GetOptions(
 die 'config not found' unless $config;
 die 'server_list not found' unless $server_list;
 
-CloudForecast::Web::Server->new({
+CloudForecast::Web->new({
     host => $host,
     port => $port,
     allowfrom => \@allowfrom,
