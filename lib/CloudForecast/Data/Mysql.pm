@@ -23,6 +23,7 @@ sysinfo {
     my @sysinfo;
     if ( my $sysinfo = $c->ledge_get('sysinfo') ) {
         push @sysinfo, 'version', $sysinfo->{version} if $sysinfo->{version};
+        push @sysinfo, 'version_comment', $sysinfo->{version_comment} if $sysinfo->{version_comment};
 
         if ( my $uptime = $sysinfo->{uptime} ) {
             my $day = int( $uptime /86400 );
@@ -57,9 +58,8 @@ fetcher {
 
     my %sysinfo;   
     $sysinfo{uptime} = $status{Uptime} || 0;
-    $sysinfo{version} = $mysql->version;
     map { $sysinfo{$_} = $variable{$_} } grep { exists $variable{$_} }
-        qw/log_slow_queries slow_launch_time log_queries_not_using_indexes max_connections thread_cache_size/;
+        qw/version version_comment log_slow_queries slow_launch_time log_queries_not_using_indexes max_connections thread_cache_size/;
     $c->ledge_set('sysinfo', \%sysinfo );
 
     return [ map { $status{$_} } qw/Com_delete Com_insert Com_replace Com_select Com_update Slow_queries
