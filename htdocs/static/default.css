@@ -248,7 +248,7 @@ body {
 #content #serverlist-ul ul.group-ul li.group-name-off {
   color: #666;
   background-image: -webkit-gradient( linear, left top, left bottom,
-       from(rgba(153,153,153,0.6)), color-stop(0.3, rgba(204,204,204,0.2)), to(rgba(204,204,204,0.2)) );
+       from(rgba(33,33,33,0.6)), color-stop(0.3, rgba(204,204,204,0.2)), to(rgba(204,204,204,0.2)) );
   background-image: -moz-linear-gradient(top, rgba(153,153,153,0.6), rgba(204,204,204,0.2) 30%, rgba(204,204,204,0.2));
 /*  -moz-box-shadow: inset 0px 0px 3px #333;
   -webkit-box-shadow: inset 0px 0px 3px #333;
