@@ -18,7 +18,7 @@ test_tcp(
             });
 
             my $ret = $resource->do_fetch();
-            is_deeply( $ret, [0,0,0,0,0,0,67108864] );
+            is_deeply( $ret, [0,0,0,0,undef,0,67108864] );
 
             my $sysinfo = $resource->graph_sysinfo();
             my %sysinfo = @$sysinfo;
