@@ -23,9 +23,11 @@ CloudForecast::Data::Memcached - memcached resource monitor
 
 rrds map { [$_,'COUNTER'] } qw/cmdget cmdset gethits getmisses/;
 rrds map { [$_,'GAUGE'] } qw/rate used max/;
+# rate is used as evictions
 graphs 'usage' => 'memcached usage';
 graphs 'count' => 'memcached request count';
 graphs 'rate' => 'memcached hit rate';
+graphs 'evictions' => 'number of evicted items';
 
 title {
     my $c = shift;
@@ -83,7 +85,8 @@ fetcher {
     $c->ledge_set( 'sysinfo', \@sysinfo );
 
     return [ $stats{cmd_get}, $stats{cmd_set}, $stats{get_hits}, $stats{get_misses},
-             undef, $stats{bytes}, $stats{limit_maxbytes} ];
+             $stats{evictions}, $stats{bytes}, $stats{limit_maxbytes} ];
+
 };
 
 
@@ -130,3 +133,15 @@ GPRINT:rate:AVERAGE:Ave\: %4.2lf%s
 GPRINT:rate:MAX:Max\: %4.2lf%s
 GPRINT:rate:MIN:Min\: %4.2lf%s\c
 LINE:100
+
+@@ evictions
+DEF:evict=<%RRD%>:rate:AVERAGE
+LINE:evict#993333:Item
+GPRINT:evict:LAST:Cur\: %4.2lf%s 
+GPRINT:evict:AVERAGE:Ave\: %4.2lf%s 
+GPRINT:evict:MAX:Max\: %4.2lf%s 
+GPRINT:evict:MIN:Min\: %4.2lf%s\c
+
+
+
+
