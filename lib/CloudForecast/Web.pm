@@ -614,8 +614,9 @@ $(function() {
     $('#headspacer').height( $('#header').outerHeight(true) );
 
     var hash = location.hash;
-    if ( hash.length > 0 ) {
-        page_scroll(hash);
+    if ( hash.length > 0 && hash.match(/^#lresource-/) ) {
+        var id = hash.replace( /^#lresource-/, '#resource-' );
+        page_scroll(id);
     }
 });
 : }
