@@ -213,13 +213,13 @@ sub draw_graph {
             $xgrid = 'HOUR:1:HOUR:1:HOUR:2:0:%H';
         }
         elsif ( $diff < 14 * 24 * 60 * 60) {
-            $xgrid = 'DAY:1:DAY:1:DAY:1:86400:%a';
+            $xgrid = 'DAY:1:DAY:1:DAY:2:86400:%m/%d';
         }
         elsif ( $diff < 45 * 24 * 60 * 60) {
-            $xgrid = 'WEEK:1:WEEK:1:WEEK:1:604800:Week %W';
+            $xgrid = 'DAY:1:WEEK:1:WEEK:1:0:%F';
         }
         else {
-            $xgrid = 'MONTH:1:MONTH:1:MONTH:1:2592000:%b';
+            $xgrid = 'WEEK:1:MONTH:1:MONTH:1:2592000:%b';
         }
     }
     elsif ( $span eq 'w' ) {
@@ -230,17 +230,17 @@ sub draw_graph {
     elsif ( $span eq 'm' ) {
         $period_title = 'Monthly';
         $period = -1 * 60 * 60 * 24 * 35;
-        $xgrid = 'WEEK:1:WEEK:1:WEEK:1:604800:Week %W'
+        $xgrid = 'DAY:1:WEEK:1:WEEK:1:604800:Week %W'
     }
     elsif ( $span eq 'y' ) {
         $period_title = 'Yearly';
         $period = -1 * 60 * 60 * 24 * 400;
-        $xgrid = 'MONTH:1:MONTH:1:MONTH:1:2592000:%b'
+        $xgrid = 'WEEK:1:MONTH:1:MONTH:1:2592000:%b'
     }
     else {
         $period_title = 'Daily';
         $period = -1 * 60 * 60 * 33; # 33 hours
-        $xgrid = 'HOUR:1:HOUR:1:HOUR:2:0:%H';
+        $xgrid = 'HOUR:1:HOUR:2:HOUR:2:0:%H';
     }
     
     my $template = $graph_def->{template};
