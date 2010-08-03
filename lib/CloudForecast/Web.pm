@@ -218,7 +218,7 @@ __DATA__
 <link rel="stylesheet" type="text/css" href="<: $c.req.uri_for('/static/css/anytimec.css') :>" />
 </head>
 <body>
-<div id="container">
+
 <div id="header">
 <h1 class="title"><a href="<: $c.req.uri_for('/') :>">CloudForecast</a></h1>
 <div class="welcome">
@@ -226,17 +226,23 @@ __DATA__
 <li><a href="<: $c.req.uri_for('/') :>">TOP</a></li>
 </ul>
 </div>
+<div id="headmenu">
+: block headmenu -> {
+&nbsp;
+: }
 </div>
-
-: block headmenu -> { } 
-
-<div id="content">
 
 <h2 id="ptitle">
 : block ptitle -> {
 <a href="<: $c.req.uri_for('/') :>">SERVER LIST</a>
 : }
 </h2>
+
+</div>
+<div id="headspacer"></div>
+
+<div id="content">
+
 
 <div id="display-control">
 : block displaycontrol -> {
@@ -246,7 +252,6 @@ __DATA__
 
 : block content -> { }
 
-</div>
 </div>
 
 <script src="<: $c.req.uri_for('/static/js/jquery-1.4.2.min.js') :>" type="text/javascript"></script>
@@ -266,13 +271,12 @@ SERVER LIST «
 : }
 
 : around headmenu -> {
-<div id="grouplist">
 <ul>
+<li><a href="#">TOP</a></li>
   : for $server_list -> $group {
 <li><a href="#group-<: $group.title_key :>"><: $group.title :></a></li>
   : }
 </ul>
-</div>
 : }
 
 : around content -> {
@@ -297,26 +301,40 @@ SERVER LIST «
 
 : around javascript -> {
 $(function() {
-    $("#grouplist > ul > li > a").click( function(){
+     var page_scroll = function (id) {
+         id = id.replace(/(~|%|:|\.)/g,'\\$1');
+         if ( $(id).length > 0 ) {
+             var offset = $(id).offset().top - $('#header').outerHeight(true) - 5;
+             $('html,body').animate( { scrollTop: offset }, 50);
+         }
+     };
+
+    $("#headmenu > ul > li > a:gt(0)").click( function(){
         if ( $(this).data('dblc') == true ) return false;
         var tag = this;
         var id = setTimeout( function(){
             var match = $(tag).attr('href').match(/([0-9a-z]+)$/);
              $(tag).data('dblc', false);
-            location.hash = '#group-'+match[0];
+            location.hash = '#lgroup-'+match[0];
+            page_scroll( '#group-'+match[0]);
         }, 300 );
         $(this).data('dblc',true);
         $(this).data('ctimer', id );
         return false;
     });
-    $("#grouplist > ul > li > a").dblclick( function(){
+    $("#headmenu > ul > li > a:gt(0)").dblclick( function(){
         clearTimeout($(this).data('ctimer'));
         var match = $(this).attr('href').match(/([0-9a-z]+)$/);
         $(this).data('dblc', false);
         location.href = $('#group-'+match[0]+' a.ui-icon-arrowthick-1-ne').attr('href');
         return false;
     });
-    $("#grouplist > ul > li > a").button( { icons: {primary:'ui-icon-document-b' }});
+
+    $("#headmenu > ul > li > a:first").button( { text: false, icons: {primary:'ui-icon-arrowstop-1-n' }});
+    $("#headmenu > ul > li > a:first").click(function(){
+        $('html,body').animate( { scrollTop: 0 }, 50);
+    });
+    $("#headmenu > ul > li > a:gt(0)").button( { icons: {primary:'ui-icon-document-b' }});
 
     var opentarget = $.jStorage.get( "open_target" );
     if ( opentarget == true ) {
@@ -388,6 +406,9 @@ $(function() {
             $(li_group).children().first().addClass('ui-icon-triangle-1-e');
         }
     });
+
+    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $('#headspacer').height( $('#header').outerHeight(true) );
 })
 : } #content
 
@@ -398,13 +419,12 @@ $(function() {
 : }
 
 : around headmenu -> {
-<div id="grouplist">
 <ul>
+<li><a href="<: $c.req.uri_for('/') :>">TOP</a></li>
   : for $server_list -> $group {
 <li><a href="<: $c.req.uri_for('/group',[ id => $group.title_key ]) :>"><: $group.title :></a></li>
   : }
 </ul>
-</div>
 : }
 
 : around ptitle -> {
@@ -435,7 +455,8 @@ $(function() {
 
 : around javascript -> {
 $(function() {
-    $("#grouplist > ul > li > a").button({ icons: {primary:'ui-icon-document-b' }});
+    $("#headmenu > ul > li > a:first").button( { text: false, icons: {primary:'ui-icon-arrowstop-1-n' }});
+    $("#headmenu > ul > li > a:gt(0)").button({ icons: {primary:'ui-icon-transfer-e-w' }});
 
     var opentarget = $.jStorage.get( "open_target" );
     if ( opentarget == true ) {
@@ -482,6 +503,9 @@ $(function() {
             $(li_group).children().first().addClass('ui-icon-triangle-1-e');
         }
     });
+
+    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $('#headspacer').height( $('#header').outerHeight(true) );
 })
 : } 
 
@@ -490,6 +514,15 @@ $(function() {
 : around title -> {
 <: $host.hostname :> <: $host.address :> « 
 : } 
+
+: around headmenu -> {
+<ul>
+<li><a href="#">TOP</a></li>
+: for $graph_list -> $resource {
+<li><a class="resource-anchor" href="#lresource-<: $resource.graph_title | uri :>"><: $resource.graph_title :></a></li>
+: }
+</ul>
+: } #around headmenu
 
 : around ptitle -> {
 <a href="<: $c.req.uri_for('/group', [id => $group_key]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :>
@@ -515,16 +548,8 @@ $(function() {
 : }
 
 : around content -> {
-: if $graph_list.size() > 1 {
-<ul id="resource-list">
 : for $graph_list -> $resource {
-<li><a href="#resource-<: $resource.graph_title :>"><: $resource.graph_title :></a></li>
-: }
-</ul>
-: }
-
-: for $graph_list -> $resource {
-<h4 class="resource-title" id="resource-<: $resource.graph_title :>"><: $resource.graph_title :></h4>
+<h4 class="resource-title" id="resource-<: $resource.graph_title | uri :>"><: $resource.graph_title :></h4>
   : if ( $resource.sysinfo.size() ) {
 <div class="resource-sysinfo">
     : for $resource.sysinfo -> $sysinfo {
@@ -558,12 +583,40 @@ $(function() {
 
 : around javascript -> {
 $(function() {
+     var page_scroll = function (id) {
+         id = id.replace(/(~|%|:|\.)/g,'\\$1');
+         if ( $(id).length > 0 ) {
+             var offset = $(id).offset().top - $('#header').outerHeight(true) - 5;
+             $('html,body').animate( { scrollTop: offset }, 50);
+         }
+     };
+
+     $("#headmenu > ul > li > a:first").button( { text: false, icons: {primary:'ui-icon-arrowstop-1-n' }});
+     $("#headmenu > ul > li > a:first").click( function() {
+         $('html,body').animate( { scrollTop: 0 }, 50);
+     });
+     $("#headmenu > ul > li > a.resource-anchor").button( { icons: {primary:'ui-icon-image' }});
+     $("#headmenu > ul > li > a.resource-anchor").click( function(){
+         var href = $(this).attr('href');
+         if ( href.match(/^#lresource-/) ) {
+             var id = href.replace( /^#lresource-/, '#resource-' );
+             page_scroll(id);
+         }
+     });
      $("#display-control a:first").button({ icons: {primary:'ui-icon-transfer-e-w' }});
+
      $("#pickdate_submit").button();
      $("#from_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
                                        monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
      $("#to_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
                                     monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
+    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $('#headspacer').height( $('#header').outerHeight(true) );
+
+    var hash = location.hash;
+    if ( hash.length > 0 ) {
+        page_scroll(hash);
+    }
 });
 : }
 

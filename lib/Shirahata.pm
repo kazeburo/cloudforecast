@@ -85,7 +85,7 @@ sub build_app {
     my $fif = HTML::FillInForm::Lite->new(layer => ':raw');
     my $tx = Text::Xslate->new(
         path => [ \%templates ],
-        cache => 2,
+        cache => 0,
         input_layer => '',
         function => {
             fillinform => sub {

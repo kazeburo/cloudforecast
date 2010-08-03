@@ -69,31 +69,31 @@ ol, ul{
 
 /* page layout */
 body {
-    text-align: center;
     background-color: #fff;
 }
 
-#container {
-    margin: 0px auto;
-    text-align: left;
-    background-color:#fff;
-}
 
 #header {
-    background-color: #333;
     padding: 0px;
-    height: 32px;
-    position:relative;
+    margin: 0px 0px 5px;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 999;
 }
 
-#header .title{
+#header h1.title{
+    background-color: rgba(22,22,22,0.9);
     padding:7px 5px 0px;
     margin: 0px 0px;
     color: #eee;
+    height: 28px;
     font-size: 1.3em;
     font-weight: bold;
     line-height:1;
 }
+
 #header .title a{
     color: #eee;
     text-decoration:none;
@@ -127,26 +127,45 @@ body {
     color: #333;
 }
 
-#grouplist {
-    background-color: #eee;
+
+#headmenu {
+    background-color: rgba(225,225,225,0.95);
     padding: 3px 6px;
-    margin: 0px 0px 5px;
+    margin: 0px 0px 0px;
     font-size: 0.9em;
 }
 
-#grouplist ul {
+#headmenu ul {
     margin: 0px;
     padding: 4px;
     list-style: none;
 }
 
-#grouplist ul li {
+#headmenu ul li {
     display: inline;
 }
 
 
+#ptitle {
+    background-color: rgba(255,255,255,0.95);
+    border-bottom: #ccc 1px solid;
+    font-size: 1.4em;
+    font-weight: bold;
+    margin: 0px 0px 0px;
+    padding: 3px 8px 5px;
+}
+
+h2#ptitle a {
+    text-decoration: none;
+    color: #333;
+}
+
+h2#ptitle span.details {
+    color: #666;
+}
+
 #content {
-    padding: 10px 10px 10px;
+    padding: 0px 10px 10px;
 }
 
 /*
@@ -156,21 +175,6 @@ body {
 #content a:active { color: #999999;  }
 #content a:hover { color: #999999;  }
 */
-
-#content h2#ptitle {
-    font-size: 1.4em;
-    font-weight: bold;
-    margin: 0px 0px 15px 0px;
-}
-
-#content h2#ptitle a {
-    text-decoration: none;
-    color: #333;
-}
-
-#content h2#ptitle span.details {
-    color: #666;
-}
 
 #content #display-control {
     text-align: right;
@@ -248,7 +252,7 @@ body {
 #content #serverlist-ul ul.group-ul li.group-name-off {
   color: #666;
   background-image: -webkit-gradient( linear, left top, left bottom,
-       from(rgba(33,33,33,0.6)), color-stop(0.3, rgba(204,204,204,0.2)), to(rgba(204,204,204,0.2)) );
+       from(rgba(153,153,153,0.6)), color-stop(0.3, rgba(204,204,204,0.2)), to(rgba(204,204,204,0.2)) );
   background-image: -moz-linear-gradient(top, rgba(153,153,153,0.6), rgba(204,204,204,0.2) 30%, rgba(204,204,204,0.2));
 /*  -moz-box-shadow: inset 0px 0px 3px #333;
   -webkit-box-shadow: inset 0px 0px 3px #333;
