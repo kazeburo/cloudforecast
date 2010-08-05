@@ -125,7 +125,7 @@ get '/' => sub {
 get '/group' => sub {
     my ( $self, $c ) = @_;
     return $c->res->not_found('ID Not Exists') unless $c->req->param('id');
-    my $group = List::Util::first { $_->{title_key} eq $c->req->param('id') }
+    my $group = List::Util::first { $_->{title} eq $c->req->param('id') || $_->{title_key} eq $c->req->param('id') }
         @{$self->configloader->server_list};
     return $c->res->not_found('Group Not Found') unless $group;
 
@@ -234,7 +234,7 @@ __DATA__
 
 <h2 id="ptitle">
 : block ptitle -> {
-<a href="<: $c.req.uri_for('/') :>">SERVER LIST</a>
+<a href="<: $c.req.uri_for('/') :>">TOP</a>
 : }
 </h2>
 
@@ -267,14 +267,14 @@ __DATA__
 @@ index
 : cascade 'base'
 : around title -> {
-SERVER LIST « 
+TOP « 
 : }
 
 : around headmenu -> {
 <ul>
 <li><a href="#">TOP</a></li>
   : for $server_list -> $group {
-<li><a href="#group-<: $group.title_key :>"><: $group.title :></a></li>
+<li><a href="#group-<: $group.title | uri :>"><: $group.title :></a></li>
   : }
 </ul>
 : }
@@ -282,8 +282,8 @@ SERVER LIST «
 : around content -> {
 <ul id="serverlist-ul">
   : for $server_list -> $group {
-<li class="group-name" id="group-<: $group.title_key :>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><: $group.title :><a href="#" class="ui-icon ui-icon-arrowthick-1-n" style="float:right">↑</a><a href="<: $c.req.uri_for('/group',[ id => $group.title_key]) :>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
-<ul class="group-ul" id="ul-group-<: $group.title_key :>">
+<li class="group-name" id="group-<: $group.title | uri :>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><: $group.title :><a href="#" class="ui-icon ui-icon-arrowthick-1-n" style="float:right">↑</a><a href="<: $c.req.uri_for('/group',[ id => $group.title]) :>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
+<ul class="group-ul" id="ul-group-<: $group.title | uri :>">
     : for $group.sub_groups -> $sub_group {
       : if $sub_group.label {
 <li id="sub-group-<: $sub_group.label_key :>" class="sub-group-name"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><: $sub_group.label :></li>
@@ -313,10 +313,10 @@ $(function() {
         if ( $(this).data('dblc') == true ) return false;
         var tag = this;
         var id = setTimeout( function(){
-            var match = $(tag).attr('href').match(/([0-9a-z]+)$/);
+            var match = $(tag).attr('href').match(/#group-(.+)$/);
              $(tag).data('dblc', false);
-            location.hash = '#lgroup-'+match[0];
-            page_scroll( '#group-'+match[0]);
+            location.hash = '#lgroup-'+match[1];
+            page_scroll( '#group-'+match[1]);
         }, 300 );
         $(this).data('dblc',true);
         $(this).data('ctimer', id );
@@ -324,9 +324,10 @@ $(function() {
     });
     $("#headmenu > ul > li > a:gt(0)").dblclick( function(){
         clearTimeout($(this).data('ctimer'));
-        var match = $(this).attr('href').match(/([0-9a-z]+)$/);
+        var match = $(this).attr('href').match(/#group-(.+)$/);
         $(this).data('dblc', false);
-        location.href = $('#group-'+match[0]+' a.ui-icon-arrowthick-1-ne').attr('href');
+        var id = match[1].replace(/(~|%|:|\.)/g,'\\$1');
+        location.href = $('#group-'+id+' a.ui-icon-arrowthick-1-ne').attr('href');
         return false;
     });
 
@@ -365,11 +366,12 @@ $(function() {
         if ( $(this).data('dblc') == true ) return false;
         $(this).data('dblc', true );
         var li_group = this;
-        var id = setTimeout(function(){ $("#ul-" + li_group.id).toggle(100, function(){
+        var gid = li_group.id.replace(/(~|%|:|\.)/g,'\\$1');
+        var id = setTimeout(function(){ $("#ul-" + gid).toggle(100, function(){
                 $(li_group).toggleClass('group-name-off');
                 $(li_group).children().first().toggleClass('ui-icon-triangle-1-s','ui-icon-triangle-1-e');
                 $(li_group).children().first().toggleClass('ui-icon-triangle-1-e','ui-icon-triangle-1-s');
-                $.jStorage.set( "display-" + li_group.id, $(this).css('display') );
+                $.jStorage.set( "display-" + gid, $(this).css('display') );
             }); 
             $(li_group).data('dblc', false ); } ,
             300 );
@@ -415,20 +417,20 @@ $(function() {
 @@ group
 : cascade 'base'
 : around title -> {
-<: $group.title :> « SERVER LIST « 
+<: $group.title :> « TOP « 
 : }
 
 : around headmenu -> {
 <ul>
 <li><a href="<: $c.req.uri_for('/') :>">TOP</a></li>
   : for $server_list -> $group {
-<li><a href="<: $c.req.uri_for('/group',[ id => $group.title_key ]) :>"><: $group.title :></a></li>
+<li><a href="<: $c.req.uri_for('/group',[ id => $group.title ]) :>"><: $group.title :></a></li>
   : }
 </ul>
 : }
 
 : around ptitle -> {
-<a href="<: $c.req.uri_for('/') :>">SERVER LIST</a> » <: $group.title :>
+<a href="<: $c.req.uri_for('/') :>">TOP</a> » <: $group.title :>
 : }
 
 : around displaycontrol -> {
@@ -437,8 +439,8 @@ $(function() {
 
 : around content -> {
 <ul id="serverlist-ul">
-<li class="group-name" id="group-<: $group.title_key :>"><span class="ui-icon ui-icon-stop" style="float:left"></span><: $group.title :></li>
-<ul class="group-ul" id="ul-group-<: $group.title_key :>">
+<li class="group-name" id="group-<: $group.title | uri :>"><span class="ui-icon ui-icon-stop" style="float:left"></span><: $group.title :></li>
+<ul class="group-ul" id="ul-group-<: $group.title| uri :>">
   : for $group.sub_groups ->  $sub_group {
     : if $sub_group.label {
 <li id="sub-group-<: $sub_group.label_key :>" class="sub-group-name"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><: $sub_group.label :></li>
@@ -614,7 +616,7 @@ $(function() {
     $('#headspacer').height( $('#header').outerHeight(true) );
 
     var hash = location.hash;
-    if ( hash.length > 0 && hash.match(/^#lresource-/) ) {
+    if ( hash.length > 0 && hash.match(/^#l?resource-/) ) {
         var id = hash.replace( /^#lresource-/, '#resource-' );
         page_scroll(id);
     }
