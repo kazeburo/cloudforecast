@@ -527,7 +527,7 @@ $(function() {
 : } #around headmenu
 
 : around ptitle -> {
-<a href="<: $c.req.uri_for('/group', [id => $group_key]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :>
+<a href="<: $c.req.uri_for('/group', [id => $group_title]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :>
 : }
 
 : around displaycontrol -> {

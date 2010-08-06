@@ -82,6 +82,31 @@ sub walk {
     return \@data;
 }
 
+sub extend {
+    my $self = shift;
+    my $token = shift;
+
+    my $etbl = $self->table("nsExtendConfigTable");
+    if ( !$etbl ) {
+        CloudForecast::Log->warn("couldnot get ExtendConfigTable");
+        return;
+    }
+    my $iid;
+    for my $id ( keys %{$etbl} ) {
+        if ( $etbl->{$id}->{nsExtendToken} eq $token ) {
+            $iid = $id;
+            last;
+        }
+    }
+
+    if ( !$iid ) {
+        CloudForecast::Log->warn("couldnot find $token configuration");
+        return;
+    }
+
+    return $self->get(["nsExtendOutputFull",$iid]);
+}
+
 
 1;
 
