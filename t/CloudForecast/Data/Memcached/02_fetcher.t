@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Test::TCP;
 use File::Temp;
 
@@ -18,13 +18,21 @@ test_tcp(
             });
 
             my $ret = $resource->do_fetch();
-            is_deeply( $ret, [0,0,0,0,undef,0,67108864] );
 
             my $sysinfo = $resource->graph_sysinfo();
             my %sysinfo = @$sysinfo;
             ok ( $sysinfo{version} );
             ok ( $sysinfo{uptime} );
-            
+
+            if ( $sysinfo{version} =~ m!^1\.4! ) {
+                is_deeply( $ret, [0,0,0,0,10,0,67108864] );
+                ok( $sysinfo{max_connections} );
+            }
+            else {
+                is_deeply( $ret, [0,0,0,0,1,0,67108864] );
+                ok( 1 );
+            }
+                       
             my $title = $resource->graph_title();
             is( $title, "testcached ($port)" );
 

@@ -23,9 +23,19 @@ CloudForecast::Data::Memcached - memcached resource monitor
 
 rrds map { [$_,'COUNTER'] } qw/cmdget cmdset gethits getmisses/;
 rrds map { [$_,'GAUGE'] } qw/rate used max/;
-graphs 'usage' => 'memcached usage';
-graphs 'count' => 'memcached request count';
-graphs 'rate' => 'memcached hit rate';
+# rate is using for current_connections
+graphs 'usage' => 'cache usage';
+graphs 'count' => 'request count';
+graphs 'rate' => 'cache hit rate';
+graphs 'conn' => 'connections' => 'conn' => sub {
+    my ($c,$template) = @_;
+    my $sysinfo = $c->ledge_get('sysinfo') || [];
+    my %sysinfo = @$sysinfo;
+    if ( $sysinfo{max_connections} ) {
+        $template .= "LINE:$sysinfo{max_connections}:#C00000\n";
+    }
+    $template;
+};
 
 title {
     my $c = shift;
@@ -80,10 +90,25 @@ fetcher {
         my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
         push @sysinfo, 'uptime' =>  sprintf("up %d days, %2d:%02d", $day, $hour, $min);
     }
+
+    if ( $stats{version} && $stats{version} =~ m!^1\.4! ) {
+        $sock->syswrite("stats settings\r\n");
+        my $raw_setting_stats;
+        $sock->sysread( $raw_setting_stats, 8192 );
+        my %setting_stats;
+        foreach my $line ( split /\r?\n/, $raw_setting_stats ) {
+            if ( $line =~ /^STAT\s([^ ]+)\s(.+)$/ ) {
+                $setting_stats{$1} = $2;
+            }
+        }
+
+        push @sysinfo, 'max_connections' => $setting_stats{maxconns};
+    }
+
     $c->ledge_set( 'sysinfo', \@sysinfo );
 
     return [ $stats{cmd_get}, $stats{cmd_set}, $stats{get_hits}, $stats{get_misses},
-             undef, $stats{bytes}, $stats{limit_maxbytes} ];
+             $stats{curr_connections}, $stats{bytes}, $stats{limit_maxbytes} ];
 
 };
 
@@ -131,5 +156,16 @@ GPRINT:rate:AVERAGE:Ave\: %4.2lf%s
 GPRINT:rate:MAX:Max\: %4.2lf%s
 GPRINT:rate:MIN:Min\: %4.2lf%s\c
 LINE:100
+
+@@ conn
+DEF:conn=<%RRD%>:rate:MAX
+AREA:conn#00C000:Connections  
+GPRINT:conn:LAST:Cur\: %6.1lf
+GPRINT:conn:AVERAGE:Ave\: %6.1lf
+GPRINT:conn:MAX:Max\: %6.1lf
+GPRINT:conn:MIN:Min\: %6.1lf\c
+
+
+
 
 
