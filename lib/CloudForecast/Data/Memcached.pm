@@ -32,7 +32,7 @@ graphs 'conn' => 'connections' => 'conn' => sub {
     my $sysinfo = $c->ledge_get('sysinfo') || [];
     my %sysinfo = @$sysinfo;
     if ( $sysinfo{max_connections} ) {
-        $template .= "LINE:$sysinfo{max_connections}:#C00000\n";
+        $template .= "LINE:$sysinfo{max_connections}#C00000\n";
     }
     $template;
 };
@@ -158,8 +158,8 @@ GPRINT:rate:MIN:Min\: %4.2lf%s\c
 LINE:100
 
 @@ conn
-DEF:conn=<%RRD%>:rate:MAX
-AREA:conn#00C000:Connections  
+DEF:conn=<%RRD%>:rate:AVERAGE
+AREA:conn#00C000:Connections 
 GPRINT:conn:LAST:Cur\: %6.1lf
 GPRINT:conn:AVERAGE:Ave\: %6.1lf
 GPRINT:conn:MAX:Max\: %6.1lf
