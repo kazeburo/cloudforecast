@@ -527,7 +527,8 @@ $(function() {
 : } #around headmenu
 
 : around ptitle -> {
-<a href="<: $c.req.uri_for('/group', [id => $group_title]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :>
+<a href="<: $c.req.uri_for('/group', [id => $group_title]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></span>
+<button href="<: $c.req.uri_for('/server', [ address => $host.address ]) :>" id="clipboard_open">clipboard</button>
 : }
 
 : around displaycontrol -> {
@@ -550,6 +551,7 @@ $(function() {
 : }
 
 : around content -> {
+<div id="to_clipboard"><form><textarea id="clipboard_text"><: $c.req.uri_for('/server', [address => $host.address]) :> <: $host.hostname :></textarea></form></div>
 : for $graph_list -> $resource {
 <h4 class="resource-title" id="resource-<: $resource.graph_title | uri :>"><: $resource.graph_title :></h4>
   : if ( $resource.sysinfo.size() ) {
@@ -620,6 +622,22 @@ $(function() {
         var id = hash.replace( /^#lresource-/, '#resource-' );
         page_scroll(id);
     }
+
+    $('.ui-widget-overlay').live("click", function() {
+        $("#to_clipboard").dialog("close");
+    });   
+    $('#to_clipboard').dialog({
+        autoOpen: false,
+        modal: true,
+        title: "Copy to Clipboard",
+        width: 497,
+        height: 95,
+        resizable: false,
+        open: function(){ $('#clipboard_text').select();  }
+    });
+
+    $("#clipboard_open").button({ text: false, icons: {primary:'ui-icon-copy' }});
+    $("#clipboard_open").click( function() { $( "#to_clipboard" ).dialog( "open" ); return false } );
 });
 : }
 
