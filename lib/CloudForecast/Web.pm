@@ -136,6 +136,64 @@ get '/group' => sub {
     );
 };
 
+get '/servers' => sub {
+    my ( $self, $c ) = @_;
+
+    my @servers = $c->req->param('address');
+    return $c->res->not_found('Address Not Exists') unless @servers;
+
+    my @hosts = grep { $_ } map {
+        $self->configloader->all_hosts->{$_}
+    } @servers;
+    return $c->res->not_found('Host Not Found') unless @hosts;
+    my @addresses = map { (address => $_->{address}) } @hosts;
+
+    my @all;
+    for my $host ( @hosts ) {
+        my $host_instance = $self->get_host($host);
+        my @graph_list = $host_instance->list_graph;
+
+        my $group_title;
+        my $group_key;
+        SEARCH_GROUP: for my $main_group ( @{$self->configloader->server_list} ) {
+            for my $sub_group ( @{$main_group->{sub_groups}} ) {
+                for my $group_host ( @{$sub_group->{hosts}} ) {
+                    if ( $group_host->{address} eq $host->{address} ) {
+                        $group_title = $main_group->{title};
+                        $group_key   = $main_group->{title_key};
+                        last SEARCH_GROUP;
+                    }
+                }
+            }
+        }
+
+        push @all, {
+            host => $host,
+            graph_list => \@graph_list,
+            group_title => $group_title,
+            group_key => $group_key,
+        };
+    }
+
+     my $daterange;
+     if ( $c->req->param('mode') && $c->req->param('mode') eq 'range' ) {
+         $daterange = 1;
+     } 
+     my @today = localtime;
+     my $today =  sprintf("%04d-%02d-%02d 00:00:00", $today[5]+1900, $today[4]+1, $today[3]);
+     my @yesterday = localtime( time - 24* 60 * 60 );
+     my $yesterday = sprintf("%04d-%02d-%02d 00:00:00", $yesterday[5]+1900, $yesterday[4]+1, $yesterday[3]);
+
+    return $c->render(
+        'servers',
+        hosts => \@all,
+        addresses => \@addresses,
+        daterange => $daterange,
+        today => $today,
+        yesterday => $yesterday
+    );
+};
+
 get '/server' => sub {
     my ( $self, $c ) = @_;
     my $daterange;
@@ -246,8 +304,13 @@ __DATA__
 
 <div id="display-control">
 : block displaycontrol -> {
-<input type="checkbox" id="open_target" /><label for="open_target">open in current window</label>
-: }
+<div id="display-control-main">
+<button id="open_selected">View Selected Hosts</button>
+</div>
+<div id="display-control-sub">
+<input type="checkbox" id="open_target" /><label for="open_target">target window</label>
+</div>
+: } #displaycontrol
 </div>
 
 : block content -> { }
@@ -256,6 +319,7 @@ __DATA__
 
 <script src="<: $c.req.uri_for('/static/js/jquery-1.4.2.min.js') :>" type="text/javascript"></script>
 <script src="<: $c.req.uri_for('/static/js/jquery-ui-1.8.2.custom.min.js') :>" type="text/javascript"></script>
+<script src="<: $c.req.uri_for('/static/js/jquery.field.min.js') :>" type="text/javascript"></script>
 <script src="<: $c.req.uri_for('/static/js/jstorage.js') :>" type="text/javascript"></script>
 <script src="<: $c.req.uri_for('/static/js/anytimec.js') :>" type="text/javascript"></script>
 <script type="text/javascript">
@@ -280,6 +344,7 @@ TOP «
 : }
 
 : around content -> {
+<form>
 <ul id="serverlist-ul">
   : for $server_list -> $group {
 <li class="group-name" id="group-<: $group.title | uri :>"><span class="ui-icon ui-icon-triangle-1-s" style="float:left"></span><: $group.title :><a href="#" class="ui-icon ui-icon-arrowthick-1-n" style="float:right">↑</a><a href="<: $c.req.uri_for('/group',[ id => $group.title]) :>" class="ui-icon ui-icon-arrowthick-1-ne" style="float:right" >↗</a></li>
@@ -290,13 +355,14 @@ TOP «
       : }
 <ul class="host-ul" id="ul-sub-group-<: $sub_group.label_key :>">
       : for $sub_group.hosts -> $host {
-<li class="host-li"><a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
+<li class="host-li configgroup-<: $host.config_group_num  :>"><input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
       : }
 </ul>
     : } # sub_group
 </ul>
   : } # group
 </ul>
+</form>
 : } # content
 
 : around javascript -> {
@@ -337,30 +403,51 @@ $(function() {
     });
     $("#headmenu > ul > li > a:gt(0)").button( { icons: {primary:'ui-icon-document-b' }});
 
+    $("input.addresscb").createCheckboxRange();
+    $("input.addresscb").change(function() {
+        if ( $(this).attr('checked') ){
+            $(this).parent().addClass("host-li-checked");
+        }
+        else {
+            $(this).parent().removeClass("host-li-checked");
+        }
+        if ( $("input.addresscb:checked").length >= 2 ) {
+            $("#open_selected").button({disabled:false});
+        }
+        else {
+            $("#open_selected").button({disabled:true});
+        }
+    });
+    $("input.addresscb").change();
+    $("#open_selected").click(function(){
+        var form = $('<form/>');
+        form.attr('method','get');
+        form.attr('action', '<: $c.req.uri_for('/servers') :>');
+        form.attr('target', ($("#open_target").attr("checked")) ? "_blank" : "_self");
+        $("input.addresscb:checked").each( function () {
+            var input = $('<input/>');
+            input.attr('name','address');
+            input.attr('value',$(this).val());
+            form.append(input);
+        });
+        form.submit();
+    });
     var opentarget = $.jStorage.get( "open_target" );
     if ( opentarget == true ) {
         $("#open_target").attr("checked", true );
     }
-    $("#open_target").button({ icons: {primary:'ui-icon-newwin' }});
+    $("#open_target").button({ text:null, icons: {primary:'ui-icon-newwin' }});
     $("#open_target").change(function(){
         $.jStorage.set( "open_target", $(this).attr("checked") );
         if ( $(this).attr("checked") ) {
             $(".host-li a").attr("target","_blank");
-            $(this).button({ label: "open in new window"});
         }
         else {
             $(".host-li a").attr("target","_self");
-            $(this).button({ label: "open in currnet window"});
         }
     });
-    if ( $("#open_target").attr("checked") ) {
-        $(".host-li a").attr("target","_blank");
-        $("#open_target").button({ label: "open in new window"});
-    }
-    else {
-        $(".host-li a").attr("target","_self");
-        $("#open_target").button({ label: "open in current window"});
-    }
+    $("#open_target").change();
+    
 
     $("li.group-name").click(function(){
         if ( $(this).data('dblc') == true ) return false;
@@ -433,11 +520,8 @@ $(function() {
 <a href="<: $c.req.uri_for('/') :>">TOP</a> » <: $group.title :>
 : }
 
-: around displaycontrol -> {
-<input type="checkbox" id="open_target" /><label for="open_target">open in current window</label>
-: }
-
 : around content -> {
+<form>
 <ul id="serverlist-ul">
 <li class="group-name" id="group-<: $group.title | uri :>"><span class="ui-icon ui-icon-stop" style="float:left"></span><: $group.title :></li>
 <ul class="group-ul" id="ul-group-<: $group.title| uri :>">
@@ -447,12 +531,13 @@ $(function() {
     : }
 <ul class="host-ul" id="ul-sub-group-<: $sub_group.label_key :>">
     : for $sub_group.hosts -> $host {
-<li class="host-li"><a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
+<li class="host-li"><input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
     : }
 </ul>
   : }
 </ul>
 </ul>
+</form>
 : }
 
 : around javascript -> {
@@ -460,30 +545,53 @@ $(function() {
     $("#headmenu > ul > li > a:first").button( { text: false, icons: {primary:'ui-icon-arrowstop-1-n' }});
     $("#headmenu > ul > li > a:gt(0)").button({ icons: {primary:'ui-icon-transfer-e-w' }});
 
-    var opentarget = $.jStorage.get( "open_target" );
-    if ( opentarget == true ) {
-        $("#open_target").attr("checked", true );
-    }
-    $("#open_target").button({ icons: {primary:'ui-icon-newwin' }});
-    $("#open_target").change(function(){
-        $.jStorage.set( "open_target", $(this).attr("checked") );
-        if ( $(this).attr("checked") ) {
-            $(".host-li a").attr("target","_blank");
-            $(this).button({ label: "open in new window"});
-        }
-        else {
-            $(".host-li a").attr("target","_self");
-            $(this).button({ label: "open in currnet window"});
-        }
-    });
-    if ( $("#open_target").attr("checked") ) {
-        $(".host-li a").attr("target","_blank");
-        $("#open_target").button({ label: "open in new window"});
-    }
-    else {
-        $(".host-li a").attr("target","_self");
-        $("#open_target").button({ label: "open in current window"});
-    }
+     $("input.addresscb").createCheckboxRange();
+     $("input.addresscb").change(function() {
+         if ( $(this).attr('checked') ){
+             $(this).parent().addClass("host-li-checked");
+         }
+         else {
+             $(this).parent().removeClass("host-li-checked");
+         }
+         if ( $("input.addresscb:checked").val() ) {
+             $("#open_selected").button({disabled:false});
+         }
+         else {
+             $("#open_selected").button({disabled:true});
+         }
+     });
+     $("input.addresscb").change();
+
+     $("input.addresscb").change();
+     $("#open_selected").click(function(){
+         var form = $('<form/>');
+         form.attr('method','get');
+         form.attr('action', '<: $c.req.uri_for('/servers') :>');
+         form.attr('target', ($("#open_target").attr("checked")) ? "_blank" : "_self");
+         $("input.addresscb:checked").each( function () {
+             var input = $('<input/>');
+             input.attr('name','address');
+             input.attr('value',$(this).val());
+             form.append(input);
+         });
+         form.submit();
+     });
+
+     var opentarget = $.jStorage.get( "open_target" );
+     if ( opentarget == true ) {
+         $("#open_target").attr("checked", true );
+     }
+     $("#open_target").button({ text:null, icons: {primary:'ui-icon-newwin' }});
+     $("#open_target").change(function(){
+         $.jStorage.set( "open_target", $(this).attr("checked") );
+         if ( $(this).attr("checked") ) {
+             $(".host-li a").attr("target","_blank");
+         }
+         else {
+             $(".host-li a").attr("target","_self");
+         }
+     });
+     $("#open_target").change();
 
     $("li.sub-group-name").click(function(){
         var li_sub_group = this;
@@ -640,4 +748,112 @@ $(function() {
     $("#clipboard_open").click( function() { $( "#to_clipboard" ).dialog( "open" ); return false } );
 });
 : }
+
+
+@@ servers
+: cascade 'base'
+: around title -> {
+Selected Servers « 
+: } #title
+
+
+: around headmenu -> {
+<ul>
+<li><a href="<: $c.req.uri_for('/') :>">TOP</a></li>
+</ul>
+: } #around headmenu
+
+
+: around ptitle -> {
+Selected Servers
+: }
+
+: around displaycontrol -> {
+<form id="pickdate" method="get" action="<: $c.req.uri_for('/servers') :>">
+<a href="<: $c.req.uri_for('/servers', $addresses) :>">Disply Latest Graph</a>
+<span>Date Range:</span>
+<label for="from_date">From</label>
+<input type="text" id="from_date" name="from_date" value="<: $c.req.param('from_date') || $yesterday :>" size="21" />
+<label for="to_date">To</label>
+<input type="text" id="to_date" name="to_date" value="<: $c.req.param('to_date') || $c.req.param('from_date') || $today :>" size="21" />
+<input type="hidden" name="mode" value="range" />
+<span>ex: 2004-05-23 12:00:00</span>
+<input type="submit" id="pickdate_submit" value="Display">
+: for $hosts -> $host {
+<input type="hidden" name="address" value="<: $host.host.address :>" />
+: } #for
+</form>
+: }
+
+: around content -> {
+<table>
+<tr>
+: for $hosts -> $host {
+<td valign="top">
+<div style="width: 501px; overflow: hidden">
+<h3 class="host-title"><a href="<: $c.req.uri_for('/server', [address => $host.host.address]) :>" class="address""><: $host.host.address :></a> <strong><: $host.host.hostname :></strong></h3>
+<p class="host-detail"><: $host.host.details :></p>
+<p class="host-detail">[<a href="<: $c.req.uri_for('/group', [id => $host.group_title]) :>"><: $host.group_title :></a>]</p>
+: for $host.graph_list -> $resource {
+<h4 class="resource-title" id="resource-<: $resource.graph_title | uri :>"><: $resource.graph_title :></h4>
+  : if ( $resource.sysinfo.size() ) {
+<div class="resource-sysinfo">
+    : for $resource.sysinfo -> $sysinfo {
+      : if ( ($~sysinfo.index % 2) == 0 ) {
+<div>
+<span><: $sysinfo :></span>
+      : } else {
+<: $sysinfo :>
+</div>
+      : } # if index % 2
+    : } # for sysnfo
+</div>
+  : } # if resource.sysinfo.size
+
+<div class="resource-graph">
+  : for $resource.graphs -> $graph {
+<div class="ngraph">
+    : if $daterange {
+<img src="<: $c.req.uri_for('/graph', [span => 'c', from_date => $c.req.param('from_date'), to_date => $c.req.param('to_date'), address => $host.host.address, resource => $resource.resource, key => $graph ]) :>" />
+    : } else {
+<img src="<: $c.req.uri_for('/graph', [span => 'd', address => $host.host.address, resource => $resource.resource, key => $graph]) :>" />
+    : } # if daterange
+</div>
+  : } # for resource.graphs
+</div>
+: } # for host.graph_list
+<h3 class="host-title"><a href="<: $c.req.uri_for('/server', [address => $host.host.address]) :>" class="address""><: $host.host.address :></a> <strong>
+<: $host.host.hostname :></strong></h3>
+</div>
+</td>
+: } # for hosts
+</tr>
+</table>
+: } #content
+
+: around javascript -> {
+$(function() {
+    var page_scroll = function (id) {
+        id = id.replace(/(~|%|:|\.)/g,'\\$1');
+        if ( $(id).length > 0 ) {
+            var offset = $(id).offset().top - $('#header').outerHeight(true) - 5;
+            $('html,body').animate( { scrollTop: offset }, 50);
+        }
+    };
+    $("#headmenu > ul > li > a:first").button( { text: false, icons: {primary:'ui-icon-arrowstop-1-n' }});
+
+     $("#display-control a:first").button({ icons: {primary:'ui-icon-transfer-e-w' }});
+
+     $("#pickdate_submit").button();
+     $("#from_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
+                                       monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
+     $("#to_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
+                                    monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
+
+    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $('#headspacer').height( $('#header').outerHeight(true) );
+
+});
+: }
+
 

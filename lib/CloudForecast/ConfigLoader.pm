@@ -114,6 +114,7 @@ sub load_server_list {
     my @hosts_by_group;
     my %all_hosts;
     my $i=0;
+    my $sub_config_group_num=0;
     foreach my $group ( @groups ) {
 
         my @sub_groups;
@@ -134,8 +135,10 @@ sub load_server_list {
             my @sub_group_hosts;
             for my $host_line ( @$hosts ) {
                 my $host = $self->parse_host( $host_line, $host_config );
+                $host->{config_group_num}=$sub_config_group_num;
                 push @sub_group_hosts, $host;
-                $all_hosts{$host->{address}} = $host;                    
+                $all_hosts{$host->{address}} = $host;
+                $sub_config_group_num++;
             }
             
             if ( @sub_groups && ! $sub_group->{label} ) {

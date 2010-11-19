@@ -199,10 +199,18 @@ h2#ptitle #clipboard_open {
     text-align: right;
     margin: 10px 0px 20px 0px;
     padding: 4px;
-    font-size: 0.9em;
+    font-size: 9pt;
     background-color: #eee;
     -webkit-border-radius: 3px;   /* Safari、Google Chrome */
     -moz-border-radius: 3px;  /* Firefox */
+}
+
+#content #display-control-main {
+    float: left;
+    text-align: left;
+}
+
+#content #display-control-sub {
 }
 
 #content #display-control form {
@@ -291,12 +299,36 @@ h2#ptitle #clipboard_open {
     padding: 4px 18px ;
 }
 
+#content #serverlist-ul ul.group-ul ul.host-ul label {
+    font-size: 5px;
+    padding: 0px;
+    margin: 0px;
+    width: 10px;
+    height: 10px;
+}
+
 #content #serverlist-ul ul.group-ul ul.host-ul li a {
     text-decoration: none;
 }
 
 #content #serverlist-ul ul.group-ul ul.host-ul li span.details {
     color: #666;
+}
+
+.host-li-checked {
+    background-color: #ffc;
+}
+
+#content h3.host-title {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    padding: 3px;
+    margin: 0px 0px 3px 0px;
+}
+
+#content p.host-detail {
+    text-align: center;
 }
 
 #content ul#resource-list {
@@ -368,5 +400,7 @@ h2#ptitle #clipboard_open {
 }
 
 
-
+.ui-icon-null {
+    background-position: -240px -224px;
+}
 
