@@ -13,6 +13,14 @@ use Path::Class;
 
 accessor(qw/configloader root_dir global_config server_list restarter port host allowfrom front_proxy/);
 
+our $GIF_DATA = pack "C35", (
+    0x47, 0x49, 0x46, 0x38, 0x39, 0x61,
+    0x01, 0x00, 0x01, 0x00, 0x80, 0xff,
+    0x00, 0xff, 0xff, 0xff, 0x00, 0x00,
+    0x00, 0x2c, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x01, 0x00, 0x00, 0x02,
+    0x02, 0x44, 0x01, 0x00, 0x3b);
+
 sub run {
     my $self = shift;
 
@@ -134,6 +142,22 @@ get '/group' => sub {
         server_list => $self->configloader->server_list,
         group => $group
     );
+};
+
+get '/exists_server' => sub {
+    my ( $self, $c ) = @_;
+    my $daterange;
+
+    my $address = $c->req->param('address');
+    return $c->res->not_found() unless $address;
+
+    my $host = $self->configloader->all_hosts->{$address};
+    return $c->res->not_found() unless $host;
+
+    $c->res->content_type('image/gif');
+    $c->res->body($GIF_DATA);
+    return $c->res;
+
 };
 
 get '/servers' => sub {
