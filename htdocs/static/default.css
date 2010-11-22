@@ -137,12 +137,14 @@ body {
 
 #headmenu ul {
     margin: 0px;
-    padding: 4px;
+    padding: 2px;
     list-style: none;
 }
 
 #headmenu ul li {
     display: inline;
+    padding: 0px;
+    margin: 0px;
 }
 
 
@@ -165,7 +167,7 @@ h2#ptitle span.details {
 }
 
 h2#ptitle #clipboard_open {
-    font-size: 8pt;
+    font-size: 0.8em;
     font-weight: normal;
     padding: 0px;
     margin: 0px;
@@ -201,7 +203,7 @@ h2#ptitle #clipboard_open {
 #display-control {
     text-align: right;
     padding: 2px;
-    font-size: 8pt;
+    font-size: 0.7em;
     border: 1px solid #ccc;
     background-color: rgba(238,238,238,0.95);
     -webkit-border-radius: 3px;   /* Safari、Google Chrome */
@@ -224,7 +226,7 @@ h2#ptitle #clipboard_open {
     padding: 3px 3px;
     border: 1px #ccc solid;
     color: #888;
-    font-size: 8pt;
+    font-size: 1em;
     width: 13em;
     background-color: #f6f6f6;
     -webkit-border-radius: 3px;
@@ -239,7 +241,7 @@ h2#ptitle #clipboard_open {
 
 #display-control form > label,
 #display-control form > span {
-    font-size: 8pt;
+    font-size: 1em;
     color: #999;
 }
 
