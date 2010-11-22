@@ -323,7 +323,7 @@ __DATA__
 <div id="display-control-wrap"><div id="display-control">
 : block displaycontrol -> {
 <div id="display-control-main">
-<button id="open_selected">View Selected Hosts</button>
+<a href="<: $c.req.uri_for('/') :>" id="open_selected">View Selected Hosts</a>
 </div>
 <div id="display-control-sub">
 <input type="checkbox" id="open_target" /><label for="open_target">target window</label>
@@ -452,16 +452,13 @@ $(function() {
 
     $("#open_selected").click(function(){
         var form = $('<form/>');
-        form.attr('method','get');
-        form.attr('action', '<: $c.req.uri_for('/servers') :>');
-        form.attr('target', ($("#open_target").attr("checked")) ? "_blank" : "_self");
         $("input.addresscb:checked").each( function () {
             var input = $('<input/>');
             input.attr('name','address');
             input.attr('value',$(this).val());
             form.append(input);
         });
-        form.submit();
+        $(this).attr('href','<: $c.req.uri_for('/servers') :>?' + form.serialize());
     });
     var opentarget = $.jStorage.get( "open_target" );
     if ( opentarget == true ) {
@@ -472,9 +469,11 @@ $(function() {
         $.jStorage.set( "open_target", $(this).attr("checked") );
         if ( $(this).attr("checked") ) {
             $(".host-li a").attr("target","_blank");
+            $("#open_selected").attr("target","_blank");
         }
         else {
             $(".host-li a").attr("target","_self");
+            $("#open_selected").attr("target","_self");
         }
     });
     $("#open_target").change();
@@ -600,35 +599,33 @@ $(function() {
          $("#open_selected").button({disabled:true});
      }
 
-     $("#open_selected").click(function(){
-         var form = $('<form/>');
-         form.attr('method','get');
-         form.attr('action', '<: $c.req.uri_for('/servers') :>');
-         form.attr('target', ($("#open_target").attr("checked")) ? "_blank" : "_self");
-         $("input.addresscb:checked").each( function () {
-             var input = $('<input/>');
-             input.attr('name','address');
-             input.attr('value',$(this).val());
-             form.append(input);
-         });
-         form.submit();
-     });
-
-     var opentarget = $.jStorage.get( "open_target" );
-     if ( opentarget == true ) {
-         $("#open_target").attr("checked", true );
-     }
-     $("#open_target").button({ text:null, icons: {primary:'ui-icon-newwin' }});
-     $("#open_target").change(function(){
-         $.jStorage.set( "open_target", $(this).attr("checked") );
-         if ( $(this).attr("checked") ) {
-             $(".host-li a").attr("target","_blank");
-         }
-         else {
-             $(".host-li a").attr("target","_self");
-         }
-     });
-     $("#open_target").change();
+    $("#open_selected").click(function(){
+        var form = $('<form/>');
+        $("input.addresscb:checked").each( function () {
+            var input = $('<input/>');
+            input.attr('name','address');
+            input.attr('value',$(this).val());
+            form.append(input);
+        });
+        $(this).attr('href','<: $c.req.uri_for('/servers') :>?' + form.serialize());
+    });
+    var opentarget = $.jStorage.get( "open_target" );
+    if ( opentarget == true ) {
+        $("#open_target").attr("checked", true );
+    }
+    $("#open_target").button({ text:null, icons: {primary:'ui-icon-newwin' }});
+    $("#open_target").change(function(){
+        $.jStorage.set( "open_target", $(this).attr("checked") );
+        if ( $(this).attr("checked") ) {
+            $(".host-li a").attr("target","_blank");
+            $("#open_selected").attr("target","_blank");
+        }
+        else {
+            $(".host-li a").attr("target","_self");
+            $("#open_selected").attr("target","_self");
+        }
+    });
+    $("#open_target").change();
 
     $("li.sub-group-name").click(function(){
         var li_sub_group = this;
