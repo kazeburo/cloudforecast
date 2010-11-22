@@ -320,13 +320,7 @@ __DATA__
 : }
 </h2>
 
-</div>
-<div id="headspacer"></div>
-
-<div id="content">
-
-
-<div id="display-control">
+<div id="display-control-wrap"><div id="display-control">
 : block displaycontrol -> {
 <div id="display-control-main">
 <button id="open_selected">View Selected Hosts</button>
@@ -335,7 +329,12 @@ __DATA__
 <input type="checkbox" id="open_target" /><label for="open_target">target window</label>
 </div>
 : } #displaycontrol
+</div></div>
+
 </div>
+<div id="headspacer"></div>
+
+<div id="content">
 
 : block content -> { }
 
@@ -428,13 +427,15 @@ $(function() {
     $("#headmenu > ul > li > a:gt(0)").button( { icons: {primary:'ui-icon-document-b' }});
 
     $("input.addresscb").createCheckboxRange();
-    $("input.addresscb").change(function() {
-        if ( $(this).attr('checked') ){
-            $(this).parent().addClass("host-li-checked");
-        }
-        else {
-            $(this).parent().removeClass("host-li-checked");
-        }
+    $("input.addresscb").click(function() {
+        $("input.addresscb").each(function(){
+            if( $(this).is(":checked") ) {
+                $(this).parent().addClass("host-li-checked");
+            }
+            else {
+                $(this).parent().removeClass("host-li-checked")
+            }
+        });
         if ( $("input.addresscb:checked").length >= 2 ) {
             $("#open_selected").button({disabled:false});
         }
@@ -442,7 +443,13 @@ $(function() {
             $("#open_selected").button({disabled:true});
         }
     });
-    $("input.addresscb").change();
+    if ( $("input.addresscb:checked").length >= 2 ) {
+        $("#open_selected").button({disabled:false});
+    }
+    else {
+        $("#open_selected").button({disabled:true});
+    } 
+
     $("#open_selected").click(function(){
         var form = $('<form/>');
         form.attr('method','get');
@@ -570,23 +577,29 @@ $(function() {
     $("#headmenu > ul > li > a:gt(0)").button({ icons: {primary:'ui-icon-transfer-e-w' }});
 
      $("input.addresscb").createCheckboxRange();
-     $("input.addresscb").change(function() {
-         if ( $(this).attr('checked') ){
-             $(this).parent().addClass("host-li-checked");
-         }
-         else {
-             $(this).parent().removeClass("host-li-checked");
-         }
-         if ( $("input.addresscb:checked").val() ) {
+     $("input.addresscb").click(function() {
+         $("input.addresscb").each(function(){
+             if( $(this).is(":checked") ) {
+                 $(this).parent().addClass("host-li-checked");
+             }
+             else {
+                 $(this).parent().removeClass("host-li-checked")
+             }
+         });
+         if ( $("input.addresscb:checked").length >= 2 ) {
              $("#open_selected").button({disabled:false});
          }
          else {
              $("#open_selected").button({disabled:true});
          }
-     });
-     $("input.addresscb").change();
+     }); 
+     if ( $("input.addresscb:checked").length >= 2 ) {
+         $("#open_selected").button({disabled:false});
+     }
+     else {
+         $("#open_selected").button({disabled:true});
+     }
 
-     $("input.addresscb").change();
      $("#open_selected").click(function(){
          var form = $('<form/>');
          form.attr('method','get');
@@ -659,8 +672,7 @@ $(function() {
 : } #around headmenu
 
 : around ptitle -> {
-<a href="<: $c.req.uri_for('/group', [id => $group_title]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></span>
-<button href="<: $c.req.uri_for('/server', [ address => $host.address ]) :>" id="clipboard_open">clipboard</button>
+<a href="<: $c.req.uri_for('/group', [id => $group_title]) :>"><: $group_title :></a> » <a href="<: $c.req.uri_for('/server', [address => $host.address]) :>" class="address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></span><span class="ui-icon ui-icon-copy" style="display:inline-block;cursor:pointer;" id="clipboard_open"></span>
 : }
 
 : around displaycontrol -> {
@@ -768,7 +780,6 @@ $(function() {
         open: function(){ $('#clipboard_text').select();  }
     });
 
-    $("#clipboard_open").button({ text: false, icons: {primary:'ui-icon-copy' }});
     $("#clipboard_open").click( function() { $( "#to_clipboard" ).dialog( "open" ); return false } );
 });
 : }
