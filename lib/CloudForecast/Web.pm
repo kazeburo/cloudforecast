@@ -323,6 +323,7 @@ __DATA__
 <div id="display-control-wrap"><div id="display-control">
 : block displaycontrol -> {
 <div id="display-control-main">
+<span style="display:inline-box;border: 1px solid #ccc;background-color:#eee;padding:3px;-webkit-border-radius: 2px;-moz-border-radius: 2px;"><input type="checkbox" name="uncheckall" /></span>
 <a href="<: $c.req.uri_for('/') :>" id="open_selected">View Selected Hosts</a>
 </div>
 <div id="display-control-sub">
@@ -426,8 +427,7 @@ $(function() {
     });
     $("#headmenu > ul > li > a:gt(0)").button( { icons: {primary:'ui-icon-document-b' }});
 
-    $("input.addresscb").createCheckboxRange();
-    $("input.addresscb").click(function() {
+    var addresscbClick = function () {
         $("input.addresscb").each(function(){
             if( $(this).is(":checked") ) {
                 $(this).parent().addClass("host-li-checked");
@@ -437,18 +437,20 @@ $(function() {
             }
         });
         if ( $("input.addresscb:checked").length >= 2 ) {
+            $("input[name=uncheckall]").attr('disabled',false);
+            $("input[name=uncheckall]").attr('checked', true);
             $("#open_selected").button({disabled:false});
         }
         else {
+            $("input[name=uncheckall]").attr('disabled',true);
+            $("input[name=uncheckall]").attr('checked', false);
             $("#open_selected").button({disabled:true});
-        }
-    });
-    if ( $("input.addresscb:checked").length >= 2 ) {
-        $("#open_selected").button({disabled:false});
-    }
-    else {
-        $("#open_selected").button({disabled:true});
-    } 
+        } 
+    };
+
+    $("input.addresscb").createCheckboxRange();
+    $("input.addresscb").click(addresscbClick);
+    addresscbClick.call();
 
     $("#open_selected").click(function(){
         var form = $('<form/>');
@@ -460,6 +462,12 @@ $(function() {
         });
         $(this).attr('href','<: $c.req.uri_for('/servers') :>?' + form.serialize());
     });
+    $("input[name=uncheckall]").click(function(){
+        $("input.addresscb:checked").attr('checked',false);
+        addresscbClick.call();
+    });
+
+
     var opentarget = $.jStorage.get( "open_target" );
     if ( opentarget == true ) {
         $("#open_target").attr("checked", true );
@@ -575,8 +583,7 @@ $(function() {
     $("#headmenu > ul > li > a:first").button( { text: false, icons: {primary:'ui-icon-arrowstop-1-n' }});
     $("#headmenu > ul > li > a:gt(0)").button({ icons: {primary:'ui-icon-transfer-e-w' }});
 
-     $("input.addresscb").createCheckboxRange();
-     $("input.addresscb").click(function() {
+     var addresscbClick = function () {
          $("input.addresscb").each(function(){
              if( $(this).is(":checked") ) {
                  $(this).parent().addClass("host-li-checked");
@@ -586,29 +593,36 @@ $(function() {
              }
          });
          if ( $("input.addresscb:checked").length >= 2 ) {
+             $("input[name=uncheckall]").attr('disabled',false);
+             $("input[name=uncheckall]").attr('checked', true);
              $("#open_selected").button({disabled:false});
          }
          else {
+             $("input[name=uncheckall]").attr('disabled',true);
+             $("input[name=uncheckall]").attr('checked', false);
              $("#open_selected").button({disabled:true});
-         }
-     }); 
-     if ( $("input.addresscb:checked").length >= 2 ) {
-         $("#open_selected").button({disabled:false});
-     }
-     else {
-         $("#open_selected").button({disabled:true});
-     }
-
-    $("#open_selected").click(function(){
-        var form = $('<form/>');
-        $("input.addresscb:checked").each( function () {
-            var input = $('<input/>');
-            input.attr('name','address');
-            input.attr('value',$(this).val());
-            form.append(input);
-        });
-        $(this).attr('href','<: $c.req.uri_for('/servers') :>?' + form.serialize());
-    });
+         } 
+     };
+ 
+     $("input.addresscb").createCheckboxRange();
+     $("input.addresscb").click(addresscbClick);
+     addresscbClick.call();
+ 
+     $("#open_selected").click(function(){
+         var form = $('<form/>');
+         $("input.addresscb:checked").each( function () {
+             var input = $('<input/>');
+             input.attr('name','address');
+             input.attr('value',$(this).val());
+             form.append(input);
+         });
+         $(this).attr('href','<: $c.req.uri_for('/servers') :>?' + form.serialize());
+     });
+     $("input[name=uncheckall]").click(function(){
+         $("input.addresscb:checked").attr('checked',false);
+         addresscbClick.call();
+     });
+ 
     var opentarget = $.jStorage.get( "open_target" );
     if ( opentarget == true ) {
         $("#open_target").attr("checked", true );
