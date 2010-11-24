@@ -54,6 +54,9 @@ fetcher {
     # SNMP->get 配列のリファレンスが最終的に戻る
     my $ret = $c->component('SNMP')->get(@map);
 
+    # alive
+    $c->ledge_set_alive(@$ret ? 1 : 0 );
+
     #sysinfo
     my $sysdescr = pop @$ret;
     $c->ledge_set('sysinfo', [ system => $sysdescr ] );

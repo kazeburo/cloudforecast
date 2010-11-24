@@ -35,7 +35,6 @@ sub db_path {
 
 sub connection {
     my $self = shift;
-    return $self->{_connection} if $self->{_connection};
     my $db_path = $self->db_path;
 
     my $dbh = DBI->connect( "dbi:SQLite:dbname=$db_path","","",

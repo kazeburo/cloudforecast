@@ -428,20 +428,35 @@ sub _ledge {
         $self->address,
         join( "-", map { URI::Escape::uri_escape($_) } @{$self->args});
 
+    $self->_ledge_do(
+        $method,
+        $self->resource_class,
+        $address,
+        @_
+    );
+}
+
+sub _ledge_do {
+    my $self = shift;
+    my $method = shift;
+    my $resource_class = shift;
+    my $address = shift;
+    my @args = @_;
+
     ### Webインターフェイスからのアクセスセスは直接DBにアクセス
     if ( !$self->global_config->{__do_web} && $self->global_config->{gearman_enable} ) {
         my $gearman = CloudForecast::Gearman->new({
             host => $self->global_config->{gearman_server}->{host},
             port => $self->global_config->{gearman_server}->{port},
         });
-        $gearman->can( 'ledge_' . $method )->( $gearman, $self->resource_class, $address, @_  );
+        $gearman->can( 'ledge_' . $method )->( $gearman, $resource_class, $address, @_  );
     }
     else {
         $self->{_ledge} ||= CloudForecast::Ledge->new({
             data_dir => $self->global_config->{data_dir},
             db_name  => $self->global_config->{db_name}
         });
-        $self->{_ledge}->can($method)->( $self->{_ledge}, $self->resource_class, $address, @_  );
+        $self->{_ledge}->can($method)->( $self->{_ledge}, $resource_class, $address, @_  );
     }
 }
 
@@ -451,6 +466,18 @@ sub ledge_delete { shift->_ledge('delete', @_ ) }
 sub ledge_expire { shift->_ledge('expire', @_ ) }
 sub ledge_get { shift->_ledge('get', @_ ) }
 
+sub ledge_set_alive {
+    my $self = shift;
+    my $value = shift;
+    $self->_ledge_do(
+        "set",
+        "__ALIVE__",
+        $self->address,
+        "alive",
+        $value,
+        660
+    );    
+}
 
 sub init_rrd {
     my $self = shift;

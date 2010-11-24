@@ -5,11 +5,13 @@ use warnings;
 use Shirahata -base;
 use CloudForecast::Host;
 use CloudForecast::ConfigLoader;
+use CloudForecast::Ledge;
 use List::Util;
 use Plack::Builder;
 use Plack::Loader;
 use Net::IP;
 use Path::Class;
+use JSON;
 
 accessor(qw/configloader root_dir global_config server_list restarter port host allowfrom front_proxy/);
 
@@ -99,6 +101,15 @@ sub run {
     }
 }
 
+sub ledge {
+    my $self = shift;
+    $self->{__ledge} ||= CloudForecast::Ledge->new({
+        data_dir => $self->configloader->global_config->{data_dir},
+        db_name  => $self->configloader->global_config->{db_name}
+    });
+    $self->{__ledge};
+}
+
 sub get_host {
     my ( $self, $host ) = @_;
     my $host_instance = CloudForecast::Host->new({
@@ -158,6 +169,23 @@ get '/exists_server' => sub {
     $c->res->body($GIF_DATA);
     return $c->res;
 
+};
+
+get '/api/alive' => sub {
+    my ( $self, $c ) = @_;
+
+    my @servers = $c->req->param('address');
+    return $c->res->not_found('Address Not Exists') unless @servers;
+
+    my $ret = $self->ledge->get_multi_by_address(
+        '__ALIVE__',
+        'alive',
+        [@servers]
+    );
+
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body(JSON->new->latin1->encode($ret));
+    return $c->res;
 };
 
 get '/servers' => sub {
