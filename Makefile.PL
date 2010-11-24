@@ -28,7 +28,6 @@ requires 'Gearman::Server';
 requires 'Parallel::Prefork', 0.08;
 requires 'YAML::Syck', 1.10;
 requires 'JSON', 2.27;
-requires 'JSON::XS', 2.3;
 requires 'Starlet', 0.08;
 requires 'Filesys::Notify::Simple';
 requires 'Proc::Daemon';
