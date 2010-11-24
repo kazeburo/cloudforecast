@@ -171,7 +171,7 @@ get '/exists_server' => sub {
 
 };
 
-get '/api/alive' => sub {
+post '/api/alive' => sub {
     my ( $self, $c ) = @_;
 
     my @servers = $c->req->param('address');
@@ -369,7 +369,7 @@ __DATA__
 
 </div>
 
-<script src="<: $c.req.uri_for('/static/js/jquery-1.4.2.min.js') :>" type="text/javascript"></script>
+<script src="<: $c.req.uri_for('/static/js/jquery-1.4.4.min.js') :>" type="text/javascript"></script>
 <script src="<: $c.req.uri_for('/static/js/jquery-ui-1.8.2.custom.min.js') :>" type="text/javascript"></script>
 <script src="<: $c.req.uri_for('/static/js/jquery.field.min.js') :>" type="text/javascript"></script>
 <script src="<: $c.req.uri_for('/static/js/jstorage.js') :>" type="text/javascript"></script>
@@ -407,7 +407,7 @@ TOP «
       : }
 <ul class="host-ul" id="ul-sub-group-<: $sub_group.label_key :>">
       : for $sub_group.hosts -> $host {
-<li class="host-li configgroup-<: $host.config_group_num  :>"><input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
+<li class="host-li configgroup-<: $host.config_group_num  :>"><span class="host-status">&#x25c6;</span> <input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>" class="host-address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></span></li>
       : }
 </ul>
     : } # sub_group
@@ -564,6 +564,39 @@ $(function() {
 
     $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
     $('#headspacer').height( $('#header').outerHeight(true) );
+
+    var hostslen = $("a.host-address").length;
+    var alive_api = function (startnum) {
+        var form = $('<form/>');
+        var endnum = (startnum+100 < hostslen) ? startnum+100 : hostslen;
+        $("a.host-address").slice(startnum, endnum).each(function(){
+            var input = $('<input/>');
+            input.attr('name','address');
+            input.attr('value',$(this).text());
+            form.append(input);
+        });
+        $.post(
+            '<: $c.req.uri_for('/api/alive') :>',
+            form.serialize(),
+            function (data) {
+                $("a.host-address").slice(startnum, endnum).each(function(){
+                    var ip = $(this).text();
+                    if ( data[ip] == 1 ) {
+                        $(this).parent().children("span.host-status").addClass("host-status-ok");
+                    }
+                    else if ( data[ip] == 0 ) {
+                        $(this).parent().children("span.host-status").addClass("host-status-crit");
+                    }
+                    else {
+                        $(this).parent().children("span.host-status").addClass("host-status-warn");
+                    }
+                });
+                if ( endnum < hostslen ) alive_api(startnum+100);
+            },
+            "json"
+        );
+    };
+    alive_api(0);
 })
 : } #content
 
@@ -597,7 +630,7 @@ $(function() {
     : }
 <ul class="host-ul" id="ul-sub-group-<: $sub_group.label_key :>">
     : for $sub_group.hosts -> $host {
-<li class="host-li"><input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
+<li class="host-li"><span class="host-status">&#x25c6;</span> <input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>" class="host-address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
     : }
 </ul>
   : }
@@ -692,6 +725,38 @@ $(function() {
 
     $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
     $('#headspacer').height( $('#header').outerHeight(true) );
+    var hostslen = $("a.host-address").length;
+    var alive_api = function (startnum) {
+        var form = $('<form/>');
+        var endnum = (startnum+100 < hostslen) ? startnum+100 : hostslen;
+        $("a.host-address").slice(startnum, endnum).each(function(){
+            var input = $('<input/>');
+            input.attr('name','address');
+            input.attr('value',$(this).text());
+            form.append(input);
+        });
+        $.post(
+            '<: $c.req.uri_for('/api/alive') :>',
+            form.serialize(),
+            function (data) {
+                $("a.host-address").slice(startnum, endnum).each(function(){
+                    var ip = $(this).text();
+                    if ( data[ip] == 1 ) {
+                        $(this).parent().children("span.host-status").addClass("host-status-ok");
+                    }
+                    else if ( data[ip] == 0 ) {
+                        $(this).parent().children("span.host-status").addClass("host-status-crit");
+                    }
+                    else {
+                        $(this).parent().children("span.host-status").addClass("host-status-warn");
+                    }
+                });
+                if ( endnum < hostslen ) alive_api(startnum+100);
+            },
+            "json"
+        );
+    };
+    alive_api(0);
 })
 : } 
 

@@ -306,7 +306,7 @@ h2#ptitle #clipboard_open {
 #content #serverlist-ul ul.group-ul ul.host-ul li {
     font-size: 1.2em;
     border-bottom: 1px #ccc solid;
-    padding: 4px 18px ;
+    padding: 4px 12px ;
 }
 
 #content #serverlist-ul ul.group-ul ul.host-ul label {
@@ -324,6 +324,23 @@ h2#ptitle #clipboard_open {
 #content #serverlist-ul ul.group-ul ul.host-ul li span.details {
     color: #666;
 }
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status {
+    color: #fff;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-ok {
+    color: #eee;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-warn {
+    color: #f93;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-crit {
+    color: #f33;
+}
+
 
 .host-li-checked {
     background-color: #ffc;
