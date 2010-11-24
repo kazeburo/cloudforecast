@@ -413,4 +413,7 @@ h2#ptitle #clipboard_open {
 .ui-icon-null {
     background-position: -240px -224px;
 }
+div.AnyTime-win {
+    z-index: 999;
+}
 
