@@ -36,6 +36,14 @@ sub version {
     return $self->connection->get_info(18); # SQL_DBMS_VER
 }
 
+sub db {
+    my $self = shift;
+    if ( @_ ) {
+        return $self->connection->do("use ?",undef,$_[0]);
+    }
+    $self->select_one("SELECT DATABASE()");
+}
+
 sub select_one {
     my $self = shift;
     my $query = shift;
