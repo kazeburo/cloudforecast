@@ -66,3 +66,25 @@ ok( $ledge );
     ok( !$data );
     ok( !$sum );
 }
+
+
+{
+    $ledge->add('resource10','address10','key10', 'val10' );
+    $ledge->add('resource10','address11','key10', 'val11' );
+    $ledge->add('resource10','address12','key10', 'val12' );
+    $ledge->add('resource10','address13','key10', 'val13' );
+
+    my $ret = $ledge->get_multi_by_address('resource10','key10',
+                                           [qw/address10 address11 address12 address13 address14/]);
+    ok( $ret );
+    is( ref($ret), 'HASH');
+    is_deeply( $ret, {
+        'address10' => 'val10',
+        'address11' => 'val11',
+        'address12' => 'val12',
+        'address13' => 'val13',
+    });
+}
+
+
+

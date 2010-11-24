@@ -6,6 +6,7 @@ use base qw/Class::Accessor::Fast/;
 use Storable qw//;
 use MIME::Base64 qw//;
 use Digest::MD5 qw//;
+use Data::Util qw(:validate);
 use Path::Class;
 use DBI;
 use Carp;
@@ -178,6 +179,38 @@ EOF
     Carp::croak "faied get(thaw): $@" if $@;
         
     return wantarray ? ( $$data, $row->{csum} ) : $$data;
+}
+
+sub get_multi_by_address {
+    my $self = shift;
+    my ( $resource_name, $key, $address ) = @_;
+    Carp::croak "address must be arrayref" unless array_ref($address);
+
+    my $dbh = $self->connection;
+    my $placeholder =  "(" . join(",", map { "?" } @$address ) . ")";
+    my $sth = $dbh->prepare(<<EOF);
+SELECT address, data, csum, delete_in FROM ledge WHERE resource_name = ? AND key =? AND address IN $placeholder
+EOF
+
+    eval {
+        $sth->execute($resource_name, $key, @$address);
+    };
+    Carp::croak "get failed :$@" if $@;
+
+    my %ret;
+    while( my $row = $sth->fetchrow_hashref ) {
+        next if $row->{delete_in} > 0 && $row->{delete_in} <= time;
+        my $data;
+        eval {
+            $data = Storable::thaw(MIME::Base64::decode_base64($row->{data}));
+            $data or die "failed";
+        };
+        Carp::croak "faied get(thaw): $@" if $@;
+
+        $ret{$row->{address}} = $$data;
+    }
+
+    return \%ret;
 }
 
 sub delete {
