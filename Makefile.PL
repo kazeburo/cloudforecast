@@ -20,7 +20,6 @@ requires 'Net::IP';
 requires 'Plack::Middleware::Access';
 requires 'Plack::Middleware::ReverseProxy';
 requires 'Router::Simple';
-requires 'Data::Util';
 requires 'Text::Xslate', 0.1054;
 requires 'HTML::FillInForm::Lite', 1.09;
 requires 'MRO::Compat';

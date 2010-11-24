@@ -6,7 +6,6 @@ use base qw/Class::Accessor::Fast/;
 use Storable qw//;
 use MIME::Base64 qw//;
 use Digest::MD5 qw//;
-use Data::Util qw(:validate);
 use Path::Class;
 use DBI;
 use Carp;
@@ -183,7 +182,7 @@ EOF
 sub get_multi_by_address {
     my $self = shift;
     my ( $resource_name, $key, $address ) = @_;
-    Carp::croak "address must be arrayref" unless array_ref($address);
+    Carp::croak "address must be arrayref" if !ref($address) || ref($address) ne 'ARRAY';
 
     my $dbh = $self->connection;
     my $placeholder =  "(" . join(",", map { "?" } @$address ) . ")";
