@@ -171,20 +171,36 @@ get '/exists_server' => sub {
 
 };
 
-post '/api/alive' => sub {
+post '/api/haserror' => sub {
     my ( $self, $c ) = @_;
 
     my @servers = $c->req->param('address');
     return $c->res->not_found('Address Not Exists') unless @servers;
 
-    my $ret = $self->ledge->get_multi_by_address(
-        '__ALIVE__',
-        'alive',
+    my $crit = $self->ledge->get_multi_by_address(
+        '__SYSTEM__',
+        '__has_error__:crit',
         [@servers]
     );
 
+    my $ok = $self->ledge->get_multi_by_address(
+        '__SYSTEM__',
+        '__has_error__:ok',
+        [@servers]
+    );
+    
+    my %ret;
+    for my $server ( @servers ) {
+        if ( exists $crit->{$server} ) {
+            $ret{$server} = 1;
+        }
+        elsif ( exists $ok->{$server} ) {
+            $ret{$server} = 0;
+        }
+    }
+
     $c->res->content_type('application/json; charset=utf-8');
-    $c->res->body(JSON->new->latin1->encode($ret));
+    $c->res->body(JSON->new->latin1->encode(\%ret));
     return $c->res;
 };
 
@@ -566,7 +582,7 @@ $(function() {
     $('#headspacer').height( $('#header').outerHeight(true) );
 
     var hostslen = $("a.host-address").length;
-    var alive_api = function (startnum) {
+    var haserror_api = function (startnum) {
         var form = $('<form/>');
         var endnum = (startnum+100 < hostslen) ? startnum+100 : hostslen;
         $("a.host-address").slice(startnum, endnum).each(function(){
@@ -576,27 +592,27 @@ $(function() {
             form.append(input);
         });
         $.post(
-            '<: $c.req.uri_for('/api/alive') :>',
+            '<: $c.req.uri_for('/api/haserror') :>',
             form.serialize(),
             function (data) {
                 $("a.host-address").slice(startnum, endnum).each(function(){
                     var ip = $(this).text();
                     if ( data[ip] == 1 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-ok");
+                        $(this).parent().children("span.host-status").addClass("host-status-crit");
                     }
                     else if ( data[ip] == 0 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-crit");
+                        $(this).parent().children("span.host-status").addClass("host-status-ok");
                     }
                     else {
                         $(this).parent().children("span.host-status").addClass("host-status-warn");
                     }
                 });
-                if ( endnum < hostslen ) alive_api(startnum+100);
+                if ( endnum < hostslen ) haserror_api(startnum+100);
             },
             "json"
         );
     };
-    alive_api(0);
+    haserror_api(0);
 })
 : } #content
 
@@ -726,7 +742,7 @@ $(function() {
     $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
     $('#headspacer').height( $('#header').outerHeight(true) );
     var hostslen = $("a.host-address").length;
-    var alive_api = function (startnum) {
+    var haserror_api = function (startnum) {
         var form = $('<form/>');
         var endnum = (startnum+100 < hostslen) ? startnum+100 : hostslen;
         $("a.host-address").slice(startnum, endnum).each(function(){
@@ -736,27 +752,27 @@ $(function() {
             form.append(input);
         });
         $.post(
-            '<: $c.req.uri_for('/api/alive') :>',
+            '<: $c.req.uri_for('/api/haserror') :>',
             form.serialize(),
             function (data) {
                 $("a.host-address").slice(startnum, endnum).each(function(){
                     var ip = $(this).text();
                     if ( data[ip] == 1 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-ok");
+                        $(this).parent().children("span.host-status").addClass("host-status-crit");
                     }
                     else if ( data[ip] == 0 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-crit");
+                        $(this).parent().children("span.host-status").addClass("host-status-ok");
                     }
                     else {
                         $(this).parent().children("span.host-status").addClass("host-status-warn");
                     }
                 });
-                if ( endnum < hostslen ) alive_api(startnum+100);
+                if ( endnum < hostslen ) haserror_api(startnum+100);
             },
             "json"
         );
     };
-    alive_api(0);
+    haserror_api(0);
 })
 : } 
 

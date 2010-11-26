@@ -357,7 +357,19 @@ sub do_fetch {
 sub exec_fetch {
     my $self = shift;
     CloudForecast::Log->debug('fetcher start');
-    my $ret = $self->do_fetch();
+    my $ret;
+    eval {
+        $ret = $self->do_fetch();
+    };
+    # alive
+    my $err = $@;
+    if ( $err ) {
+        $self->ledge_set_haserror('crit');
+    }
+    else {
+        $self->ledge_set_haserror('ok');
+    }
+    die $err if $err;
     $self->call_updater($ret);
 }
 
@@ -419,20 +431,25 @@ sub call_updater {
     }
 }
 
+
+sub _ledge_address_key {
+    my $self = shift;
+    my $address = sprintf "%s_%s",
+        $self->address,
+        join( "-", map { URI::Escape::uri_escape($_) } @{$self->args});
+    return $address;
+}
+
 sub _ledge {
     my $self = shift;
     my $method = shift;
     my @args = @_;
 
-    my $address = sprintf "%s_%s",
-        $self->address,
-        join( "-", map { URI::Escape::uri_escape($_) } @{$self->args});
-
     $self->_ledge_do(
         $method,
         $self->resource_class,
-        $address,
-        @_
+        $self->_ledge_address_key,
+        @args
     );
 }
 
@@ -441,7 +458,6 @@ sub _ledge_do {
     my $method = shift;
     my $resource_class = shift;
     my $address = shift;
-    my @args = @_;
 
     ### Webインターフェイスからのアクセスセスは直接DBにアクセス
     if ( !$self->global_config->{__do_web} && $self->global_config->{gearman_enable} ) {
@@ -460,23 +476,24 @@ sub _ledge_do {
     }
 }
 
-sub ledge_add { shift->_ledge('add', @_ ) }
-sub ledge_set { shift->_ledge('set', @_ ) }
-sub ledge_delete { shift->_ledge('delete', @_ ) }
-sub ledge_expire { shift->_ledge('expire', @_ ) }
-sub ledge_get { shift->_ledge('get', @_ ) }
+sub ledge_add { my $self = shift; $self->_ledge('add', @_ ) }
+sub ledge_set { my $self = shift; $self->_ledge('set', @_ ) }
+sub ledge_delete { my $self = shift; $self->_ledge('delete', @_ ) }
+sub ledge_expire { my $self = shift; $self->_ledge('expire', @_ ) }
+sub ledge_get { my $self = shift; $self->_ledge('get', @_ ) }
 
-sub ledge_set_alive {
+
+sub ledge_set_haserror {
     my $self = shift;
-    my $value = shift;
+    my $type = shift;
     $self->_ledge_do(
-        "set",
-        "__ALIVE__",
+        'set',
+        '__SYSTEM__',
         $self->address,
-        "alive",
-        $value,
-        660
-    );    
+        '__has_error__:'.$type,
+        1,
+        540,
+    );
 }
 
 sub init_rrd {
