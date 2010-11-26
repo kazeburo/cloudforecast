@@ -341,6 +341,9 @@ h2#ptitle #clipboard_open {
     color: #f33;
 }
 
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-wait {
+    color: #ccc;
+}
 
 .host-li-checked {
     background-color: #ffc;

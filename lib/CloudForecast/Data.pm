@@ -363,8 +363,11 @@ sub exec_fetch {
     };
     # alive
     my $err = $@;
-    if ( $err ) {
+    if ( $err && $self->resource_class eq "Basic" ) {
         $self->ledge_set_haserror('crit');
+    }
+    elsif ( $err ) {
+        $self->ledge_set_haserror('warn');
     }
     else {
         $self->ledge_set_haserror('ok');

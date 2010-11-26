@@ -183,6 +183,12 @@ post '/api/haserror' => sub {
         [@servers]
     );
 
+    my $warn = $self->ledge->get_multi_by_address(
+        '__SYSTEM__',
+        '__has_error__:warn',
+        [@servers]
+    );
+
     my $ok = $self->ledge->get_multi_by_address(
         '__SYSTEM__',
         '__has_error__:ok',
@@ -192,6 +198,9 @@ post '/api/haserror' => sub {
     my %ret;
     for my $server ( @servers ) {
         if ( exists $crit->{$server} ) {
+            $ret{$server} = 2;
+        }
+        elsif ( exists $warn->{$server} ) {
             $ret{$server} = 1;
         }
         elsif ( exists $ok->{$server} ) {
@@ -597,14 +606,17 @@ $(function() {
             function (data) {
                 $("a.host-address").slice(startnum, endnum).each(function(){
                     var ip = $(this).text();
-                    if ( data[ip] == 1 ) {
+                    if ( data[ip] == 2 ) {
                         $(this).parent().children("span.host-status").addClass("host-status-crit");
+                    }
+                    else if ( data[ip] == 1 ) {
+                        $(this).parent().children("span.host-status").addClass("host-status-warn");
                     }
                     else if ( data[ip] == 0 ) {
                         $(this).parent().children("span.host-status").addClass("host-status-ok");
                     }
                     else {
-                        $(this).parent().children("span.host-status").addClass("host-status-warn");
+                        $(this).parent().children("span.host-status").addClass("host-status-wait");
                     }
                 });
                 if ( endnum < hostslen ) haserror_api(startnum+100);
@@ -757,14 +769,17 @@ $(function() {
             function (data) {
                 $("a.host-address").slice(startnum, endnum).each(function(){
                     var ip = $(this).text();
-                    if ( data[ip] == 1 ) {
+                    if ( data[ip] == 2 ) {
                         $(this).parent().children("span.host-status").addClass("host-status-crit");
+                    }
+                    else if ( data[ip] == 1 ) {
+                        $(this).parent().children("span.host-status").addClass("host-status-warn");
                     }
                     else if ( data[ip] == 0 ) {
                         $(this).parent().children("span.host-status").addClass("host-status-ok");
                     }
                     else {
-                        $(this).parent().children("span.host-status").addClass("host-status-warn");
+                        $(this).parent().children("span.host-status").addClass("host-status-wait");
                     }
                 });
                 if ( endnum < hostslen ) haserror_api(startnum+100);
