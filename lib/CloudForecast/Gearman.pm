@@ -72,11 +72,24 @@ sub _ledge_update {
     $ret->{status};
 }
 
+sub _ledge_background_update {
+    my $self = shift;
+    my @args = @_;
+    my $freeze = $self->gearman_client->dispatch_background(
+        'ledge',
+        Storable::nfreeze(\@args),
+    );
+}
 
 sub ledge_add { shift->_ledge_update('add', @_ ) }
 sub ledge_set { shift->_ledge_update('set', @_ ) }
 sub ledge_delete { shift->_ledge_update('delete', @_ ) }
 sub ledge_expire { shift->_ledge_update('expire', @_ ) }
+
+sub ledge_background_add { shift->_ledge_background_update('add', @_ ) }
+sub ledge_background_set { shift->_ledge_background_update('set', @_ ) }
+sub ledge_background_delete { shift->_ledge_background_update('delete', @_ ) }
+sub ledge_background_expire { shift->_ledge_background_update('expire', @_ ) }
 
 sub ledge_get {
     my $self = shift;

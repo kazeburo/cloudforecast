@@ -471,6 +471,7 @@ sub _ledge_do {
         $gearman->can( 'ledge_' . $method )->( $gearman, $resource_class, $address, @_  );
     }
     else {
+        $method =~ s!^background_!!g;
         $self->{_ledge} ||= CloudForecast::Ledge->new({
             data_dir => $self->global_config->{data_dir},
             db_name  => $self->global_config->{db_name}
@@ -483,14 +484,18 @@ sub ledge_add { my $self = shift; $self->_ledge('add', @_ ) }
 sub ledge_set { my $self = shift; $self->_ledge('set', @_ ) }
 sub ledge_delete { my $self = shift; $self->_ledge('delete', @_ ) }
 sub ledge_expire { my $self = shift; $self->_ledge('expire', @_ ) }
-sub ledge_get { my $self = shift; $self->_ledge('get', @_ ) }
+sub ledge_background_add { my $self = shift; $self->_ledge('background_add', @_ ) }
+sub ledge_background_set { my $self = shift; $self->_ledge('background_set', @_ ) }
+sub ledge_background_delete { my $self = shift; $self->_ledge('background_delete', @_ ) }
+sub ledge_background_expire { my $self = shift; $self->_ledge('background_expire', @_ ) }
 
+sub ledge_get { my $self = shift; $self->_ledge('get', @_ ) }
 
 sub ledge_set_haserror {
     my $self = shift;
     my $type = shift;
     $self->_ledge_do(
-        'set',
+        'background_set',
         '__SYSTEM__',
         $self->address,
         '__has_error__:'.$type,
