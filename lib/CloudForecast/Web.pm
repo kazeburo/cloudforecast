@@ -432,7 +432,7 @@ TOP «
       : }
 <ul class="host-ul" id="ul-sub-group-<: $sub_group.label_key :>">
       : for $sub_group.hosts -> $host {
-<li class="host-li configgroup-<: $host.config_group_num  :>"><span class="host-status">&#x25c6;</span> <input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>" class="host-address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></span></li>
+<li class="host-li configgroup-<: $host.config_group_num  :>"><span class="host-status">&#x2716;</span> <input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>" class="host-address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></span></li>
       : }
 </ul>
     : } # sub_group
@@ -606,17 +606,18 @@ $(function() {
             function (data) {
                 $("a.host-address").slice(startnum, endnum).each(function(){
                     var ip = $(this).text();
+                    var tag = $(this).parent().children("span.host-status");
                     if ( data[ip] == 2 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-crit");
+                        tag.addClass("host-status-crit");
                     }
                     else if ( data[ip] == 1 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-warn");
+                        tag.addClass("host-status-warn");
                     }
                     else if ( data[ip] == 0 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-ok");
+                        tag.addClass("host-status-ok");
                     }
                     else {
-                        $(this).parent().children("span.host-status").addClass("host-status-wait");
+                        tag.addClass("host-status-wait");
                     }
                 });
                 if ( endnum < hostslen ) haserror_api(startnum+100);
@@ -658,7 +659,7 @@ $(function() {
     : }
 <ul class="host-ul" id="ul-sub-group-<: $sub_group.label_key :>">
     : for $sub_group.hosts -> $host {
-<li class="host-li"><span class="host-status">&#x25c6;</span> <input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>" class="host-address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
+<li class="host-li"><span class="host-status">&#x2716;</span> <input class="addresscb" name="addresscb" type="checkbox" value="<: $host.address :>" /> <a href="<: $c.req.uri_for('/server',[address => $host.address ]) :>" class="host-address"><: $host.address :></a> <strong><: $host.hostname :></strong> <span class="details"><: $host.details :></li>
     : }
 </ul>
   : }
@@ -769,17 +770,18 @@ $(function() {
             function (data) {
                 $("a.host-address").slice(startnum, endnum).each(function(){
                     var ip = $(this).text();
+                    var tag = $(this).parent().children("span.host-status");
                     if ( data[ip] == 2 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-crit");
+                        tag.addClass("host-status-crit");
                     }
                     else if ( data[ip] == 1 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-warn");
+                        tag.addClass("host-status-warn");
                     }
                     else if ( data[ip] == 0 ) {
-                        $(this).parent().children("span.host-status").addClass("host-status-ok");
+                        tag.addClass("host-status-ok");
                     }
                     else {
-                        $(this).parent().children("span.host-status").addClass("host-status-wait");
+                        tag.addClass("host-status-wait");
                     }
                 });
                 if ( endnum < hostslen ) haserror_api(startnum+100);
