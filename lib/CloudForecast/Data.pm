@@ -464,6 +464,9 @@ sub _ledge_do {
 
     ### Webインターフェイスからのアクセスセスは直接DBにアクセス
     if ( !$self->global_config->{__do_web} && $self->global_config->{gearman_enable} ) {
+        if ( $method !~ m!^background_! && ! defined wantarray ) {
+            $method = 'background_' . $method;
+        }
         my $gearman = CloudForecast::Gearman->new({
             host => $self->global_config->{gearman_server}->{host},
             port => $self->global_config->{gearman_server}->{port},

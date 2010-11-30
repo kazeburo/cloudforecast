@@ -26,7 +26,6 @@ fetcher {
             return [undef, undef];
         }
 
-        warn keys %interfaces;
         my $if = List::Util::first {
             exists $interfaces{$_->{ifDescr}}
         } values %{$ifs};
