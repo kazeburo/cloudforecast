@@ -553,7 +553,7 @@ sub update_rrd {
             $data,
         );
         my $ERR=RRDs::error;
-        dir $ERR if $ERR;
+        die $ERR if $ERR;
     };
     die "udpate rrdfile failed: $@" if $@;
 }
