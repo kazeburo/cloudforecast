@@ -137,24 +137,24 @@ body {
 
 #headmenu ul {
     margin: 0px;
-    padding: 4px;
+    padding: 2px;
     list-style: none;
 }
 
 #headmenu ul li {
     display: inline;
+    padding: 0px;
+    margin: 0px;
 }
 
 
 #ptitle {
     background-color: rgba(255,255,255,0.95);
 /*    border-bottom: #ccc 1px solid; */
-    -moz-box-shadow: 0px 3px 5px #aaa;
-    -webkit-box-shadow: 0px 3px 5px #aaa;
     font-size: 1.4em;
     font-weight: bold;
     margin: 0px 0px 0px;
-    padding: 3px 8px 5px;
+    padding: 5px 8px 7px;
 }
 
 h2#ptitle a {
@@ -167,7 +167,7 @@ h2#ptitle span.details {
 }
 
 h2#ptitle #clipboard_open {
-    font-size: 8pt;
+    font-size: 0.8em;
     font-weight: normal;
     padding: 0px;
     margin: 0px;
@@ -183,9 +183,6 @@ h2#ptitle #clipboard_open {
     resize:none;
 }
 
-#content {
-    padding: 0px 10px 10px;
-}
 
 /*
 #content a { color: #5555cc;}
@@ -195,25 +192,41 @@ h2#ptitle #clipboard_open {
 #content a:hover { color: #999999;  }
 */
 
-#content #display-control {
+#display-control-wrap {
+    -moz-box-shadow: 0px 3px 5px #aaa;
+    -webkit-box-shadow: 0px 3px 5px #aaa;
+    background-color: rgba(255,255,255,0.95);
+    padding: 0px 10px 6px;
+    margin: 0px 0px 13px;
+}
+
+#display-control {
     text-align: right;
-    margin: 10px 0px 20px 0px;
-    padding: 4px;
-    font-size: 0.9em;
-    background-color: #eee;
+    padding: 2px;
+    font-size: 0.7em;
+    border: 1px solid #ccc;
+    background-color: rgba(238,238,238,0.95);
     -webkit-border-radius: 3px;   /* Safari、Google Chrome */
     -moz-border-radius: 3px;  /* Firefox */
 }
 
-#content #display-control form {
+#display-control-main {
+    float: left;
+    text-align: left;
 }
 
-#content #display-control form #from_date,
-#content #display-control form #to_date {
+#display-control-sub {
+}
+
+#display-control form {
+}
+
+#display-control form #from_date,
+#display-control form #to_date {
     padding: 3px 3px;
     border: 1px #ccc solid;
     color: #888;
-    font-size: 0.9em;
+    font-size: 1em;
     width: 13em;
     background-color: #f6f6f6;
     -webkit-border-radius: 3px;
@@ -223,14 +236,19 @@ h2#ptitle #clipboard_open {
     text-align: center;
 }
 
-#content #display-control form #pickdate_submit {
+#display-control form #pickdate_submit {
 }
 
-#content #display-control form > label,
-#content #display-control form > span {
-    font-size: 0.9em;
+#display-control form > label,
+#display-control form > span {
+    font-size: 1em;
     color: #999;
 }
+
+#content {
+    padding: 0px 10px 10px;
+}
+
 
 #content #serverlist-ul {
     padding: 1px;
@@ -288,7 +306,15 @@ h2#ptitle #clipboard_open {
 #content #serverlist-ul ul.group-ul ul.host-ul li {
     font-size: 1.2em;
     border-bottom: 1px #ccc solid;
-    padding: 4px 18px ;
+    padding: 4px 12px ;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul label {
+    font-size: 5px;
+    padding: 0px;
+    margin: 0px;
+    width: 10px;
+    height: 10px;
 }
 
 #content #serverlist-ul ul.group-ul ul.host-ul li a {
@@ -297,6 +323,42 @@ h2#ptitle #clipboard_open {
 
 #content #serverlist-ul ul.group-ul ul.host-ul li span.details {
     color: #666;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status {
+    color: #fff;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-ok {
+    color: #eee;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-warn {
+    color: #f93;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-crit {
+    color: #f33;
+}
+
+#content #serverlist-ul ul.group-ul ul.host-ul li span.host-status-wait {
+    color: #ccc;
+}
+
+.host-li-checked {
+    background-color: #ffc;
+}
+
+#content h3.host-title {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    padding: 3px;
+    margin: 0px 0px 3px 0px;
+}
+
+#content p.host-detail {
+    text-align: center;
 }
 
 #content ul#resource-list {
@@ -368,5 +430,10 @@ h2#ptitle #clipboard_open {
 }
 
 
-
+.ui-icon-null {
+    background-position: -240px -224px;
+}
+div.AnyTime-win {
+    z-index: 999;
+}
 
