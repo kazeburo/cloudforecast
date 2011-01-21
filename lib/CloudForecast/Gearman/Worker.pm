@@ -210,7 +210,7 @@ sub watchdog_zombie {
 
 sub run_worker {
     my $self = shift;
-    my $worker = $self->gearman_worker;
+
  
     my $scoreboard = CloudForecast::Gearman::Scoreboard->new( 
         undef, $self->max_workers );
@@ -237,6 +237,7 @@ sub run_worker {
         $pm->start and next;
         $0 = "$0 (worker)";
         my $i = 0;
+        my $worker = $self->gearman_worker;
         $worker->work(
             on_start => sub {
                 $i++;
