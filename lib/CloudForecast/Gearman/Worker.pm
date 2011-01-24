@@ -100,6 +100,7 @@ sub fetcher_worker {
     my $worker = $self->gearman_worker;
     $worker->register_function('fetcher', sub {
         my $job = shift;
+        my $resource;
         eval {
             my $args;
             eval {
@@ -107,7 +108,7 @@ sub fetcher_worker {
                 $args or die "invalid arg";
             };
             die "failed thaw: $@" if $@;
-            my $resource = $self->load_resource($args);
+            $resource = $self->load_resource($args);
             $resource->exec_fetch;
         };
         CloudForecast::Log->warn("fetcher failed: $@") if $@;
