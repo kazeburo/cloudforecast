@@ -33,7 +33,7 @@ sysinfo {
         }
 
         map { push @sysinfo, $_, $sysinfo->{$_} } grep { exists $sysinfo->{$_} } 
-            qw/max_connections thread_cache_size log_slow_queries long_query_time log_queries_not_using_indexes/;
+            qw/max_connections max_connect_errors thread_cache_size log_slow_queries long_query_time log_queries_not_using_indexes/;
         
     }
     return \@sysinfo;
@@ -59,7 +59,7 @@ fetcher {
     my %sysinfo;   
     $sysinfo{uptime} = $status{Uptime} || 0;
     map { $sysinfo{$_} = $variable{$_} } grep { exists $variable{$_} }
-        qw/version version_comment log_slow_queries long_query_time log_queries_not_using_indexes max_connections thread_cache_size/;
+        qw/version version_comment log_slow_queries long_query_time log_queries_not_using_indexes max_connections max_connect_errors thread_cache_size/;
     $c->ledge_set('sysinfo', \%sysinfo );
 
     return [ map { $status{$_} } qw/Com_delete Com_insert Com_replace Com_select Com_update Slow_queries
