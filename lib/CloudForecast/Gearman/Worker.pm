@@ -204,6 +204,11 @@ sub watchdog_zombie {
                 CloudForecast::Log->warn("exection_time exceed, kill: " . $status->{pid});
                 kill 'TERM', $status->{pid}
             }
+            if ( $status->{status} eq CloudForecast::Gearman::Scoreboard::STATUS_IDLE
+                     && time - $status->{time} > 360 + int(30*(0.5-rand(1))) ) {
+                CloudForecast::Log->warn("idle_time exceed, kill: " . $status->{pid});
+                kill 'TERM', $status->{pid}
+            }
         }
         sleep 30;
     }
