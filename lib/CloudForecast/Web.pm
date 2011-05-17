@@ -899,7 +899,7 @@ $(function() {
     $('#headspacer').height( $('#header').outerHeight(true) );
 
     var hash = location.hash;
-    if ( hash.length > 0 && hash.match(/^#l?resource-/) ) {
+    if ( hash.length > 0 && hash.match(/^#l?resource-[a-zA-Z0-9\-\._~%]+$/) ) {
         var id = hash.replace( /^#lresource-/, '#resource-' );
         page_scroll(id);
     }
