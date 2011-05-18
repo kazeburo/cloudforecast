@@ -107,10 +107,10 @@ GPRINT:my4r:MAX:Max\: %4.1lf[%%]
 GPRINT:my4r:MIN:Min\: %4.1lf[%%]\l
 
 @@ row_speed
-DEF:my1=<%RRD%>:iv:AVERAGE
-DEF:my2=<%RRD%>:uv:AVERAGE
-DEF:my3=<%RRD%>:dv:AVERAGE
-DEF:my4=<%RRD%>:rv:AVERAGE
+DEF:my1=<%RRD%>:ir:AVERAGE
+DEF:my2=<%RRD%>:ur:AVERAGE
+DEF:my3=<%RRD%>:dr:AVERAGE
+DEF:my4=<%RRD%>:rr:AVERAGE
 LINE1:my1#CC0000:Insert
 GPRINT:my1:LAST:Cur\: %6.1lf
 GPRINT:my1:AVERAGE:Ave\: %6.1lf
