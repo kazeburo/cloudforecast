@@ -6,11 +6,45 @@ rrds map { [ $_, 'COUNTER' ] } qw/read write ioread iowrite/;
 graphs 'byte' => 'DiskIO';
 graphs 'count' => 'DiskIO Count';
 
+title {
+    my $c = shift;
+    my $device = $c->args->[0] || '17';
+    if ( $device =~ /^\d+$/ ) {
+        $device = $c->ledge_get('device_name') || $device;
+    }
+    return "DiskIO ($device)";
+};
+
 fetcher {
     my $c = shift;
-    my @map = map { [ $_, 17 ] } qw/diskIONWritten diskIONRead diskIOWrites diskIOReads/;
-    $c->component('SNMP')->get(@map);
+    my $device = $c->args->[0] || 17;
+
+    if ( $device !~ /^\d+$/ ) {
+        my $disks = $c->component('SNMP')->table("diskIOTable",
+            columns => [qw/diskIOIndex diskIODevice diskIONRead diskIONWritten diskIOReads diskIOWrites/] );
+        if ( !$disks ) {
+            CloudForecast::Log->warn("couldnot get disk table");
+            return [undef, undef, undef, undef];
+        }
+        my $disk = List::Util::first { $_->{diskIODevice} eq $device } values %{$disks};
+        if ( !$disk ) {
+            CloudForecast::Log->warn("couldnot find disk partition '$device'");
+            return [undef, undef, undef, undef];
+        }
+        CloudForecast::Log->debug("found partition '$device' with diskIOIndex:$disk->{diskIOIndex}");
+        return [ map { $disk->{$_} } qw/diskIONRead diskIONWritten diskIOReads diskIOWrites/ ];
+    }
+    else {
+        my @map = map { [ $_, $device ] } qw/diskIODevice diskIONRead diskIONWritten diskIOReads diskIOWrites/;
+        my $ret = $c->component('SNMP')->get(@map);
+        my $device_name = shift @$ret;
+        if ( $device_name ) {
+            $c->ledge_set('device_name', $device_name);
+        }
+        return $ret;
+    }
 };
+
 
 __DATA__
 @@ byte
