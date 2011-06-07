@@ -196,6 +196,7 @@ sub watchdog_zombie {
     die "fork failed: $!" unless defined $pid;
     return $pid if($pid); # main process
 
+    $0 = "$0 (watchdog)";
     while ( 1 ) {
         my @statuses = $scoreboard->get_parsed_statuses;
         for my $status ( @statuses ) {
@@ -212,6 +213,7 @@ sub watchdog_zombie {
         }
         sleep 30;
     }
+    exit;
 }
 
 sub run_worker {

@@ -244,6 +244,7 @@ sub watchdog {
             CloudForecast::Log->warn( "File updates: " . join(",", @path) );
             sleep 1;
             kill 'TERM', $parent_pid;
+            exit;
         } );
     }
 }

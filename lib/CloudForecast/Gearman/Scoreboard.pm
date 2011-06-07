@@ -96,8 +96,6 @@ sub clear_child {
         or die "seek failed:$!";
     for (my $slot = 0; $slot < $self->{max_workers}; $slot++) {
         my $rlen = sysread($self->{fh}, my $data, $SLOT_SIZE);
-        die "unexpected eof while reading scoreboard file:$!"
-            unless $rlen == $SLOT_SIZE;
         if ($data =~ /^.$pid .*\n$/) {
             # found
             sysseek $self->{fh}, $SLOT_SIZE * $slot, SEEK_SET
