@@ -2,7 +2,7 @@ use inc::Module::Install;
 name 'CloudForecast';
 all_from 'lib/CloudForecast.pm';
 
-tests 't/*.t';
+tests_recursive;
 #author_tests 'xt';
 
 test_requires 'Test::More';

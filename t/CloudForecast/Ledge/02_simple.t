@@ -44,6 +44,8 @@ ok( $ledge );
 
     $ret = $ledge->delete('resource2','address2', 'key2');
     ok( $ret );
+}
+{
     my $ret =  $ledge->add('resource2','address2','key2', 'val2-1' );
     is( $ret, 1 );
     my ($data, $sum) = $ledge->get('resource2','address2', 'key2');
@@ -51,6 +53,8 @@ ok( $ledge );
 
     $ret =  $ledge->set('resource3','address3','key3', 'val3-1' );
     is( $ret, 1 );
+}
+{
     my ($data, $sum) = $ledge->get('resource3','address3', 'key3');
     is ( $data, 'val3-1' );
 }
