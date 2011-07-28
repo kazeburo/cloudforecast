@@ -72,7 +72,7 @@ sub load_data_module {
     my $self = shift;
     my $resource = shift;
 
-    $resource = ucfirst $resource;
+    $resource =~ s{([^_]+)|(_)}{$1 ? ucfirst $1 : $2 ? '::' : ''}egx;
     my $module = "CloudForecast::Data::" . $resource;
     $module->require or die $@;
     $module;
