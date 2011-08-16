@@ -50,6 +50,7 @@ fetcher {
 
     # sysinfo
     push @map, [ 'sysDescr', 0];
+    push @map, [ 'sysUpTime', 0];
 
     # SNMP->get 配列のリファレンスが最終的に戻る
     my $ret = $c->component('SNMP')->get(@map);
@@ -62,9 +63,14 @@ fetcher {
 
     #sysinfo
     my @sysinfo;
+    my $uptime = pop @$ret;
+    my $day = int( $uptime /86400 );
+    my $hour = int( ( $uptime % 86400 ) / 3600 );
+    my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
+    push @sysinfo, 'uptime', sprintf("up %d days, %2d:%02d", $day, $hour, $min);
+    push @sysinfo, 'cpu core' => $corenum if $corenum;
     my $sysdescr = pop @$ret;
     push @sysinfo, system => $sysdescr;
-    push @sysinfo, core => $corenum if $corenum;
 
     $c->ledge_set('sysinfo', \@sysinfo );
 
