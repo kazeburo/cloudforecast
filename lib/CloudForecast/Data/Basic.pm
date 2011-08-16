@@ -54,9 +54,19 @@ fetcher {
     # SNMP->get 配列のリファレンスが最終的に戻る
     my $ret = $c->component('SNMP')->get(@map);
 
+    my $processor = $c->component('SNMP')->table('hrProcessorTable',columns=>[qw/hrProcessorLoad/]);
+    my $corenum;
+    if ( $processor ) {
+        $corenum = scalar keys %$processor;
+    }
+
     #sysinfo
+    my @sysinfo;
     my $sysdescr = pop @$ret;
-    $c->ledge_set('sysinfo', [ system => $sysdescr ] );
+    push @sysinfo, system => $sysdescr;
+    push @sysinfo, core => $corenum if $corenum;
+
+    $c->ledge_set('sysinfo', \@sysinfo );
 
     return $ret;
 };
