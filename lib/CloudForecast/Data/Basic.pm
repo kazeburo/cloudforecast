@@ -60,6 +60,7 @@ fetcher {
     my @sysinfo;
     my $uptime = pop @$ret;
     if ( defined $uptime ) {
+        $uptime = $uptime / 100;
         my $day = int( $uptime /86400 );
         my $hour = int( ( $uptime % 86400 ) / 3600 );
         my $min = int( ( ( $uptime % 86400 ) % 3600) / 60 );
