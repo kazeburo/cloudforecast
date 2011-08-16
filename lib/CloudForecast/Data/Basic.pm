@@ -67,7 +67,7 @@ fetcher {
         push @sysinfo, 'uptime', sprintf("up %d days, %2d:%02d", $day, $hour, $min);
     }
     if ( $processor ) {
-        my $core = scalar keys %$processor
+        my $core = scalar keys %$processor;
         push @sysinfo, 'cpu core' => $core if $core;
     }
 
