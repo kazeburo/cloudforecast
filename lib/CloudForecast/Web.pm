@@ -587,7 +587,7 @@ $(function() {
         }
     });
 
-    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $(window).resize(function(){ $('#headspacer').height( $('#header').outerHeight(true) ) } );
     $('#headspacer').height( $('#header').outerHeight(true) );
 
     var hostslen = $("a.host-address").length;
@@ -752,7 +752,7 @@ $(function() {
         }
     });
 
-    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $(window).resize(function(){ $('#headspacer').height( $('#header').outerHeight(true) ) } );
     $('#headspacer').height( $('#header').outerHeight(true) );
     var hostslen = $("a.host-address").length;
     var haserror_api = function (startnum) {
@@ -895,7 +895,7 @@ $(function() {
                                        monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
      $("#to_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
                                     monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
-    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $(window).resize(function(){ $('#headspacer').height( $('#header').outerHeight(true) ) } );
     $('#headspacer').height( $('#header').outerHeight(true) );
 
     var hash = location.hash;
@@ -1022,7 +1022,7 @@ $(function() {
      $("#to_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
                                     monthAbbreviations: ['01','02','03','04','05','06','07','08','09','10','11','12'] });
 
-    $('window').resize(function(){ $('headspacer').height( $('#header').outerHeight(true) ) } );
+    $(window).resize(function(){ $('#headspacer').height( $('#header').outerHeight(true) ) } );
     $('#headspacer').height( $('#header').outerHeight(true) );
 
 });
