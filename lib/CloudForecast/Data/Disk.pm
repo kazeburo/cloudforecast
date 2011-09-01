@@ -13,9 +13,37 @@ title {
     return "Disk ($partition)";
 };
 
+sub hrstorage {
+    my ($c,$interface) = @_;
+    if ( $interface !~ /^\d+$/ ) {
+        my $disks = $c->component('SNMP')->table("hrStorage",
+            columns => [qw/hrStorageIndex hrStorageDescr hrStorageAllocationUnits hrStorageSize hrStorageUsed/] );
+        if ( !$disks ) {
+            CloudForecast::Log->debug("couldnot get htStorage, use dskTable");
+            return;
+        }
+
+        my $disk = List::Util::first { $_->{hrStorageDescr} eq $interface } values %{$disks};
+        if ( !$disk ) {
+            CloudForecast::Log->warn("couldnot find disk partition '$interface'");
+            return [undef, undef];
+        }
+        CloudForecast::Log->debug("found partition '$interface' with hrStorageIndex:$disk->{hrStorageIndex}");
+        return [ $disk->{hrStorageSize}*$disk->{hrStorageAllocationUnits}/1024,
+                 $disk->{hrStorageUsed}*$disk->{hrStorageAllocationUnits}/1024 ];
+    }
+    my @map = map { [ $_, $interface ] } qw/hrStorageAllocationUnits hrStorageSize hrStorageUsed/;
+    my $ret = $c->component('SNMP')->get(@map);
+    my $allocsize = shift @$ret;
+    return [$ret->[0]*$allocsize/1024, $ret->[1]*$allocsize/1024];
+}
+
 fetcher {
     my $c = shift;
     my $interface = $c->args->[0] || 0;
+
+    my $usage = $c->hrstorage($interface);
+    return $usage if $usage;    
 
     if ( $interface !~ /^\d+$/ ) {
         my $disks = $c->component('SNMP')->table("dskTable", 
