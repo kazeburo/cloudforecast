@@ -364,7 +364,7 @@ sub do_fetch {
         if ( !ref($ret) || ref($ret) ne 'ARRAY' );
     my $timestamp;
     my $result;
-    if ( $ret->[0] && ref($ret->[0) && ref($ret->[0) eq 'ARRAY' ) {
+    if ( $ret->[0] && ref($ret->[0]) && ref($ret->[0]) eq 'ARRAY' ) {
         $result = $ret->[0];
         $timestamp = $ret->[1];
     }
@@ -568,7 +568,7 @@ sub update_rrd {
 
     my $timestamp;
     my $result;
-    if ( $ret->[0] && ref($ret->[0) && ref($ret->[0) eq 'ARRAY' ) {
+    if ( $ret->[0] && ref($ret->[0]) && ref($ret->[0]) eq 'ARRAY' ) {
         $result = $ret->[0];
         $timestamp = $ret->[1] || 'N';
     }
