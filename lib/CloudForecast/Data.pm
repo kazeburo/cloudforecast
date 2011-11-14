@@ -270,6 +270,7 @@ sub draw_graph {
         next if $line =~ m!^\s*#!;
         next if $line =~ m!^\s+$!;
         $line =~ s!<%RRD%>!$rrd_path!g;
+        $line =~ s!<%RRD_FOR\s+(.+?)\s+%>!&rrd_path_for($self,$1)!ge;
         push @args, $line;
     }
 
@@ -341,16 +342,39 @@ sub rrd_path {
     
 }
 
+sub rrd_path_for {
+    my $self = shift;
+    my $opt = shift;
+    my ($address,$args) = split /:/,$opt, 2;
+    my @args = split /:/, $args;
+    my $filename = sprintf "%s_%s.rrd",
+        URI::Escape::uri_escape( $address ),
+        join( "-", map { URI::Escape::uri_escape($_) } @args);
+    return Path::Class::file(
+        $self->global_config->{data_dir},
+        $self->resource_name,
+        $filename )->cleanup;    
+}
+
 sub do_fetch {
     my $self = shift;
     my $ret = $self->fetcher_func->($self);
     die 'fetcher result undefind value' unless $ret;
     die 'fetcher result value isnot array ref'
         if ( !ref($ret) || ref($ret) ne 'ARRAY' );
-    CloudForecast::Log->debug( 'fetcher result [' . join(",", map { !defined $_ ? 'U' : $_ } @$ret) . ']');
+    my $timestamp;
+    my $result;
+    if ( $ret->[0] && ref($ret->[0) && ref($ret->[0) eq 'ARRAY' ) {
+        $result = $ret->[0];
+        $timestamp = $ret->[1];
+    }
+    else {
+        $result = $ret;
+    }
+    CloudForecast::Log->debug( 'fetcher result [' . join(",", map { !defined $_ ? 'U' : $_ } @$result) . ']');
 
     my $schema = $self->rrd_schema;
-    die 'schema and result values is no match' if ( scalar @$ret != scalar @$schema );
+    die 'schema and result values is no match' if ( scalar @$result != scalar @$schema );
     return $ret;
 }
 
@@ -542,9 +566,20 @@ sub update_rrd {
     my $ret = shift;
     my $file = $self->rrd_path;
 
+    my $timestamp;
+    my $result;
+    if ( $ret->[0] && ref($ret->[0) && ref($ret->[0) eq 'ARRAY' ) {
+        $result = $ret->[0];
+        $timestamp = $ret->[1] || 'N';
+    }
+    else {
+        $timestamp = 'N';
+        $result = $ret;
+    }
+
     # update
     my $ds = join ":", map { sprintf "%s", $_->[0] } @{$self->rrd_schema};
-    my $data= join ":", "N", map { ! defined $_ ? 'U' : $_ } @$ret;
+    my $data= join ":", $timestamp, map { ! defined $_ ? 'U' : $_ } @$result;
     CloudForecast::Log->debug('update rrd file: '. $file. " -t $ds $data");
     eval {
         RRDs::update(
