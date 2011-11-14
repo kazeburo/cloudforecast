@@ -62,7 +62,7 @@ sub walk {
     my $self = shift;
     my @ids = @_;
     my $count = @ids;
-    my $max = $self->config->{max_bulkwalk} || 10;
+    my $max = $self->config->{max_bulkwalk} || 1;
     my @ret = $self->session->bulkwalk( 0, $max, SNMP::VarList->new(map { [$_] } @ids) );
 
     if ( $self->session->{ErrorStr} ) {
