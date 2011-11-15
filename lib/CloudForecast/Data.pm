@@ -255,7 +255,7 @@ sub draw_graph {
     my @args = (
         $tmpfile,
         '-w', ($size eq 'l') ? 800 : 400,
-        '-h', ($size eq 'l') ? 120 : 100,
+        '-h', ($size eq 'l') ? 100 : 100,
         '-a', 'PNG',
         '-t', "$period_title ". $self->address,
         '-l', 0, #minimum
