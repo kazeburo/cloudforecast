@@ -585,7 +585,7 @@ sub update_rrd {
         RRDs::update(
             $file,
             '-t', $ds,
-            $data,
+            '--',$data,
         );
         my $ERR=RRDs::error;
         die $ERR if $ERR;
