@@ -42,13 +42,13 @@ sub find_resource {
 
 sub draw_graph {
     my $self = shift;
-    my ( $resource, $key, $span, $from, $to ) = @_;
+    my ( $resource, $key, $span, $from, $to, $size ) = @_;
 
     my $data = $self->find_resource($resource);
     return unless $data;
     my $img;
     eval {
-        $img = $data->draw_graph( $key, $span, $from, $to );
+        $img = $data->draw_graph( $key, $span, $from, $to, $size );
     };
     my $err = $@;
     CloudForecast::Log->warn("draw_graph $resource failed: $@") if $@;
