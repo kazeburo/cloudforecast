@@ -345,14 +345,14 @@ sub rrd_path {
 sub rrd_path_for {
     my $self = shift;
     my $opt = shift;
-    my ($address,$args) = split /:/,$opt, 2;
+    my ($address,$resource_name, $args) = split /:/,$opt, 3;
     my @args = split /:/, $args;
     my $filename = sprintf "%s_%s.rrd",
         URI::Escape::uri_escape( $address ),
         join( "-", map { URI::Escape::uri_escape($_) } @args);
     return Path::Class::file(
         $self->global_config->{data_dir},
-        $self->resource_name,
+        lc($resource_name),
         $filename )->cleanup;    
 }
 
