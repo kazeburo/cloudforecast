@@ -332,9 +332,11 @@ get '/graph' => sub {
     my $host = $self->configloader->all_hosts->{$address};
     return $c->res->not_found('Host Not Found') unless $host;
 
+    my $size = $c->req->param('size') || 'n';
+
     my $host_instance = $self->get_host($host);
     my ($img,$err) = $host_instance->draw_graph($resource,$key, $span,
-        $c->req->param('from_date'), $c->req->param('to_date') );
+        $c->req->param('from_date'), $c->req->param('to_date'), $size );
 
     return $c->res->server_error($err) unless $img;
 
@@ -852,7 +854,7 @@ $(function() {
   : for $resource.graphs -> $graph {
 <div class="ngraph">
     : if $daterange {
-<img src="<: $c.req.uri_for('/graph', [span => 'c', from_date => $c.req.param('from_date'), to_date => $c.req.param('to_date'), address => $host.address, resource => $resource.resource, key => $graph ]) :>" />
+<img src="<: $c.req.uri_for('/graph', [span => 'c', from_date => $c.req.param('from_date'), to_date => $c.req.param('to_date'), address => $host.address, resource => $resource.resource, key => $graph, size => 'l' ]) :>" />
     : } else {
       : my $terms = ( $c.req.param('displaymy') ) ? ['d','w','m','y'] : ['d','w']
       : for $terms -> $term {

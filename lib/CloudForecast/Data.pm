@@ -184,9 +184,10 @@ sub list_graph {
 
 sub draw_graph {
     my $self = shift;
-    my ($key, $span, $from, $to ) = @_;
+    my ($key, $span, $from, $to, $size ) = @_;
     die 'key no defined' unless $key;
     $span ||= 'd';
+    $size ||= 'n';
 
     my $graph_def = $self->graph_defs->{$key};
     die 'invalid key' unless $graph_def;
@@ -253,7 +254,8 @@ sub draw_graph {
 
     my @args = (
         $tmpfile,
-        '-w', 400,
+        '-w', ($size eq 'l') ? 800 : 400,
+        '-h', ($size eq 'l') ? 120 : 100,
         '-a', 'PNG',
         '-t', "$period_title ". $self->address,
         '-l', 0, #minimum
