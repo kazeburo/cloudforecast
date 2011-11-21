@@ -19,11 +19,11 @@ $ ./cloudforecast_radar -r -c cloudforecast.yaml -l server_list.yaml
   - 起動すると5分ごとに巡回を行います
   - -r 再起動オプション。ライブラリや設定ファイルを更新すると自動で再起動します
   - -c 設定ファイル
-  - -c サーバ一覧
+  - -l サーバ一覧
 
 
 # web server
-$ ./cloudforecast_web -r- p 5000 -c cloudforecast.yaml -l server_list.yaml
+$ ./cloudforecast_web -r -p 5000 -c cloudforecast.yaml -l server_list.yaml
   - グラフ閲覧 HTTPD
   - -p ポート httpdのport
   - -o | -host httpdがListenするIP。デフォルトはすべてのIP
