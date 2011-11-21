@@ -1,6 +1,7 @@
 package CloudForecast::Data::Basic;
 
 use CloudForecast::Data -base;
+use Config;
 
 # RRDファイルを作成
 # [定義名,タイプ]
@@ -43,8 +44,13 @@ fetcher {
     #load
     push @map, [ 'laLoad', 1 ];
     # memory
-    push @map, map { [ $_, 0 ] } qw/memTotalSwap memAvailSwap memTotalReal memAvailReal memTotalFree 
+    if (lc($Config{osname}) eq 'linux' && $Config{osvers} =~ /^2\.6\./) {
+        push @map, map { [ $_, 0 ] } qw/memTotalSwap memAvailSwap memTotalReal memAvailReal memTotalFree 
+                            memBuffer memCached/;
+    } else {
+        push @map, map { [ $_, 0 ] } qw/memTotalSwap memAvailSwap memTotalReal memAvailReal memTotalFree 
                             memShared memBuffer memCached/;
+    }
     # tcp established
     push @map, [ 'tcpCurrEstab', 0 ];
 
