@@ -223,6 +223,26 @@ sub draw_graph {
             $xgrid = 'WEEK:1:MONTH:1:MONTH:1:2592000:%b';
         }
     }
+    elsif ( $span eq 'h' ) {
+        $period_title = 'Hourly';
+        $period = -1 * 60 * 60;
+        $xgrid = 'MINUTE:10:MINUTE:30:MINUTE:10:0:%H:%M';
+    }
+    elsif ( $span eq '4h' ) {
+        $period_title = '4 Hours';
+        $period = -1 * 4 * 60 * 60;
+        $xgrid = 'MINUTE:30:HOUR:1:MINUTE:30:0:%H:%M';
+    }
+    elsif ( $span eq '8h' ) {
+        $period_title = '8 Hours';
+        $period = -1 * 8 * 60 * 60;
+        $xgrid = 'MINUTE:30:HOUR:1:HOUR:1:0:%H:%M';
+    }
+    elsif ( $span eq '3d' ) {
+        $period_title = '3 Days';
+        $period = -1 * 3 * 24 * 60 * 60;
+        $xgrid = 'HOUR:6:DAY:1:HOUR:6:0:%H';
+    }
     elsif ( $span eq 'w' ) {
         $period_title = 'Weekly';
         $period = -1 * 60 * 60 * 24 * 8;
