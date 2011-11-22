@@ -822,6 +822,18 @@ $(function() {
 <a href="<: $c.req.uri_for('/server', [ address => $host.address, displaymy => $c.req.param('displaymy') ? 0 : 1 ]) :>"><: $c.req.param('displaymy') ? 'Hide' : 'Show' :> Monthly Graph</a>
 : }
 <span>Date Range:</span>
+
+<select id="time_range" name="time_range" class="ui-button ui-widget ui-state-default ui-corner-all">
+  <option value="">select</option>
+: for [['h','Hourly'],['4h','4 Hours'],['8h','8 Hours'],['3d','3 Days']] -> $opt {
+  : if $opt[0] == $c.req.param('time_range') {
+  <option value="" selected="selected"><: $opt[1] :></option>
+  : } else {
+  <option value="<: $opt[0] :>"><: $opt[1] :></option>
+  : }
+: }
+</select>
+ or 
 <label for="from_date">From</label>
 <input type="text" id="from_date" name="from_date" value="<: $c.req.param('from_date') || $yesterday :>" size="21" />
 <label for="to_date">To</label>
@@ -854,7 +866,11 @@ $(function() {
   : for $resource.graphs -> $graph {
 <div class="ngraph">
     : if $daterange {
+      : if $c.req.param('time_range') != "" {
+<img src="<: $c.req.uri_for('/graph', [span => $c.req.param('time_range'), from_date => '', to_date => '', address => $host.address, resource => $resource.resource, key => $graph, size => 'l' ]) :>" />
+      : } else {
 <img src="<: $c.req.uri_for('/graph', [span => 'c', from_date => $c.req.param('from_date'), to_date => $c.req.param('to_date'), address => $host.address, resource => $resource.resource, key => $graph, size => 'l' ]) :>" />
+      : }
     : } else {
       : my $terms = ( $c.req.param('displaymy') ) ? ['d','w','m','y'] : ['d','w']
       : for $terms -> $term {
@@ -891,6 +907,17 @@ $(function() {
          }
      });
      $("#display-control a:first").button({ icons: {primary:'ui-icon-transfer-e-w' }});
+
+
+     $("#time_range").change(function() {
+         console.log();
+         $("#time_range option").filter(":selected").each(function(){
+             if ($(this).val() !== "") {
+                 $("#pickdate").submit();
+                 return true;
+             }
+         });
+     });
 
      $("#pickdate_submit").button();
      $("#from_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",
@@ -946,6 +973,18 @@ Selected Servers
 <form id="pickdate" method="get" action="<: $c.req.uri_for('/servers') :>">
 <a href="<: $c.req.uri_for('/servers', $addresses) :>">Disply Latest Graph</a>
 <span>Date Range:</span>
+
+<select id="time_range" name="time_range">
+  <option value="">select</option>
+: for [['h','Hourly'],['4h','4 Hours'],['8h','8 Hours'],['3d','3 Days']] -> $opt {
+  : if $opt[0] == $c.req.param('time_range') {
+  <option value="" selected="selected"><: $opt[1] :></option>
+  : } else {
+  <option value="<: $opt[0] :>"><: $opt[1] :></option>
+  : }
+: }
+</select>
+ or 
 <label for="from_date">From</label>
 <input type="text" id="from_date" name="from_date" value="<: $c.req.param('from_date') || $yesterday :>" size="21" />
 <label for="to_date">To</label>
@@ -988,7 +1027,11 @@ Selected Servers
   : for $resource.graphs -> $graph {
 <div class="ngraph">
     : if $daterange {
+      : if $c.req.param('time_range') != "" {
+<img src="<: $c.req.uri_for('/graph', [span => $c.req.param('time_range'), from_date => '', to_date => '', address => $host.host.address, resource => $resource.resource, key => $graph ]) :>" />
+      : } else {
 <img src="<: $c.req.uri_for('/graph', [span => 'c', from_date => $c.req.param('from_date'), to_date => $c.req.param('to_date'), address => $host.host.address, resource => $resource.resource, key => $graph ]) :>" />
+      : }
     : } else {
 <img src="<: $c.req.uri_for('/graph', [span => 'd', address => $host.host.address, resource => $resource.resource, key => $graph]) :>" />
     : } # if daterange
@@ -1017,6 +1060,16 @@ $(function() {
     $("#headmenu > ul > li > a:first").button( { text: false, icons: {primary:'ui-icon-arrowstop-1-n' }});
 
      $("#display-control a:first").button({ icons: {primary:'ui-icon-transfer-e-w' }});
+
+     $("#time_range").change(function() {
+         console.log();
+         $("#time_range option").filter(":selected").each(function(){
+             if ($(this).val() !== "") {
+                 $("#pickdate").submit();
+                 return true;
+             }
+         });
+     });
 
      $("#pickdate_submit").button();
      $("#from_date").AnyTime_picker( { format: "%Y-%m-%d %H:00:00",

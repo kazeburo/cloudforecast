@@ -245,6 +245,16 @@ h2#ptitle #clipboard_open {
     color: #999;
 }
 
+#display-control form > select {
+    padding: 0.4em 0.4em;
+    text-align: left;
+    width: 8em;
+}
+
+#display-control form > select > option {
+    padding-left: 0.4em;
+}
+
 #content {
     padding: 0px 10px 10px;
 }
