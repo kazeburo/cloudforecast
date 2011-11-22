@@ -38,15 +38,18 @@ sub run {
         push @watchdog_pid, $configloader->watchdog;
     }
 
+    my $now = time;
+    my $next = $now - ( $now % 300 )  + 300;
+    my $pid;
+
     my @signals_received;
     $SIG{$_} = sub {
         push @signals_received, $_[0];
     } for (qw/INT TERM HUP/);
+    $SIG{$_} = sub {
+        $next = 0;
+    } for (qw/ALRM/);
     $SIG{PIPE} = 'IGNORE';
-
-    my $now = time;
-    my $next = $now - ( $now % 300 )  + 300;
-    my $pid;
 
     CloudForecast::Log->warn( sprintf( "first radar start in %s", scalar localtime $next) );
 
