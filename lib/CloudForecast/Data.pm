@@ -226,7 +226,7 @@ sub draw_graph {
     elsif ( $span eq 'h' ) {
         $period_title = 'Hourly';
         $period = -1 * 60 * 60;
-        $xgrid = 'MINUTE:10:MINUTE:30:MINUTE:10:0:%H:%M';
+        $xgrid = 'MINUTE:5:MINUTE:10:MINUTE:10:0:%H:%M';
     }
     elsif ( $span eq '4h' ) {
         $period_title = '4 Hours';
@@ -274,7 +274,7 @@ sub draw_graph {
 
     my @args = (
         $tmpfile,
-        '-w', ($size eq 'l') ? 800 : 400,
+        '-w', ($size eq 'l') ? 700 : 400,
         '-h', ($size eq 'l') ? 100 : 100,
         '-a', 'PNG',
         '-t', "$period_title ". $self->address,
