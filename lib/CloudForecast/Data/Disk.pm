@@ -16,7 +16,7 @@ title {
 sub hrstorage {
     my ($c,$interface) = @_;
     if ( $interface !~ /^\d+$/ ) {
-        my $disks = $c->component('SNMP')->table("hrStorage",
+        my $disks = $c->component('SNMP')->table("hrStorageTable",
             columns => [qw/hrStorageIndex hrStorageDescr hrStorageAllocationUnits hrStorageSize hrStorageUsed/] );
         if ( !$disks ) {
             CloudForecast::Log->debug("couldnot get htStorage, use dskTable");
