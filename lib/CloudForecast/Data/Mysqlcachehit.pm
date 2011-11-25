@@ -6,7 +6,7 @@ rrds map { [ $_, 'GAUGE'] }
     qw(
           key_cache
           query_cache
-          table_lock_immediate
+          tablelock_immediate
           thread_cache
           tmp_table_on_memory
      );
@@ -139,31 +139,32 @@ __DATA__
 @@ cachehit
 DEF:my1=<%RRD%>:key_cache:AVERAGE
 DEF:my2=<%RRD%>:query_cache:AVERAGE
-DEF:my3=<%RRD%>:table_lock_immediate:AVERAGE
+DEF:my3=<%RRD%>:tablelock_immediate:AVERAGE
 DEF:my4=<%RRD%>:thread_cache:AVERAGE
 DEF:my5=<%RRD%>:tmp_table_on_memory:AVERAGE
-LINE1:my1#FFFF00:key cache            
-GPRINT:my1:LAST:Cur\: %4.1lf[%%]
-GPRINT:my1:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my1:MAX:Max\: %4.1lf[%%]
-GPRINT:my1:MIN:Min\: %4.1lf[%%]\c
+COMMENT:                           Cur    Ave     Max    Min\l
+LINE1:my1#ff8000:key cache            
+GPRINT:my1:LAST:%5.1lf
+GPRINT:my1:AVERAGE:%5.1lf
+GPRINT:my1:MAX:%5.1lf
+GPRINT:my1:MIN:%5.1lf [%%]\l
 LINE1:my2#00FF00:query cache          
-GPRINT:my2:LAST:Cur\: %4.1lf[%%]
-GPRINT:my2:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my2:MAX:Max\: %4.1lf[%%]
-GPRINT:my2:MIN:Min\: %4.1lf[%%]\c
+GPRINT:my2:LAST:%5.1lf
+GPRINT:my2:AVERAGE:%5.1lf
+GPRINT:my2:MAX:%5.1lf
+GPRINT:my2:MIN:%5.1lf [%%]\l
 LINE1:my3#00FFFF:table lock immediate 
-GPRINT:my3:LAST:Cur\: %4.1lf[%%]
-GPRINT:my3:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my3:MAX:Max\: %4.1lf[%%]
-GPRINT:my3:MIN:Min\: %4.1lf[%%]\c
+GPRINT:my3:LAST:%5.1lf
+GPRINT:my3:AVERAGE:%5.1lf
+GPRINT:my3:MAX:%5.1lf
+GPRINT:my3:MIN:%5.1lf [%%]\l
 LINE1:my4#0000FF:thread cache         
-GPRINT:my4:LAST:Cur\: %4.1lf[%%]
-GPRINT:my4:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my4:MAX:Max\: %4.1lf[%%]
-GPRINT:my4:MIN:Min\: %4.1lf[%%]\c
+GPRINT:my4:LAST:%5.1lf
+GPRINT:my4:AVERAGE:%5.1lf
+GPRINT:my4:MAX:%5.1lf
+GPRINT:my4:MIN:%5.1lf [%%]\l
 LINE1:my5#800080:tmp table on memory  
-GPRINT:my5:LAST:Cur\: %4.1lf[%%]
-GPRINT:my5:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my5:MAX:Max\: %4.1lf[%%]
-GPRINT:my5:MIN:Min\: %4.1lf[%%]\c
+GPRINT:my5:LAST:%5.1lf
+GPRINT:my5:AVERAGE:%5.1lf
+GPRINT:my5:MAX:%5.1lf
+GPRINT:my5:MIN:%5.1lf [%%]\l
