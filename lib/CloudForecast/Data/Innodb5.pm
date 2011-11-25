@@ -86,7 +86,35 @@ fetcher {
        ];
 };
 
-# fixme pod
+=encoding utf-8
+
+=head1 NAME
+
+CloudForecast::Data::Innodb5 - monitor InnoDB for MySQL 5
+
+=head1 SYNOPSIS
+
+    component_config:
+    resources:
+      - innodb5
+
+=head1 DESCRIPTION
+
+monitor various InnoDB statuses. requires >= MySQL 5.0.
+
+=head1 AUTHOR
+
+HIROSE Masaaki E<lt>hirose31@gmail.comE<gt>
+
+=head1 SEE ALSO
+
+resouces on Innodb_pages_read and Innodb_pages_written:
+
+L<http://www.facebook.com/notes/mysql-at-facebook/innodb-disk-io-counters-in-show-status/445139830932>
+
+L<http://forums.innodb.com/read.php?4,1228,1233>
+
+=cut
 
 __DATA__
 @@ row_count
