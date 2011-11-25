@@ -95,4 +95,4 @@ DEF:my1=<%RRD%>:free:AVERAGE
 AREA:my1#1d71ff:Free 
 GPRINT:my1:LAST:Cur\: %4.1lf%s
 GPRINT:my1:MAX:Max\: %4.1lf%s
-GPRINT:my1:MIN:Min\: %4.1lf%s\l
+GPRINT:my1:MIN:Min\: %4.1lf%s\c
