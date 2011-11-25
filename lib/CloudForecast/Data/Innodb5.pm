@@ -5,11 +5,13 @@ use CloudForecast::Data -base;
 rrds map { [ $_, 'DERIVE'] }  qw/ir ur dr rr/;
 rrds map { [ $_, 'GAUGE'] }   qw/cr/;
 rrds map { [ $_, 'COUNTER'] } qw/pr pw/;
+rrds map { [ $_, 'GAUGE'] }   qw/dirtyr/;
 
-graphs 'row_count', 'ROW OPERATIONS Count';
-graphs 'row_speed', 'ROW OPERATIONS Speed';
-graphs 'cache',     'Buffer pool hit rate';
-graphs 'page_io',   'Page I/O count';
+graphs 'row_count',  'ROW OPERATIONS Count';
+graphs 'row_speed',  'ROW OPERATIONS Speed';
+graphs 'cache',      'Buffer pool hit rate';
+graphs 'page_io',    'Page I/O count';
+graphs 'dirty_rate', 'Dirty pages rate';
 
 title {
     my $c = shift;
@@ -72,11 +74,15 @@ fetcher {
     my $buffer_pool_hit_rate = sprintf "%.2f",
         (1.0 - $status{"innodb_buffer_pool_reads"} / $status{"innodb_buffer_pool_read_requests"}) * 100;
 
+    my $buffer_pool_dirty_pages_rate = sprintf "%.2f",
+        $status{"innodb_buffer_pool_pages_dirty"} / $status{"innodb_buffer_pool_pages_data"} * 100.0;
+
     # Should substruct Innodb_dblwr_writes from Innodb_pages_written?
     return [
         (map { $status{$_}} qw(innodb_rows_inserted innodb_rows_updated innodb_rows_deleted innodb_rows_read)),
         $buffer_pool_hit_rate,
         $status{innodb_pages_read}, $status{innodb_pages_written},
+        $buffer_pool_dirty_pages_rate
        ];
 };
 
@@ -143,6 +149,15 @@ GPRINT:my4:MIN:Min\: %6.1lf\c
 @@ cache
 DEF:my1=<%RRD%>:cr:AVERAGE
 AREA:my1#990000:Hit Rate  
+GPRINT:my1:LAST:Cur\: %4.1lf[%%]
+GPRINT:my1:AVERAGE:Ave\: %4.1lf[%%]
+GPRINT:my1:MAX:Max\: %4.1lf[%%]
+GPRINT:my1:MIN:Min\: %4.1lf[%%]\c
+LINE:100
+
+@@ dirty_rate
+DEF:my1=<%RRD%>:dirtyr:AVERAGE
+AREA:my1#5a2b09:Dirty pages rate
 GPRINT:my1:LAST:Cur\: %4.1lf[%%]
 GPRINT:my1:AVERAGE:Ave\: %4.1lf[%%]
 GPRINT:my1:MAX:Max\: %4.1lf[%%]
