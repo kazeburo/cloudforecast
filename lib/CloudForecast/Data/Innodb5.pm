@@ -6,9 +6,11 @@ rrds map { [ $_, 'DERIVE'] }  qw/ir ur dr rr/;
 rrds map { [ $_, 'GAUGE'] }   qw/cr/;
 rrds map { [ $_, 'COUNTER'] } qw/pr pw/;
 rrds map { [ $_, 'GAUGE'] }   qw/dirtyr/;
+rrds map { [ $_, 'GAUGE'] }   qw/bp_total bp_free/;
 
 graphs 'row_count',  'ROW OPERATIONS Count';
 graphs 'row_speed',  'ROW OPERATIONS Speed';
+graphs 'bp_usage',   'Buffer pool usage';
 graphs 'cache',      'Buffer pool hit rate';
 graphs 'page_io',    'Page I/O count';
 graphs 'dirty_rate', 'Dirty pages rate';
@@ -77,12 +79,16 @@ fetcher {
     my $buffer_pool_dirty_pages_rate = sprintf "%.2f",
         $status{"innodb_buffer_pool_pages_dirty"} / $status{"innodb_buffer_pool_pages_data"} * 100.0;
 
+    my $buffer_pool_total = $status{"innodb_buffer_pool_pages_total"} * $status{"innodb_page_size"};
+    my $buffer_pool_free  = $status{"innodb_buffer_pool_pages_free"}  * $status{"innodb_page_size"};
+
     # Should substruct Innodb_dblwr_writes from Innodb_pages_written?
     return [
         (map { $status{$_}} qw(innodb_rows_inserted innodb_rows_updated innodb_rows_deleted innodb_rows_read)),
         $buffer_pool_hit_rate,
         $status{innodb_pages_read}, $status{innodb_pages_written},
-        $buffer_pool_dirty_pages_rate
+        $buffer_pool_dirty_pages_rate,
+        $buffer_pool_total, $buffer_pool_free,
        ];
 };
 
@@ -206,3 +212,16 @@ GPRINT:my2r:LAST:Cur\: %5.1lf%s
 GPRINT:my2r:AVERAGE:Ave\: %5.1lf%s
 GPRINT:my2r:MAX:Max\: %5.1lf%s
 GPRINT:my2r:MIN:Min\: %5.1lf%s\c
+
+@@ bp_usage
+DEF:total=<%RRD%>:bp_total:AVERAGE
+DEF:free=<%RRD%>:bp_free:AVERAGE
+CDEF:used=total,free,-
+AREA:total#afffb2:Total\:
+GPRINT:total:LAST:%5.2lf%S\l
+AREA:used#ffc0c0:Used \:
+LINE1:used#aa0000
+GPRINT:used:LAST:Cur\: %5.1lf%S
+GPRINT:used:AVERAGE:Ave\: %5.1lf%S
+GPRINT:used:MAX:Max\: %5.1lf%S
+GPRINT:used:MIN:Min\: %5.1lf%S\l
