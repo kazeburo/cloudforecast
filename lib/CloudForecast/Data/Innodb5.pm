@@ -12,7 +12,7 @@ graphs 'row_count',  'ROW OPERATIONS Count';
 graphs 'row_speed',  'ROW OPERATIONS Speed';
 graphs 'bp_usage',   'Buffer pool usage';
 graphs 'cache',      'Buffer pool hit rate';
-graphs 'page_io',    'Page I/O count';
+graphs 'page_io',    'Page read(+)/write(-) count';
 graphs 'dirty_rate', 'Dirty pages rate';
 
 title {
@@ -202,16 +202,17 @@ LINE:100
 DEF:my1=<%RRD%>:pr:AVERAGE
 DEF:my2r=<%RRD%>:pw:AVERAGE
 CDEF:my2=my2r,-1,*
-LINE1:my1#c0c0c0:Read 
+AREA:my1#c0c0c0:Read 
 GPRINT:my1:LAST:Cur\: %5.1lf%s
 GPRINT:my1:AVERAGE:Ave\: %5.1lf%s
 GPRINT:my1:MAX:Max\: %5.1lf%s
 GPRINT:my1:MIN:Min\: %5.1lf%s\c
-LINE1:my2#800080:Write
+AREA:my2#800080:Write
 GPRINT:my2r:LAST:Cur\: %5.1lf%s
 GPRINT:my2r:AVERAGE:Ave\: %5.1lf%s
 GPRINT:my2r:MAX:Max\: %5.1lf%s
 GPRINT:my2r:MIN:Min\: %5.1lf%s\c
+HRULE:0#ff0000
 
 @@ bp_usage
 DEF:total=<%RRD%>:bp_total:AVERAGE
