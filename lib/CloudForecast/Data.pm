@@ -277,7 +277,7 @@ sub draw_graph {
         '-w', ($size eq 'l') ? 700 : 400,
         '-h', ($size eq 'l') ? 100 : 100,
         '-a', 'PNG',
-        '-t', "$period_title ". $self->address,
+        '-t', "$period_title ". $self->hostname,
         '-l', 0, #minimum
         '-u', 2, #maximum
         '-v', $graph_def->{title},
