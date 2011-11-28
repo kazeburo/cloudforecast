@@ -230,6 +230,13 @@ sub run_worker {
         push @watchdog_pid, $self->configloader->watchdog;
     }
 
+    my $wait_guard = CloudForecast::Gearman::Worker::Guard->new(sub{
+        for my $pid ( @watchdog_pid ) {
+            kill 'TERM', $pid;
+            waitpid( $pid, 0 );
+        }
+    });
+
     my $pm = Parallel::Prefork::SpareWorkers->new({
         max_workers  => $self->max_workers,
         min_spare_workers => $self->max_workers,
@@ -267,11 +274,22 @@ sub run_worker {
 
     $pm->wait_all_children();
 
-    for my $pid ( @watchdog_pid ) {
-        kill 'TERM', $pid;
-        waitpid( $pid, 0 );
-    }
 }
 
 1;
+
+package CloudForecast::Gearman::Worker::Guard;
+
+sub new {
+    my $class = shift;
+    my $cb = shift;
+    bless $cb, $class;
+}
+
+sub DESTROY {
+    $_[0]->();
+}
+
+1;
+
 
