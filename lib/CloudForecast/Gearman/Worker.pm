@@ -232,7 +232,7 @@ sub run_worker {
 
     my $wait_guard = CloudForecast::Gearman::Worker::Guard->new(sub{
         for my $pid ( @watchdog_pid ) {
-            kill 'TERM', $pid;
+            kill 'TERM', $pid ;
             waitpid( $pid, 0 );
         }
     });
@@ -273,7 +273,7 @@ sub run_worker {
     }
 
     $pm->wait_all_children();
-
+    $wait_guard->DESTROY();
 }
 
 1;
