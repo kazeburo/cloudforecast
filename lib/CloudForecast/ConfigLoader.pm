@@ -249,7 +249,7 @@ sub watchdog {
             $found++;
         } );
     }
-    $0 = "$0 (watchdog-wait-for-shutdown)";
+    $0 = "$0 (restarter-wait-for-shutdown)";
     while (1) { sleep 1 }
     exit;
 }
