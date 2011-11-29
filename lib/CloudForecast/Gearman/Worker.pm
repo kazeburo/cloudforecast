@@ -196,6 +196,8 @@ sub watchdog_zombie {
     die "fork failed: $!" unless defined $pid;
     return $pid if($pid); # main process
 
+    $SIG{$_} = 'DEFAULT' for qw/TERM HUP USR1/;
+
     $0 = "$0 (watchdog)";
     while ( 1 ) {
         my @statuses = $scoreboard->get_parsed_statuses;
@@ -211,8 +213,11 @@ sub watchdog_zombie {
                 kill 'TERM', $status->{pid}
             }
         }
-        sleep 30;
+        sleep 1 for 1..30;
     }
+
+    $0 = "$0 (watchdog-wait-for-shutdown)";
+    while (1) { sleep 1 }
     exit;
 }
 

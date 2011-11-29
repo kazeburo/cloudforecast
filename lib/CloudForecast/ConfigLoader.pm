@@ -235,18 +235,23 @@ sub watchdog {
     die "failed fork: $!" unless defined $pid;
     return $pid if($pid); # main process
 
+    $SIG{$_} = 'DEFAULT' for qw/TERM HUP USR1/;
     $0 = "$0 (restarter)";
     my $watcher = Filesys::Notify::Simple->new(\@path);
-    while (1) {
+    my $found=0;
+    while (!$found) {
         $watcher->wait( sub {
             my @path = grep { $_ !~ m![/\\][\._]|\.bak$|~$!  } map { $_->{path} } @_;
             return if ! @path;
             CloudForecast::Log->warn( "File updates: " . join(",", @path) );
             sleep 1;
             kill 'TERM', $parent_pid;
-            exit;
+            $found++;
         } );
     }
+    $0 = "$0 (watchdog-wait-for-shutdown)";
+    while (1) { sleep 1 }
+    exit;
 }
 
 1;
