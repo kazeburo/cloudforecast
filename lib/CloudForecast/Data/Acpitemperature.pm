@@ -2,8 +2,6 @@ package CloudForecast::Data::Acpitemperature;
 
 use CloudForecast::Data -base;
 
-# fixme /proc/acpi/thermal_zone/*/temperature
-
 rrds map { [ $_, 'GAUGE' ] } qw /temp/;
 graphs 'temp' => 'ACPI Temperature';
 
