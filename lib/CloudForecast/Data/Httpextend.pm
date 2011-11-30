@@ -1,10 +1,7 @@
-package CloudForecast::Data::Apache;
+package CloudForecast::Data::Httpextend;
 
 use CloudForecast::Data -base;
 use HTTP::Request;
-
-# TODO: ほんとは args とかで resouces 個別に有効/無効を選べるようにしたい。
-my $ExtendedStatus = $ENV{CF_AP_EXTEND} || 0;
 
 my @status_def = (
     { ds => 'wait', key => '_', desc => 'Waiting for Connection' },
@@ -23,19 +20,16 @@ my @status_dsnames = map { $_->{ds} } @status_def;
 my %dsname_of      = map { $_->{key} => $_->{ds} } @status_def;
 
 rrds map { [ $_, 'GAUGE' ] } @status_dsnames;
-graphs 'ap_status' => 'Apache Status';
-
-# あとで追加するのは面倒なので、DS だけは作っておく。
 rrds map { [ $_, 'GAUGE' ] } qw(rps bps bpr);
-if ($ExtendedStatus) {
-    graphs 'ap_rps' => 'Apache Req/s';
-    graphs 'ap_bps' => 'Apache Bytes/s';
-    graphs 'ap_bpr' => 'Apache Bytes/req';
-}
+
+graphs 'ap_status' => 'Apache Status';
+graphs 'ap_rps' => 'Apache Req/s';
+graphs 'ap_bps' => 'Apache Bytes/s';
+graphs 'ap_bpr' => 'Apache Bytes/req';
 
 title {
     my $c = shift;
-    my $title = "Apache";
+    my $title = "Apache Extend";
     if ( my $port = $c->args->[0] ) {
         $title .= " ($port)";
     }
@@ -85,24 +79,20 @@ fetcher {
         }
     }
 
-    if ($ExtendedStatus) {
-        return [@status{@status_dsnames}, $rps, $bps, $bpr];
-    } else {
-        return [@status{@status_dsnames}];
-    }
+    return [@status{@status_dsnames}, $rps, $bps, $bpr];
 };
 
 =encoding utf-8
 
 =head1 NAME
 
-CloudForecast::Data::Apache - monitor statuses of Apache
+CloudForecast::Data::Httpextend - monitor statuses of Apache
 
 =head1 SYNOPSIS
 
     component_config:
     resources:
-      - apache:80:/server-status?auto:www.example.com
+      - httpextend:80:/server-status?auto:www.example.com
 
 =head1 DESCRIPTION
 
