@@ -210,7 +210,7 @@ sub watchdog_zombie {
                 CloudForecast::Log->warn("exection_time exceed, kill: " . $pid);
                 kill 'TERM', $pid;
             }
-            if ( $status eq STATUS_IDLE && time - $time > 360 + int(30*(0.5-rand(1)) ) {
+            if ( $status eq STATUS_IDLE && time - $time > 360 + int(30*(0.5-rand(1))) ) {
                 CloudForecast::Log->warn("idle_time exceed, kill: " . $pid);
                 kill 'TERM', $pid
             }
