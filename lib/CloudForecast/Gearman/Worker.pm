@@ -6,15 +6,18 @@ use base qw/Class::Accessor::Fast/;
 use Gearman::Worker;
 use UNIVERSAL::require;
 use Storable qw//;
-use Parallel::Prefork::SpareWorkers;
+use File::Temp qw//;
+use Parallel::Prefork 0.13;
+use Parallel::Scoreboard 0.03;
 use CloudForecast::Log;
 use CloudForecast::ConfigLoader;
-use CloudForecast::Gearman::Scoreboard;
 use CloudForecast::Ledge;
 
 #preload
 require CloudForecast::Data;
 
+use constant STATUS_IDLE   => '_';
+use constant STATUS_ACTIVE => 'A';
 
 __PACKAGE__->mk_accessors(qw/configloader
                              restarter
@@ -200,17 +203,16 @@ sub watchdog_zombie {
 
     $0 = "$0 (watchdog)";
     while ( 1 ) {
-        my @statuses = $scoreboard->get_parsed_statuses;
-        for my $status ( @statuses ) {
-            if ( $status->{status} eq CloudForecast::Gearman::Scoreboard::STATUS_ACTIVE
-                     && time - $status->{time} > $self->max_exection_time ) {
-                CloudForecast::Log->warn("exection_time exceed, kill: " . $status->{pid});
-                kill 'TERM', $status->{pid}
+        my $stats = $scoreboard->read_all();
+        for my $pid ( keys %$stats) {
+            my($status,$time,$type) = split /\s+/, $stats{$pid}, 3;
+            if ( $status eq STATUS_ACTIVE && time - $time > $self->max_exection_time ) {
+                CloudForecast::Log->warn("exection_time exceed, kill: " . $pid);
+                kill 'TERM', $pid;
             }
-            if ( $status->{status} eq CloudForecast::Gearman::Scoreboard::STATUS_IDLE
-                     && time - $status->{time} > 360 + int(30*(0.5-rand(1))) ) {
-                CloudForecast::Log->warn("idle_time exceed, kill: " . $status->{pid});
-                kill 'TERM', $status->{pid}
+            if ( $status eq STATUS_IDLE && time - $time > 360 + int(30*(0.5-rand(1)) ) {
+                CloudForecast::Log->warn("idle_time exceed, kill: " . $pid);
+                kill 'TERM', $pid
             }
         }
         sleep 1 for 1..30;
@@ -224,9 +226,8 @@ sub watchdog_zombie {
 sub run_worker {
     my $self = shift;
 
- 
-    my $scoreboard = CloudForecast::Gearman::Scoreboard->new( 
-        undef, $self->max_workers );
+    my $scoreboard_dir = File::Temp::tempdir(CLEANUP => 1);
+    my $scoreboard = Parallel::Scoreboard->new( base_dir => $scoreboard_dir );
 
     my @watchdog_pid;
     push @watchdog_pid, $self->watchdog_zombie( $scoreboard );
@@ -235,10 +236,8 @@ sub run_worker {
         push @watchdog_pid, $self->configloader->watchdog;
     }
 
-    my $pm = Parallel::Prefork::SpareWorkers->new({
+    my $pm = Parallel::Prefork->new({
         max_workers  => $self->max_workers,
-        min_spare_workers => $self->max_workers,
-        scoreboard   => $scoreboard,
         trap_signals => {
             TERM => 'TERM',
             HUP  => 'TERM',
@@ -249,18 +248,19 @@ sub run_worker {
     while ( $pm->signal_received ne 'TERM' ) {
         $pm->start and next;
         $0 = "$0 (worker)";
+        $scoreboard->set_status( sprintf "%s %s worker", STATUS_IDLE, time );
         my $i = 0;
         my $worker = $self->gearman_worker;
         $worker->work(
             on_start => sub {
                 $i++;
-                $pm->set_status( CloudForecast::Gearman::Scoreboard::STATUS_ACTIVE );
+                $scoreboard->update( sprintf "%s %s worker", STATUS_ACTIVE, time );
             },
             on_fail => sub {
-                $pm->set_status( CloudForecast::Gearman::Scoreboard::STATUS_IDLE );
+                $scoreboard->update( sprintf "%s %s worker", STATUS_IDLE, time );
             },
             on_complete => sub {
-                $pm->set_status( CloudForecast::Gearman::Scoreboard::STATUS_IDLE );
+                $scoreboard->update( sprintf "%s %s worker", STATUS_IDLE, time );
             },
             stop_if => sub {
                 $i++ >= $self->max_requests_per_child
