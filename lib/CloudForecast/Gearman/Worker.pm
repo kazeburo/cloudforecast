@@ -205,7 +205,7 @@ sub watchdog_zombie {
     while ( 1 ) {
         my $stats = $scoreboard->read_all();
         for my $pid ( keys %$stats) {
-            my($status,$time,$type) = split /\s+/, $stats{$pid}, 3;
+            my($status,$time,$type) = split /\s+/, $stats->{$pid}, 3;
             if ( $status eq STATUS_ACTIVE && time - $time > $self->max_exection_time ) {
                 CloudForecast::Log->warn("exection_time exceed, kill: " . $pid);
                 kill 'TERM', $pid;
