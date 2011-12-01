@@ -248,7 +248,7 @@ sub run_worker {
     while ( $pm->signal_received ne 'TERM' ) {
         $pm->start and next;
         $0 = "$0 (worker)";
-        $scoreboard->set_status( sprintf "%s %s worker", STATUS_IDLE, time );
+        $scoreboard->update( sprintf "%s %s worker", STATUS_IDLE, time );
         my $i = 0;
         my $worker = $self->gearman_worker;
         $worker->work(
