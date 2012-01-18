@@ -8,7 +8,7 @@ adaptor {
     my $args = shift;
     LWP::UserAgent->new(
         timeout => 10,
-        agent   => 'CloudForecast',
+        agent   => 'cloudforecastbot'
     );
 };
 
