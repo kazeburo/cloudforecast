@@ -42,7 +42,7 @@ if ( $^O eq 'linux' && -d "/proc/sys/fs/inotify" ) {
 requires 'LWP::UserAgent';
 #requires 'SNMP'; $ yum install net-snmp-perl
 requires 'DBI';
-requires 'DBD::SQLite', 1.25;
+requires 'DBD::SQLite', 1.31;
 
 #auto_set_repository;
 auto_include;

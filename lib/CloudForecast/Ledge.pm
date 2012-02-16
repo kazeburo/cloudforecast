@@ -37,7 +37,10 @@ sub connection {
     my $db_path = $self->db_path;
 
     my $dbh = DBI->connect( "dbi:SQLite:dbname=$db_path","","",
-                            { RaiseError => 1, AutoCommit => 1 } );
+                            {
+                                RaiseError => 1, AutoCommit => 1, 
+                                sqlite_use_immediate_transaction => 1,
+                            } );
     $dbh->do(<<EOF);
 CREATE TABLE IF NOT EXISTS ledge (
     resource_name VARCHAR(255) NOT NULL,
