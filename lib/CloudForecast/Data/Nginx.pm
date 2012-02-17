@@ -6,8 +6,8 @@ use HTTP::Request;
 rrds map { [ $_, 'GAUGE' ] } qw /read write wait/;
 rrds 'request' => 'COUNTER';
 
-graphs 'connection' => 'Nginx connections';
-graphs 'request' => 'Nginx request counter';
+graphs 'connection' => 'Connections';
+graphs 'request' => 'Number of Request';
 
 title {
     my $c = shift;
@@ -66,30 +66,30 @@ __DATA__
 DEF:my1=<%RRD%>:read:AVERAGE
 DEF:my2=<%RRD%>:write:AVERAGE
 DEF:my3=<%RRD%>:wait:AVERAGE
-AREA:my1#c0c0c0:Reading  
-GPRINT:my1:LAST:Cur\: %6.1lf
-GPRINT:my1:AVERAGE:Ave\: %6.1lf
-GPRINT:my1:MAX:Max\: %6.1lf
-GPRINT:my1:MIN:Min\: %6.1lf\l
-STACK:my2#000080:Writing  
-GPRINT:my2:LAST:Cur\: %6.1lf
-GPRINT:my2:AVERAGE:Ave\: %6.1lf
-GPRINT:my2:MAX:Max\: %6.1lf
-GPRINT:my2:MIN:Min\: %6.1lf\l
-STACK:my3#008080:Waiting 
-GPRINT:my3:LAST:Cur\: %6.1lf
-GPRINT:my3:AVERAGE:Ave\: %6.1lf
-GPRINT:my3:MAX:Max\: %6.1lf
-GPRINT:my3:MIN:Min\: %6.1lf\l
+AREA:my1#c0c0c0:Reading
+GPRINT:my1:LAST:Cur\:%6.1lf
+GPRINT:my1:AVERAGE:Ave\:%6.1lf
+GPRINT:my1:MAX:Max\:%6.1lf
+GPRINT:my1:MIN:Min\:%6.1lf\l
+STACK:my2#000080:Writing
+GPRINT:my2:LAST:Cur\:%6.1lf
+GPRINT:my2:AVERAGE:Ave\:%6.1lf
+GPRINT:my2:MAX:Max\:%6.1lf
+GPRINT:my2:MIN:Min\:%6.1lf\l
+STACK:my3#008080:Waiting
+GPRINT:my3:LAST:Cur\:%6.1lf
+GPRINT:my3:AVERAGE:Ave\:%6.1lf
+GPRINT:my3:MAX:Max\:%6.1lf
+GPRINT:my3:MIN:Min\:%6.1lf\l
 
 @@ request
 DEF:my1t=<%RRD%>:request:AVERAGE
 CDEF:my1=my1t,0,25000,LIMIT
-LINE1:my1#00C000:Request  
-GPRINT:my1:LAST:Cur\: %4.1lf
-GPRINT:my1:AVERAGE:Ave\: %4.1lf
-GPRINT:my1:MAX:Max\: %4.1lf
-GPRINT:my1:MIN:Min\: %4.1lf\l
+LINE1:my1#00C000:Request
+GPRINT:my1:LAST:Cur\:%4.1lf
+GPRINT:my1:AVERAGE:Ave\:%4.1lf
+GPRINT:my1:MAX:Max\:%4.1lf
+GPRINT:my1:MIN:Min\:%4.1lf\l
 
 
 

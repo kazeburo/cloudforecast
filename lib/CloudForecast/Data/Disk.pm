@@ -71,8 +71,8 @@ DEF:my1=<%RRD%>:total:AVERAGE
 DEF:my2=<%RRD%>:used:AVERAGE
 CDEF:my1b=my1,1000,*
 CDEF:my2b=my2,1000,*
-AREA:my1b#ff99ff:Total 
-GPRINT:my1b:LAST:Current\: %3.2lf %sB
+AREA:my1b#ff99ff:Total
+GPRINT:my1b:LAST:Cur\:%4.2lf%sB
 AREA:my2b#cc00ff:Used 
-GPRINT:my2b:LAST:Current\: %3.2lf %sB
+GPRINT:my2b:LAST:Cur\:%4.2lf%sB
 

@@ -24,10 +24,10 @@ CloudForecast::Data::Memcached - memcached resource monitor
 rrds map { [$_,'COUNTER'] } qw/cmdget cmdset gethits getmisses/;
 rrds map { [$_,'GAUGE'] } qw/rate used max/;
 # rate is using for current_connections
-graphs 'usage' => 'cache usage';
-graphs 'count' => 'request count';
-graphs 'rate' => 'cache hit rate';
-graphs 'conn' => 'connections' => 'conn' => sub {
+graphs 'usage' => 'Cache Usage';
+graphs 'count' => 'Request Count';
+graphs 'rate' => 'Cache Hit Rate';
+graphs 'conn' => 'Connections' => 'conn' => sub {
     my ($c,$template) = @_;
     my $sysinfo = $c->ledge_get('sysinfo') || [];
     my %sysinfo = @$sysinfo;
@@ -117,32 +117,32 @@ __DATA__
 @@ usage
 DEF:my1=<%RRD%>:used:AVERAGE
 DEF:my2=<%RRD%>:max:AVERAGE
-AREA:my1#eaaf00:Used 
-GPRINT:my1:LAST:Cur\: %2.2lf%sB
-GPRINT:my1:AVERAGE:Ave\: %2.2lf%sB
-GPRINT:my1:MAX:Max\: %2.2lf%sB
-GPRINT:my1:MIN:Min\: %2.2lf%sB\c
+AREA:my1#eaaf00:Used
+GPRINT:my1:LAST:Cur\:%3.2lf%sB
+GPRINT:my1:AVERAGE:Ave\:%3.2lf%sB
+GPRINT:my1:MAX:Max\:%3.2lf%sB
+GPRINT:my1:MIN:Min\:%3.2lf%sB\l
 LINE:my2#333333:Max 
-GPRINT:my2:LAST:Cur\: %2.2lf%sB 
-GPRINT:my2:AVERAGE:Ave\: %2.2lf%sB 
-GPRINT:my2:MAX:Max\: %2.2lf%sB 
-GPRINT:my2:MIN:Min\: %2.2lf%sB\c
+GPRINT:my2:LAST:Cur\:%3.2lf%sB 
+GPRINT:my2:AVERAGE:Ave\:%3.2lf%sB 
+GPRINT:my2:MAX:Max\:%3.2lf%sB 
+GPRINT:my2:MIN:Min\:%3.2lf%sB\l
 
 @@ count
 DEF:my1a=<%RRD%>:cmdset:AVERAGE
 DEF:my2a=<%RRD%>:cmdget:AVERAGE
 CDEF:my1=my1a,0,100000,LIMIT
 CDEF:my2=my2a,0,100000,LIMIT
-AREA:my1#00C000:Set  
-GPRINT:my1:LAST:Cur\: %6.1lf
-GPRINT:my1:AVERAGE:Ave\: %6.1lf
-GPRINT:my1:MAX:Max\: %6.1lf
-GPRINT:my1:MIN:Min\: %6.1lf\c
-STACK:my2#0000C0:Get  
-GPRINT:my2:LAST:Cur\: %6.1lf
-GPRINT:my2:AVERAGE:Ave\: %6.1lf
-GPRINT:my2:MAX:Max\: %6.1lf
-GPRINT:my2:MIN:Min\: %6.1lf\c
+AREA:my1#00C000:Set
+GPRINT:my1:LAST:Cur\:%6.1lf
+GPRINT:my1:AVERAGE:Ave\:%6.1lf
+GPRINT:my1:MAX:Max\:%6.1lf
+GPRINT:my1:MIN:Min\:%6.1lf\l
+STACK:my2#0000C0:Get
+GPRINT:my2:LAST:Cur\:%6.1lf
+GPRINT:my2:AVERAGE:Ave\:%6.1lf
+GPRINT:my2:MAX:Max\:%6.1lf
+GPRINT:my2:MIN:Min\:%6.1lf\l
 
 
 @@ rate
@@ -150,20 +150,20 @@ DEF:hits=<%RRD%>:gethits:AVERAGE
 DEF:misses=<%RRD%>:getmisses:AVERAGE
 CDEF:total=hits,misses,+
 CDEF:rate=hits,total,/,100,*,0,100,LIMIT
-AREA:rate#990000:RATE  
-GPRINT:rate:LAST:Cur\: %4.2lf%s
-GPRINT:rate:AVERAGE:Ave\: %4.2lf%s
-GPRINT:rate:MAX:Max\: %4.2lf%s
-GPRINT:rate:MIN:Min\: %4.2lf%s\c
+AREA:rate#990000:Rate
+GPRINT:rate:LAST:Cur\:%4.2lf%s
+GPRINT:rate:AVERAGE:Ave\:%4.2lf%s
+GPRINT:rate:MAX:Max\:%4.2lf%s
+GPRINT:rate:MIN:Min\:%4.2lf%s\l
 LINE:100
 
 @@ conn
 DEF:conn=<%RRD%>:rate:AVERAGE
-AREA:conn#00C000:Connections 
-GPRINT:conn:LAST:Cur\: %6.1lf
-GPRINT:conn:AVERAGE:Ave\: %6.1lf
-GPRINT:conn:MAX:Max\: %6.1lf
-GPRINT:conn:MIN:Min\: %6.1lf\c
+AREA:conn#00C000:Connections
+GPRINT:conn:LAST:Cur\:%6.1lf
+GPRINT:conn:AVERAGE:Ave\:%6.1lf
+GPRINT:conn:MAX:Max\:%6.1lf
+GPRINT:conn:MIN:Min\:%6.1lf\l
 
 
 
