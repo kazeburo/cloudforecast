@@ -163,57 +163,57 @@ CDEF:my5=my5t,UN,0,my5t,IF
 # used
 CDEF:myelse=my2,my3,-,my7,-,my6,-,my5,-,1024,*,0,34359738368,LIMIT
 AREA:myelse#ffdd67:used      
-GPRINT:myelse:LAST:Cur\: %6.2lf%sByte
-GPRINT:myelse:AVERAGE:Ave\: %6.2lf%sByte
-GPRINT:myelse:MAX:Max\: %6.2lf%sByte\c
+GPRINT:myelse:LAST:Cur\:%6.2lf%sByte
+GPRINT:myelse:AVERAGE:Ave\:%6.2lf%sByte
+GPRINT:myelse:MAX:Max\:%6.2lf%sByte\c
 
 # shared
 CDEF:my55=my5,1024,*,0,34359738368,LIMIT
 STACK:my55#a6a6a6:shared    
-GPRINT:my55:LAST:Cur\: %6.2lf%sByte
-GPRINT:my55:AVERAGE:Ave\: %6.2lf%sByte
-GPRINT:my55:MAX:Max\: %6.2lf%sByte\c
+GPRINT:my55:LAST:Cur\:%6.2lf%sByte
+GPRINT:my55:AVERAGE:Ave\:%6.2lf%sByte
+GPRINT:my55:MAX:Max\:%6.2lf%sByte\c
 
 # buffer
 CDEF:my66=my6,1024,*,0,34359738368,LIMIT
 STACK:my66#8a8ae6:buffer    
-GPRINT:my66:LAST:Cur\: %6.2lf%sByte
-GPRINT:my66:AVERAGE:Ave\: %6.2lf%sByte
-GPRINT:my66:MAX:Max\: %6.2lf%sByte\c
+GPRINT:my66:LAST:Cur\:%6.2lf%sByte
+GPRINT:my66:AVERAGE:Ave\:%6.2lf%sByte
+GPRINT:my66:MAX:Max\:%6.2lf%sByte\c
 
 # cached
 CDEF:my77=my7,1024,*,0,34359738368,LIMIT
 STACK:my77#6060e0:cached    
 GPRINT:my77:LAST:Cur\: %6.2lf%sByte
-GPRINT:my77:AVERAGE:Ave\: %6.2lf%sByte
-GPRINT:my77:MAX:Max\: %6.2lf%sByte\c
+GPRINT:my77:AVERAGE:Ave\:%6.2lf%sByte
+GPRINT:my77:MAX:Max\:%6.2lf%sByte\c
 
 # avail real
 CDEF:my33=my3,1024,*,0,34359738368,LIMIT
 STACK:my33#80e080:avail real
-GPRINT:my33:LAST:Cur\: %6.2lf%sByte
-GPRINT:my33:AVERAGE:Ave\: %6.2lf%sByte
-GPRINT:my33:MAX:Max\: %6.2lf%sByte\c
+GPRINT:my33:LAST:Cur\:%6.2lf%sByte
+GPRINT:my33:AVERAGE:Ave\:%6.2lf%sByte
+GPRINT:my33:MAX:Max\:%6.2lf%sByte\c
 
 # total real
 CDEF:my222=my2,1024,*,0,34359738368,LIMIT
 LINE2:my222#000080:total real
-GPRINT:my222:LAST:Cur\: %6.2lf%sByte
-GPRINT:my222:AVERAGE:Ave\: %6.2lf%sByte
-GPRINT:my222:MAX:Max\: %6.2lf%sByte\c
+GPRINT:my222:LAST:Cur\:%6.2lf%sByte
+GPRINT:my222:AVERAGE:Ave\:%6.2lf%sByte
+GPRINT:my222:MAX:Max\:%6.2lf%sByte\c
 
 # used swap
 CDEF:my11=my1,my8,-,1024,*,0,34359738368,LIMIT
 LINE2:my11#ff6060:used  swap
-GPRINT:my11:LAST:Cur\: %6.2lf%sByte
-GPRINT:my11:AVERAGE:Ave\: %6.2lf%sByte
-GPRINT:my11:MAX:Max\: %6.2lf%sByte\c
+GPRINT:my11:LAST:Cur\:%6.2lf%sByte
+GPRINT:my11:AVERAGE:Ave\:%6.2lf%sByte
+GPRINT:my11:MAX:Max\:%6.2lf%sByte\c
 
 @@ tcpestab.def
 DEF:tcpestab=<%RRD%>:tcpestab:AVERAGE
 AREA:tcpestab#00C000: TCP Established   
-GPRINT:tcpestab:LAST:Cur\: %4.0lf
-GPRINT:tcpestab:AVERAGE:Ave\: %4.0lf
-GPRINT:tcpestab:MAX:Max\: %4.0lf
-GPRINT:tcpestab:MIN:Min\: %4.0lf\c
+GPRINT:tcpestab:LAST:Cur\:%4.0lf
+GPRINT:tcpestab:AVERAGE:Ave\:%4.0lf
+GPRINT:tcpestab:MAX:Max\:%4.0lf
+GPRINT:tcpestab:MIN:Min\:%4.0lf\c
 
