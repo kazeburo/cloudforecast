@@ -123,9 +123,9 @@ GPRINT:my1:AVERAGE:Ave\:%3.2lf%sB
 GPRINT:my1:MAX:Max\:%3.2lf%sB
 GPRINT:my1:MIN:Min\:%3.2lf%sB\l
 LINE:my2#333333:Max 
-GPRINT:my2:LAST:Cur\:%3.2lf%sB 
-GPRINT:my2:AVERAGE:Ave\:%3.2lf%sB 
-GPRINT:my2:MAX:Max\:%3.2lf%sB 
+GPRINT:my2:LAST:Cur\:%3.2lf%sB
+GPRINT:my2:AVERAGE:Ave\:%3.2lf%sB
+GPRINT:my2:MAX:Max\:%3.2lf%sB
 GPRINT:my2:MIN:Min\:%3.2lf%sB\l
 
 @@ count
