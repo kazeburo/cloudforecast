@@ -86,25 +86,25 @@ CDEF:my2r=my2,total,/,100,*
 CDEF:my3r=my3,total,/,100,*
 CDEF:my4r=my4,total,/,100,*
 AREA:my1r#c0c0c0:Insert
-GPRINT:my1r:LAST:Cur\:%4.2lf[%%]
-GPRINT:my1r:AVERAGE:Ave\:%4.2lf[%%]
-GPRINT:my1r:MAX:Max\:%4.2lf[%%]
-GPRINT:my1r:MIN:Min\:%4.2lf[%%]\l
+GPRINT:my1r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my1r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my1r:MAX:Max\:%5.1lf[%%]
+GPRINT:my1r:MIN:Min\:%5.1lf[%%]\l
 STACK:my2r#000080:Update
-GPRINT:my2r:LAST:Cur\:%4.2lf[%%]
-GPRINT:my2r:AVERAGE:Ave\:%4.2lf[%%]
-GPRINT:my2r:MAX:Max\:%4.2lf[%%]
-GPRINT:my2r:MIN:Min\:%4.2lf[%%]\l
+GPRINT:my2r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my2r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my2r:MAX:Max\:%5.1lf[%%]
+GPRINT:my2r:MIN:Min\:%5.1lf[%%]\l
 STACK:my3r#008080:Delete
-GPRINT:my3r:LAST:Cur\:%4.2lf[%%]
-GPRINT:my3r:AVERAGE:Ave\:%4.2lf[%%]
-GPRINT:my3r:MAX:Max\:%4.2lf[%%]
-GPRINT:my3r:MIN:Min\:%4.2lf[%%]\l
+GPRINT:my3r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my3r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my3r:MAX:Max\:%5.1lf[%%]
+GPRINT:my3r:MIN:Min\:%5.1lf[%%]\l
 STACK:my4r#800080:Read  
-GPRINT:my4r:LAST:Cur\:%4.2lf[%%]
-GPRINT:my4r:AVERAGE:Ave\:%4.2lf[%%]
-GPRINT:my4r:MAX:Max\:%4.2lf[%%]
-GPRINT:my4r:MIN:Min\:%4.2lf[%%]\l
+GPRINT:my4r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my4r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my4r:MAX:Max\:%5.1lf[%%]
+GPRINT:my4r:MIN:Min\:%5.1lf[%%]\l
 
 @@ row_speed
 DEF:my1=<%RRD%>:ir:AVERAGE
@@ -135,10 +135,10 @@ GPRINT:my4:MIN:Min\:%6.1lf\l
 @@ cache
 DEF:my1=<%RRD%>:cr:AVERAGE
 AREA:my1#990000:Ratio
-GPRINT:my1:LAST:Cur\:%4.2lf[%%]
-GPRINT:my1:AVERAGE:Ave\:%4.2lf[%%]
-GPRINT:my1:MAX:Max\:%4.2lf[%%]
-GPRINT:my1:MIN:Min\:%4.2lf[%%]\l
+GPRINT:my1:LAST:Cur\:%5.1lf[%%]
+GPRINT:my1:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my1:MAX:Max\:%5.1lf[%%]
+GPRINT:my1:MIN:Min\:%5.1lf[%%]\l
 LINE:100
 
 

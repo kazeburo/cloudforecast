@@ -151,10 +151,10 @@ DEF:misses=<%RRD%>:getmisses:AVERAGE
 CDEF:total=hits,misses,+
 CDEF:rate=hits,total,/,100,*,0,100,LIMIT
 AREA:rate#990000:Rate
-GPRINT:rate:LAST:Cur\:%4.2lf%s
-GPRINT:rate:AVERAGE:Ave\:%4.2lf%s
-GPRINT:rate:MAX:Max\:%4.2lf%s
-GPRINT:rate:MIN:Min\:%4.2lf%s\l
+GPRINT:rate:LAST:Cur\:%4.1lf%s[%%]
+GPRINT:rate:AVERAGE:Ave\:%4.1lf%s[%%]
+GPRINT:rate:MAX:Max\:%4.1lf%s[%%]
+GPRINT:rate:MIN:Min\:%4.1lf%s[%%]\l
 LINE:100
 
 @@ conn
