@@ -184,7 +184,7 @@ GPRINT:my66:MAX:Max\:%6.2lf%sByte\c
 # cached
 CDEF:my77=my7,1024,*,0,34359738368,LIMIT
 STACK:my77#6060e0:cached   
-GPRINT:my77:LAST:Cur\: %6.2lf%sByte
+GPRINT:my77:LAST:Cur\:%6.2lf%sByte
 GPRINT:my77:AVERAGE:Ave\:%6.2lf%sByte
 GPRINT:my77:MAX:Max\:%6.2lf%sByte\c
 
@@ -211,9 +211,9 @@ GPRINT:my11:MAX:Max\:%6.2lf%sByte\c
 
 @@ tcpestab.def
 DEF:tcpestab=<%RRD%>:tcpestab:AVERAGE
-AREA:tcpestab#00C000: TCP Established
+AREA:tcpestab#00C000:TCP Established
 GPRINT:tcpestab:LAST:Cur\:%4.0lf
 GPRINT:tcpestab:AVERAGE:Ave\:%4.0lf
 GPRINT:tcpestab:MAX:Max\:%4.0lf
-GPRINT:tcpestab:MIN:Min\:%4.0lf\c
+GPRINT:tcpestab:MIN:Min\:%4.0lf\l
 
