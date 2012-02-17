@@ -85,7 +85,7 @@ GPRINT:my1r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my1r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my1r:MAX:Max\:%5.1lf[%%]
 GPRINT:my1r:MIN:Min\:%5.1lf[%%]\l
-STACK:my2r#000080:Insert
+STACK:my2r#000080:Insert 
 GPRINT:my2r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my2r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my2r:MAX:Max\:%5.1lf[%%]
