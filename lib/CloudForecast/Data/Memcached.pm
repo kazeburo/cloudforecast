@@ -118,15 +118,15 @@ __DATA__
 DEF:my1=<%RRD%>:used:AVERAGE
 DEF:my2=<%RRD%>:max:AVERAGE
 AREA:my1#eaaf00:Used
-GPRINT:my1:LAST:Cur\:%3.2lf%sB
-GPRINT:my1:AVERAGE:Ave\:%3.2lf%sB
-GPRINT:my1:MAX:Max\:%3.2lf%sB
-GPRINT:my1:MIN:Min\:%3.2lf%sB\l
+GPRINT:my1:LAST:Cur\:%5.2lf%sB
+GPRINT:my1:AVERAGE:Ave\:%5.2lf%sB
+GPRINT:my1:MAX:Max\:%5.2lf%sB
+GPRINT:my1:MIN:Min\:%5.2lf%sB\l
 LINE:my2#333333:Max 
-GPRINT:my2:LAST:Cur\:%3.2lf%sB
-GPRINT:my2:AVERAGE:Ave\:%3.2lf%sB
-GPRINT:my2:MAX:Max\:%3.2lf%sB
-GPRINT:my2:MIN:Min\:%3.2lf%sB\l
+GPRINT:my2:LAST:Cur\:%5.2lf%sB
+GPRINT:my2:AVERAGE:Ave\:%5.2lf%sB
+GPRINT:my2:MAX:Max\:%5.2lf%sB
+GPRINT:my2:MIN:Min\:%5.2lf%sB\l
 
 @@ count
 DEF:my1a=<%RRD%>:cmdset:AVERAGE
@@ -151,10 +151,10 @@ DEF:misses=<%RRD%>:getmisses:AVERAGE
 CDEF:total=hits,misses,+
 CDEF:rate=hits,total,/,100,*,0,100,LIMIT
 AREA:rate#990000:Rate
-GPRINT:rate:LAST:Cur\:%4.1lf%s[%%]
-GPRINT:rate:AVERAGE:Ave\:%4.1lf%s[%%]
-GPRINT:rate:MAX:Max\:%4.1lf%s[%%]
-GPRINT:rate:MIN:Min\:%4.1lf%s[%%]\l
+GPRINT:rate:LAST:Cur\:%5.1lf[%%]
+GPRINT:rate:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:rate:MAX:Max\:%5.1lf[%%]
+GPRINT:rate:MIN:Min\:%5.1lf[%%]\l
 LINE:100
 
 @@ conn
