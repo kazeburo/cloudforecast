@@ -43,8 +43,10 @@ fetcher {
     #load
     push @map, [ 'laLoad', 1 ];
     # memory
+    # memSharedは取れないので削除。memIndexをdummyに入れておく
     push @map, map { [ $_, 0 ] } qw/memTotalSwap memAvailSwap memTotalReal memAvailReal memTotalFree 
-                            memShared memBuffer memCached/;
+                            memIndex memBuffer memCached/;
+
     # tcp established
     push @map, [ 'tcpCurrEstab', 0 ];
 
@@ -153,26 +155,16 @@ DEF:my1=<%RRD%>:totalswap:AVERAGE
 DEF:my2=<%RRD%>:totalreal:AVERAGE
 DEF:my3=<%RRD%>:availreal:AVERAGE
 DEF:my4=<%RRD%>:totalfree:AVERAGE
-DEF:my5t=<%RRD%>:shared:AVERAGE
 DEF:my6=<%RRD%>:buffer:AVERAGE
 DEF:my7=<%RRD%>:cached:AVERAGE
 DEF:my8=<%RRD%>:availswap:AVERAGE
 
-CDEF:my5=my5t,UN,0,my5t,IF
-
 # used
-CDEF:myelse=my2,my3,-,my7,-,my6,-,my5,-,1024,*,0,34359738368,LIMIT
+CDEF:myelse=my2,my3,-,my7,-,my6,-,1024,*,0,34359738368,LIMIT
 AREA:myelse#ffdd67:used      
 GPRINT:myelse:LAST:Cur\:%6.2lf%sByte
 GPRINT:myelse:AVERAGE:Ave\:%6.2lf%sByte
 GPRINT:myelse:MAX:Max\:%6.2lf%sByte\l
-
-# shared
-CDEF:my55=my5,1024,*,0,34359738368,LIMIT
-STACK:my55#a6a6a6:shared    
-GPRINT:my55:LAST:Cur\:%6.2lf%sByte
-GPRINT:my55:AVERAGE:Ave\:%6.2lf%sByte
-GPRINT:my55:MAX:Max\:%6.2lf%sByte\l
 
 # buffer
 CDEF:my66=my6,1024,*,0,34359738368,LIMIT
