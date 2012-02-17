@@ -113,38 +113,38 @@ DEF:my3=<%RRD%>:cr:AVERAGE
 DEF:my4=<%RRD%>:cu:AVERAGE
 DEF:my5=<%RRD%>:cd:AVERAGE
 AREA:my1#c0c0c0:Select 
-GPRINT:my1:LAST:Cur\:%6.1lf
-GPRINT:my1:AVERAGE:Ave\:%6.1lf
-GPRINT:my1:MAX:Max\:%6.1lf
-GPRINT:my1:MIN:Min\:%6.1lf\l
+GPRINT:my1:LAST:Cur\:%7.1lf
+GPRINT:my1:AVERAGE:Ave\:%7.1lf
+GPRINT:my1:MAX:Max\:%7.1lf
+GPRINT:my1:MIN:Min\:%7.1lf\l
 STACK:my2#000080:Insert 
-GPRINT:my2:LAST:Cur\:%6.1lf
-GPRINT:my2:AVERAGE:Ave\:%6.1lf
-GPRINT:my2:MAX:Max\:%6.1lf
-GPRINT:my2:MIN:Min\:%6.1lf\l
+GPRINT:my2:LAST:Cur\:%7.1lf
+GPRINT:my2:AVERAGE:Ave\:%7.1lf
+GPRINT:my2:MAX:Max\:%7.1lf
+GPRINT:my2:MIN:Min\:%7.1lf\l
 STACK:my3#008080:Replace
-GPRINT:my3:LAST:Cur\:%6.1lf
-GPRINT:my3:AVERAGE:Ave\:%6.1lf
-GPRINT:my3:MAX:Max\:%6.1lf
-GPRINT:my3:MIN:Min\:%6.1lf\l
+GPRINT:my3:LAST:Cur\:%7.1lf
+GPRINT:my3:AVERAGE:Ave\:%7.1lf
+GPRINT:my3:MAX:Max\:%7.1lf
+GPRINT:my3:MIN:Min\:%7.1lf\l
 STACK:my4#800080:Update 
-GPRINT:my4:LAST:Cur\:%6.1lf
-GPRINT:my4:AVERAGE:Ave\:%6.1lf
-GPRINT:my4:MAX:Max\:%6.1lf
-GPRINT:my4:MIN:Min\:%6.1lf\l
+GPRINT:my4:LAST:Cur\:%7.1lf
+GPRINT:my4:AVERAGE:Ave\:%7.1lf
+GPRINT:my4:MAX:Max\:%7.1lf
+GPRINT:my4:MIN:Min\:%7.1lf\l
 STACK:my5#C0C000:Delete 
-GPRINT:my5:LAST:Cur\:%6.1lf
-GPRINT:my5:AVERAGE:Ave\:%6.1lf
-GPRINT:my5:MAX:Max\:%6.1lf
-GPRINT:my5:MIN:Min\:%6.1lf\l
+GPRINT:my5:LAST:Cur\:%7.1lf
+GPRINT:my5:AVERAGE:Ave\:%7.1lf
+GPRINT:my5:MAX:Max\:%7.1lf
+GPRINT:my5:MIN:Min\:%7.1lf\l
 
 @@ slow
 DEF:my1=<%RRD%>:sq:AVERAGE
-AREA:my1#00c000:Slow Queries
-GPRINT:my1:LAST:Cur\:%5.3lf
-GPRINT:my1:AVERAGE:Ave\:%5.3lf
-GPRINT:my1:MAX:Max\:%5.3lf
-GPRINT:my1:MIN:Min\:%5.3lf\l
+AREA:my1#00c000:Queries
+GPRINT:my1:LAST:Cur\:%7.3lf
+GPRINT:my1:AVERAGE:Ave\:%7.3lf
+GPRINT:my1:MAX:Max\:%7.3lf
+GPRINT:my1:MIN:Min\:%7.3lf\l
 
 @@ thread
 DEF:my1=<%RRD%>:cac:AVERAGE
