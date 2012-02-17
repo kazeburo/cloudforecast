@@ -79,20 +79,20 @@ CDEF:my1=my1a,0,25000,LIMIT
 CDEF:my2=my2a,0,25000,LIMIT
 CDEF:my3=my3a,0,25000,LIMIT
 LINE1:my1#000080:Request    
-GPRINT:my1:LAST:Cur\:%5.1lf
-GPRINT:my1:AVERAGE:Ave\:%5.1lf
-GPRINT:my1:MAX:Max\:%5.1lf
-GPRINT:my1:MIN:Min\:%5.1lf\l
+GPRINT:my1:LAST:Cur\:%6.1lf
+GPRINT:my1:AVERAGE:Ave\:%6.1lf
+GPRINT:my1:MAX:Max\:%6.1lf
+GPRINT:my1:MIN:Min\:%6.1lf\l
 LINE1:my2#008080:Hit Request
-GPRINT:my2:LAST:Cur\:%5.1lf
-GPRINT:my2:AVERAGE:Ave\:%5.1lf
-GPRINT:my2:MAX:Max\:%5.1lf
-GPRINT:my2:MIN:Min\:%5.1lf\l
+GPRINT:my2:LAST:Cur\:%6.1lf
+GPRINT:my2:AVERAGE:Ave\:%6.1lf
+GPRINT:my2:MAX:Max\:%6.1lf
+GPRINT:my2:MIN:Min\:%6.1lf\l
 LINE1:my3#CC0000:Err Request
-GPRINT:my3:LAST:Cur\:%5.1lf
-GPRINT:my3:AVERAGE:Ave\:%5.1lf
-GPRINT:my3:MAX:Max\:%5.1lf
-GPRINT:my3:MIN:Min\:%5.1lf\l
+GPRINT:my3:LAST:Cur\:%6.1lf
+GPRINT:my3:AVERAGE:Ave\:%6.1lf
+GPRINT:my3:MAX:Max\:%6.1lf
+GPRINT:my3:MIN:Min\:%6.1lf\l
 
 @@ ratio
 DEF:my1=<%RRD%>:hitratio:AVERAGE
