@@ -211,9 +211,9 @@ GPRINT:my11:MAX:Max\:%6.2lf%sByte\l
 
 @@ tcpestab.def
 DEF:tcpestab=<%RRD%>:tcpestab:AVERAGE
-AREA:tcpestab#00C000:TCP Established
-GPRINT:tcpestab:LAST:Cur\:%4.0lf
-GPRINT:tcpestab:AVERAGE:Ave\:%4.0lf
-GPRINT:tcpestab:MAX:Max\:%4.0lf
-GPRINT:tcpestab:MIN:Min\:%4.0lf\l
+AREA:tcpestab#00C000:Established
+GPRINT:tcpestab:LAST:Cur\:%7.1lf
+GPRINT:tcpestab:AVERAGE:Ave\:%7.1lf
+GPRINT:tcpestab:MAX:Max\:%7.1lf
+GPRINT:tcpestab:MIN:Min\:%7.1lf\l
 

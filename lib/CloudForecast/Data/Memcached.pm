@@ -159,7 +159,7 @@ LINE:100
 
 @@ conn
 DEF:conn=<%RRD%>:rate:AVERAGE
-AREA:conn#00C000:Connections
+AREA:conn#00C000:Connection
 GPRINT:conn:LAST:Cur\:%7.1lf
 GPRINT:conn:AVERAGE:Ave\:%7.1lf
 GPRINT:conn:MAX:Max\:%7.1lf
