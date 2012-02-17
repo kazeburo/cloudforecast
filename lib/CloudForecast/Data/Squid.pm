@@ -96,11 +96,11 @@ GPRINT:my3:MIN:Min\:%6.1lf\l
 
 @@ ratio
 DEF:my1=<%RRD%>:hitratio:AVERAGE
-AREA:my1#990000:Ratio  
-GPRINT:my1:LAST:Cur\:%4.2lf[%%]
-GPRINT:my1:AVERAGE:Ave\:%4.2lf[%%]
-GPRINT:my1:MAX:Max\:%4.2lf[%%]
-GPRINT:my1:MIN:Min\:%4.2lf[%%]\l
+AREA:my1#990000:Ratio
+GPRINT:my1:LAST:Cur\:%5.1lf[%%]
+GPRINT:my1:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my1:MAX:Max\:%5.1lf[%%]
+GPRINT:my1:MIN:Min\:%5.1lf[%%]\l
 LINE:100
 
 @@ svc
