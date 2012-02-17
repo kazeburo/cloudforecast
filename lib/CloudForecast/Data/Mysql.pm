@@ -140,7 +140,7 @@ GPRINT:my5:MIN:Min\:%7.1lf\l
 
 @@ slow
 DEF:my1=<%RRD%>:sq:AVERAGE
-AREA:my1#00c000:Queries
+AREA:my1#00c000:Query
 GPRINT:my1:LAST:Cur\:%7.3lf
 GPRINT:my1:AVERAGE:Ave\:%7.3lf
 GPRINT:my1:MAX:Max\:%7.3lf
