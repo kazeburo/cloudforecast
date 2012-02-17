@@ -134,15 +134,15 @@ DEF:my2a=<%RRD%>:cmdget:AVERAGE
 CDEF:my1=my1a,0,100000,LIMIT
 CDEF:my2=my2a,0,100000,LIMIT
 AREA:my1#00C000:Set
-GPRINT:my1:LAST:Cur\:%6.1lf
-GPRINT:my1:AVERAGE:Ave\:%6.1lf
-GPRINT:my1:MAX:Max\:%6.1lf
-GPRINT:my1:MIN:Min\:%6.1lf\l
+GPRINT:my1:LAST:Cur\:%7.1lf
+GPRINT:my1:AVERAGE:Ave\:%7.1lf
+GPRINT:my1:MAX:Max\:%7.1lf
+GPRINT:my1:MIN:Min\:%7.1lf\l
 STACK:my2#0000C0:Get
-GPRINT:my2:LAST:Cur\:%6.1lf
-GPRINT:my2:AVERAGE:Ave\:%6.1lf
-GPRINT:my2:MAX:Max\:%6.1lf
-GPRINT:my2:MIN:Min\:%6.1lf\l
+GPRINT:my2:LAST:Cur\:%7.1lf
+GPRINT:my2:AVERAGE:Ave\:%7.1lf
+GPRINT:my2:MAX:Max\:%7.1lf
+GPRINT:my2:MIN:Min\:%7.1lf\l
 
 
 @@ rate
@@ -160,10 +160,10 @@ LINE:100
 @@ conn
 DEF:conn=<%RRD%>:rate:AVERAGE
 AREA:conn#00C000:Connections
-GPRINT:conn:LAST:Cur\:%6.1lf
-GPRINT:conn:AVERAGE:Ave\:%6.1lf
-GPRINT:conn:MAX:Max\:%6.1lf
-GPRINT:conn:MIN:Min\:%6.1lf\l
+GPRINT:conn:LAST:Cur\:%7.1lf
+GPRINT:conn:AVERAGE:Ave\:%7.1lf
+GPRINT:conn:MAX:Max\:%7.1lf
+GPRINT:conn:MIN:Min\:%7.1lf\l
 
 
 
