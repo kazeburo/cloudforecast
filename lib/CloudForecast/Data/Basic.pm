@@ -143,10 +143,10 @@ GPRINT:my7r:MIN:Min\:%5.1lf[%%]\l
 @@ load.def
 DEF:my1=<%RRD%>:load:AVERAGE
 AREA:my1#00C000:Load Average
-GPRINT:my1:LAST:Cur\:%4.1lf
-GPRINT:my1:AVERAGE:Ave\:%4.1lf
-GPRINT:my1:MAX:Max\:%4.1lf
-GPRINT:my1:MIN:Min\:%4.1lf\l
+GPRINT:my1:LAST:Cur\:%6.2lf
+GPRINT:my1:AVERAGE:Ave\:%6.2lf
+GPRINT:my1:MAX:Max\:%6.2lf
+GPRINT:my1:MIN:Min\:%6.2lf\l
 
 @@ memory.def
 DEF:my1=<%RRD%>:totalswap:AVERAGE
@@ -212,8 +212,8 @@ GPRINT:my11:MAX:Max\:%6.2lf%sByte\l
 @@ tcpestab.def
 DEF:tcpestab=<%RRD%>:tcpestab:AVERAGE
 AREA:tcpestab#00C000:Established
-GPRINT:tcpestab:LAST:Cur\:%7.1lf
-GPRINT:tcpestab:AVERAGE:Ave\:%7.1lf
-GPRINT:tcpestab:MAX:Max\:%7.1lf
-GPRINT:tcpestab:MIN:Min\:%7.1lf\l
+GPRINT:tcpestab:LAST:Cur\:%6.0lf
+GPRINT:tcpestab:AVERAGE:Ave\:%6.0lf
+GPRINT:tcpestab:MAX:Max\:%6.0lf
+GPRINT:tcpestab:MIN:Min\:%6.0lf\l
 
