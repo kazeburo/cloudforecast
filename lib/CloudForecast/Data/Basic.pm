@@ -105,40 +105,40 @@ CDEF:my6r=my6,total,/,100,*,0,100,LIMIT
 CDEF:my7r=my7,total,/,100,*,0,100,LIMIT
 
 AREA:my1r#c0c0c0:User     
-GPRINT:my1r:LAST:Cur\: %4.1lf[%%]
-GPRINT:my1r:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my1r:MAX:Max\: %4.1lf[%%]
-GPRINT:my1r:MIN:Min\: %4.1lf[%%]\l
+GPRINT:my1r:LAST:Cur\:%4.1lf%%
+GPRINT:my1r:AVERAGE:Ave\:%4.1lf%%
+GPRINT:my1r:MAX:Max\:%4.1lf%%
+GPRINT:my1r:MIN:Min\:%4.1lf%%\l
 STACK:my2r#000080:Nice     
-GPRINT:my2r:LAST:Cur\: %4.1lf[%%]
-GPRINT:my2r:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my2r:MAX:Max\: %4.1lf[%%]
-GPRINT:my2r:MIN:Min\: %4.1lf[%%]\l
+GPRINT:my2r:LAST:Cur\:%4.1lf%%
+GPRINT:my2r:AVERAGE:Ave\:%4.1lf%%
+GPRINT:my2r:MAX:Max\:%4.1lf%%
+GPRINT:my2r:MIN:Min\:%4.1lf%%\l
 STACK:my3r#008080:System   
-GPRINT:my3r:LAST:Cur\: %4.1lf[%%]
-GPRINT:my3r:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my3r:MAX:Max\: %4.1lf[%%]
-GPRINT:my3r:MIN:Min\: %4.1lf[%%]\l
+GPRINT:my3r:LAST:Cur\:%4.1lf%%
+GPRINT:my3r:AVERAGE:Ave\:%4.1lf%%
+GPRINT:my3r:MAX:Max\:%4.1lf%%
+GPRINT:my3r:MIN:Min\:%4.1lf%%\l
 STACK:my4r#800080:Idle     
-GPRINT:my4r:LAST:Cur\: %4.1lf[%%]
-GPRINT:my4r:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my4r:MAX:Max\: %4.1lf[%%]
-GPRINT:my4r:MIN:Min\: %4.1lf[%%]\l
+GPRINT:my4r:LAST:Cur\:%4.1lf%%
+GPRINT:my4r:AVERAGE:Ave\:%4.1lf%%
+GPRINT:my4r:MAX:Max\:%4.1lf%%
+GPRINT:my4r:MIN:Min\:%4.1lf%%\l
 STACK:my5r#f00000:Wait     
-GPRINT:my5r:LAST:Cur\: %4.1lf[%%]
-GPRINT:my5r:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my5r:MAX:Max\: %4.1lf[%%]
-GPRINT:my5r:MIN:Min\: %4.1lf[%%]\l
+GPRINT:my5r:LAST:Cur\:%4.1lf%%
+GPRINT:my5r:AVERAGE:Ave\:%4.1lf%%
+GPRINT:my5r:MAX:Max\:%4.1lf%%
+GPRINT:my5r:MIN:Min\:%4.1lf%%\l
 STACK:my6r#500000:Kernel   
-GPRINT:my6r:LAST:Cur\: %4.1lf[%%]
-GPRINT:my6r:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my6r:MAX:Max\: %4.1lf[%%]
-GPRINT:my6r:MIN:Min\: %4.1lf[%%]\l
+GPRINT:my6r:LAST:Cur\:%4.1lf%%
+GPRINT:my6r:AVERAGE:Ave\:%4.1lf%%
+GPRINT:my6r:MAX:Max\:%4.1lf%%
+GPRINT:my6r:MIN:Min\:%4.1lf%%\l
 STACK:my7r#0000E0:Interrupt
-GPRINT:my7r:LAST:Cur\: %4.1lf[%%]
-GPRINT:my7r:AVERAGE:Ave\: %4.1lf[%%]
-GPRINT:my7r:MAX:Max\: %4.1lf[%%]
-GPRINT:my7r:MIN:Min\: %4.1lf[%%]\l
+GPRINT:my7r:LAST:Cur\:%4.1lf%%
+GPRINT:my7r:AVERAGE:Ave\:%4.1lf%%
+GPRINT:my7r:MAX:Max\:%4.1lf%%
+GPRINT:my7r:MIN:Min\:%4.1lf%%\l
 
 @@ load.def
 DEF:my1=<%RRD%>:load:AVERAGE
@@ -183,7 +183,7 @@ GPRINT:my66:MAX:Max\:%6.2lf%sByte\c
 
 # cached
 CDEF:my77=my7,1024,*,0,34359738368,LIMIT
-STACK:my77#6060e0:cached    
+STACK:my77#6060e0:cached   
 GPRINT:my77:LAST:Cur\: %6.2lf%sByte
 GPRINT:my77:AVERAGE:Ave\:%6.2lf%sByte
 GPRINT:my77:MAX:Max\:%6.2lf%sByte\c
