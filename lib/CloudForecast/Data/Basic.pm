@@ -142,11 +142,11 @@ GPRINT:my7r:MIN:Min\:%4.1lf%%\l
 
 @@ load.def
 DEF:my1=<%RRD%>:load:AVERAGE
-AREA:my1#00C000:Load Average  
-GPRINT:my1:LAST:Cur\: %4.1lf
-GPRINT:my1:AVERAGE:Ave\: %4.1lf
-GPRINT:my1:MAX:Max\: %4.1lf
-GPRINT:my1:MIN:Min\: %4.1lf\l
+AREA:my1#00C000:Load Average
+GPRINT:my1:LAST:Cur\:%4.1lf
+GPRINT:my1:AVERAGE:Ave\:%4.1lf
+GPRINT:my1:MAX:Max\:%4.1lf
+GPRINT:my1:MIN:Min\:%4.1lf\l
 
 @@ memory.def
 DEF:my1=<%RRD%>:totalswap:AVERAGE
