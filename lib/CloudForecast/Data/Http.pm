@@ -56,15 +56,15 @@ __DATA__
 @@ http
 DEF:my1=<%RRD%>:busy:AVERAGE
 DEF:my2=<%RRD%>:idle:AVERAGE
-AREA:my1#00C000:Busy  
+AREA:my1#00C000:Busy
 GPRINT:my1:LAST:Cur\: %4.1lf
 GPRINT:my1:AVERAGE:Ave\: %4.1lf
 GPRINT:my1:MAX:Max\: %4.1lf
-GPRINT:my1:MIN:Min\: %4.1lf\c
-STACK:my2#0000C0:Idle  
+GPRINT:my1:MIN:Min\: %4.1lf\l
+STACK:my2#0000C0:Idle
 GPRINT:my2:LAST:Cur\: %4.1lf
 GPRINT:my2:AVERAGE:Ave\: %4.1lf
 GPRINT:my2:MAX:Max\: %4.1lf
-GPRINT:my2:MIN:Min\: %4.1lf\c
+GPRINT:my2:MIN:Min\: %4.1lf\l
 
 

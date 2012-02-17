@@ -18,7 +18,7 @@ rrds 'tcpestab' => 'GAUGE';
 graphs 'cpu' => 'CPU Usage [%]' => 'cpu.def';
 graphs 'load' => 'Load Average' => 'load.def';
 graphs 'memory' => 'Memory Usage' => 'memory.def';
-graphs 'tcpestab' => 'number of TCP Established' => 'tcpestab.def',  sub {
+graphs 'tcpestab' => 'TCP Established' => 'tcpestab.def',  sub {
     my ($c,$template) = @_;
     return $template;
 };
@@ -183,7 +183,7 @@ GPRINT:my66:MAX:Max\:%6.2lf%sByte\c
 
 # cached
 CDEF:my77=my7,1024,*,0,34359738368,LIMIT
-STACK:my77#6060e0:cached   
+STACK:my77#6060e0:cached    
 GPRINT:my77:LAST:Cur\:%6.2lf%sByte
 GPRINT:my77:AVERAGE:Ave\:%6.2lf%sByte
 GPRINT:my77:MAX:Max\:%6.2lf%sByte\c
