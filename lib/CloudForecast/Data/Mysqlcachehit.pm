@@ -90,16 +90,16 @@ fetcher {
 
 
     my $key_cache            = sprintf '%.2f',
-        (1.0 - $status{'key_reads'} / $status{'key_read_requests'} ) * 100;
+        (1.0 - $status{'key_reads'} / ( $status{'key_read_requests'} || 1 ) ) * 100;
 
     my $query_cache          = sprintf '%.2f',
-        ($status{'qcache_hits'} / ($status{'qcache_inserts'} + $status{'qcache_hits'} + $status{'qcache_not_cached'}) ) * 100;
+        ($status{'qcache_hits'} / ( ($status{'qcache_inserts'} + $status{'qcache_hits'} + $status{'qcache_not_cached'}) || 1 ) ) * 100;
 
     my $table_lock_immediate = sprintf '%.2f',
-        ($status{'table_locks_immediate'} / ($status{'table_locks_immediate'} + $status{'table_locks_waited'}) ) * 100;
+        ($status{'table_locks_immediate'} / ( ($status{'table_locks_immediate'} + $status{'table_locks_waited'}) || 1 ) ) * 100;
 
     my $thread_cache         = sprintf '%.2f',
-        (1.0 - $status{'threads_created'} / $status{'connections'} ) * 100;
+        (1.0 - $status{'threads_created'} / ( $status{'connections'} || 1 ) ) * 100;
 
     my $tmp_table_on_memory  = sprintf '%.2f',
         ($status{'created_tmp_tables'} / (($status{'created_tmp_tables'} + $status{'created_tmp_disk_tables'}) || 1) ) * 100;
