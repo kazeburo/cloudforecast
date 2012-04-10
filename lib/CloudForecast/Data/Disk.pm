@@ -26,7 +26,7 @@ sub hrstorage {
         my $disk = List::Util::first { $_->{hrStorageDescr} eq $interface } values %{$disks};
         if ( !$disk ) {
             CloudForecast::Log->warn("couldnot find disk partition '$interface'");
-            return [undef, undef];
+            return;
         }
         CloudForecast::Log->debug("found partition '$interface' with hrStorageIndex:$disk->{hrStorageIndex}");
         return [ $disk->{hrStorageSize}*$disk->{hrStorageAllocationUnits}/1024,
