@@ -160,7 +160,7 @@ DEF:my7=<%RRD%>:cached:AVERAGE
 DEF:my8=<%RRD%>:availswap:AVERAGE
 
 # used
-CDEF:myelse=my2,my3,-,my7,-,my6,-,1024,*,0,34359738368,LIMIT
+CDEF:myelse=my2,my3,-,my7,-,my6,-,1024,*,0,3435973836800,LIMIT
 AREA:myelse#ffdd67:used      
 GPRINT:myelse:LAST:Cur\:%6.2lf%sByte
 GPRINT:myelse:AVERAGE:Ave\:%6.2lf%sByte
