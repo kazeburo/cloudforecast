@@ -17,7 +17,7 @@ CloudForecast::Data::Redis - redis resource monitor
 =cut
 
 rrds map { [$_,'COUNTER'] } qw/totalcmd totalconn/;
-rrds map { [$_,'GAUGE'] } qw/conncli connslv usedmem unsaved mem_fragmentation_ratio/;
+rrds map { [$_,'GAUGE'] } qw/conncli connslv usedmem unsaved fragmentation/;
 graphs 'cmd' => 'Command Processed';
 graphs 'conn' => 'Connections';
 graphs 'mem' => 'Memory Usage';
@@ -86,7 +86,7 @@ fetcher {
     $c->ledge_set( 'sysinfo', \@sysinfo );
 
     #rrds map { [$_,'COUNTER'] } qw/totalcmd totalconn/;
-    #rrds map { [$_,'GAUGE'] } qw/conncli connslv usedmem unsaved/;
+    #rrds map { [$_,'GAUGE'] } qw/conncli connslv usedmem unsaved fragmentation/;
     return [ 
         $stats{total_commands_processed}, 
         $stats{total_connections_received}, 
