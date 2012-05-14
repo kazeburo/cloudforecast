@@ -1,4 +1,4 @@
-package CloudForecast::Data::Resis;
+package CloudForecast::Data::Redis;
 
 use CloudForecast::Data -base;
 use IO::Socket::INET;
@@ -57,7 +57,7 @@ fetcher {
     die "could not connecet to $host:$port" unless $found;
 
     $sock->blocking(1);
-    $sock->syswrite("stats\r\n");
+    $sock->syswrite("info\r\n");
     my $raw_stats;
     $sock->sysread( $raw_stats, 8192 );
     my %stats;
