@@ -102,7 +102,7 @@ fetcher {
 __DATA__
 @@ cmd
 DEF:my1=<%RRD%>:totalcmd:AVERAGE
-AREA:my1#00C000:Total Command
+AREA:my1#FF8C00:Total Command
 GPRINT:my1:LAST:Cur\:%5.1lf
 GPRINT:my1:AVERAGE:Ave\:%5.1lf
 GPRINT:my1:MAX:Max\:%5.1lf
@@ -112,17 +112,17 @@ GPRINT:my1:MIN:Min\:%5.1lf\l
 DEF:my1=<%RRD%>:totalconn:AVERAGE
 DEF:my2=<%RRD%>:conncli:AVERAGE
 DEF:my3=<%RRD%>:connslv:AVERAGE
-LINE1:my1#C00000:Clients
+LINE1:my1#C00000:Clients 
 GPRINT:my1:LAST:Cur\:%5.1lf
 GPRINT:my1:AVERAGE:Ave\:%5.1lf
 GPRINT:my1:MAX:Max\:%5.1lf
 GPRINT:my1:MIN:Min\:%5.1lf\l
-LINE1:my2#990033:Slaves
+LINE1:my2#990033:Slaves  
 GPRINT:my1:LAST:Cur\:%5.1lf
 GPRINT:my1:AVERAGE:Ave\:%5.1lf
 GPRINT:my1:MAX:Max\:%5.1lf
 GPRINT:my1:MIN:Min\:%5.1lf\l
-LINE1:my3#33cc66:Received
+LINE1:my3#2E8B57:Received
 GPRINT:my1:LAST:Cur\:%5.1lf
 GPRINT:my1:AVERAGE:Ave\:%5.1lf
 GPRINT:my1:MAX:Max\:%5.1lf
@@ -130,7 +130,7 @@ GPRINT:my1:MIN:Min\:%5.1lf\l
 
 @@ mem
 DEF:my1=<%RRD%>:usedmem:AVERAGE
-AREA:my1#00C000:Used
+AREA:my1#4682B4:Used
 GPRINT:my1:LAST:Cur\:%5.1lf%sB
 GPRINT:my1:AVERAGE:Ave\:%5.1lf%sB
 GPRINT:my1:MAX:Max\:%5.1lf%sB
@@ -138,7 +138,7 @@ GPRINT:my1:MIN:Min\:%5.1lf%sB\l
 
 @@ unsaved
 DEF:my1=<%RRD%>:unsaved:AVERAGE
-AREA:my1#00C000:Items
+AREA:my1#BDB76B:Changes
 GPRINT:my1:LAST:Cur\:%5.1lf
 GPRINT:my1:AVERAGE:Ave\:%5.1lf
 GPRINT:my1:MAX:Max\:%5.1lf
