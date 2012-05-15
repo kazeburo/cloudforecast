@@ -109,9 +109,9 @@ GPRINT:my1:MAX:Max\:%5.1lf
 GPRINT:my1:MIN:Min\:%5.1lf\l
 
 @@ conn
-DEF:my1=<%RRD%>:totalconn:AVERAGE
-DEF:my2=<%RRD%>:conncli:AVERAGE
-DEF:my3=<%RRD%>:connslv:AVERAGE
+DEF:my1=<%RRD%>:conncli:AVERAGE
+DEF:my2=<%RRD%>:connslv:AVERAGE
+DEF:my3=<%RRD%>:totalconn:AVERAGE
 LINE1:my1#C00000:Clients 
 GPRINT:my1:LAST:Cur\:%5.1lf
 GPRINT:my1:AVERAGE:Ave\:%5.1lf
