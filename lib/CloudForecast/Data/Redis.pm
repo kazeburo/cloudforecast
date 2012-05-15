@@ -118,15 +118,15 @@ GPRINT:my1:AVERAGE:Ave\:%5.1lf
 GPRINT:my1:MAX:Max\:%5.1lf
 GPRINT:my1:MIN:Min\:%5.1lf\l
 LINE1:my2#990033:Slaves  
-GPRINT:my1:LAST:Cur\:%5.1lf
-GPRINT:my1:AVERAGE:Ave\:%5.1lf
-GPRINT:my1:MAX:Max\:%5.1lf
-GPRINT:my1:MIN:Min\:%5.1lf\l
+GPRINT:my2:LAST:Cur\:%5.1lf
+GPRINT:my2:AVERAGE:Ave\:%5.1lf
+GPRINT:my2:MAX:Max\:%5.1lf
+GPRINT:my2:MIN:Min\:%5.1lf\l
 LINE1:my3#2E8B57:Received
-GPRINT:my1:LAST:Cur\:%5.1lf
-GPRINT:my1:AVERAGE:Ave\:%5.1lf
-GPRINT:my1:MAX:Max\:%5.1lf
-GPRINT:my1:MIN:Min\:%5.1lf\l
+GPRINT:my3:LAST:Cur\:%5.1lf
+GPRINT:my3:AVERAGE:Ave\:%5.1lf
+GPRINT:my3:MAX:Max\:%5.1lf
+GPRINT:my3:MIN:Min\:%5.1lf\l
 
 @@ mem
 DEF:my1=<%RRD%>:usedmem:AVERAGE
