@@ -683,7 +683,7 @@ sub update_rrd {
     my @base_schema;
     my %extend;
     for my $schema ( @{$self->rrd_schema} ) {
-        my $data = @$result;
+        my $data = shift @$result;
         if ( exists $self->extend_rrd_schema->{$schema->[0]} ) {
             $extend{$schema->[0]} = $data;
         }
@@ -694,7 +694,7 @@ sub update_rrd {
     }
 
     my $file = $self->rrd_path;
-    my $ds = join ":", @base;
+    my $ds = join ":", @base_schema;
     my $data= join ":", $timestamp, map { ! defined $_ ? 'U' : $_ } @base;
     CloudForecast::Log->debug('update rrd file: '. $file. " -t $ds $data");
     eval {
