@@ -22,7 +22,7 @@ graphs 'cpu' => 'CPU Usage [%]' => 'cpu.def', sub {
     my %sysinfo = @$sysinfo;
     my $version = $sysinfo{'snmp version'} || 0;
     if ( $version < 5.4 ) {
-        my $reader = Data::Section::Simple->new(ref $self);
+        my $reader = Data::Section::Simple->new(ref $c);
         $template = $reader->get_data_section('cpu_old.def');
     } 
     return $template;
@@ -104,7 +104,6 @@ DEF:my5t=<%RRD%>:wait:AVERAGE
 DEF:my7t=<%RRD%>:interrupt:AVERAGE
 DEF:my8t=<%RRD_EXTEND softirq  %>:softirq:AVERAGE
 CDEF:my5=my5t,UN,0,my5t,IF
-CDEF:my6=my6t,UN,0,my6t,IF
 CDEF:my7=my7t,UN,0,my7t,IF
 CDEF:my8=my8t,UN,0,my8t,IF
 CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my7,+,my8,+
