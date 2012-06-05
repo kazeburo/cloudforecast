@@ -5,6 +5,7 @@ use CloudForecast::Data -base;
 # RRDファイルを作成
 # [定義名,タイプ]
 rrds map { [ $_, 'DERIVE' ] } qw /user nice system idle wait kernel interrupt/;
+extend_rrd 'softirq','DERIVE';
 rrds 'load' => 'GAUGE';
 rrds map { [ $_, 'GAUGE' ] } qw/totalswap availswap totalreal availreal totalfree shared buffer cached/;
 rrds 'tcpestab' => 'GAUGE';
@@ -39,7 +40,7 @@ fetcher {
 
     #cpu
     my @map = map { [ $_, 0 ] } qw/ssCpuRawUser ssCpuRawNice ssCpuRawSystem
-                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt/;
+                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ/;
     #load
     push @map, [ 'laLoad', 1 ];
     # memory
@@ -92,12 +93,14 @@ DEF:my4=<%RRD%>:idle:AVERAGE
 DEF:my5t=<%RRD%>:wait:AVERAGE
 DEF:my6t=<%RRD%>:kernel:AVERAGE
 DEF:my7t=<%RRD%>:interrupt:AVERAGE
+DEF:my8t=<%RRD_EXTEND softirq  %>:softirq:AVERAGE
 
 CDEF:my5=my5t,UN,0,my5t,IF
 CDEF:my6=my6t,UN,0,my6t,IF
 CDEF:my7=my7t,UN,0,my7t,IF
+CDEF:my8=my8t,UN,0,my8t,IF
 
-CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my6,+,my7,+
+CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my6,+,my7,+,my8,+
 CDEF:my1r=my1,total,/,100,*,0,100,LIMIT
 CDEF:my2r=my2,total,/,100,*,0,100,LIMIT
 CDEF:my3r=my3,total,/,100,*,0,100,LIMIT
@@ -105,42 +108,48 @@ CDEF:my4r=my4,total,/,100,*,0,100,LIMIT
 CDEF:my5r=my5,total,/,100,*,0,100,LIMIT
 CDEF:my6r=my6,total,/,100,*,0,100,LIMIT
 CDEF:my7r=my7,total,/,100,*,0,100,LIMIT
+CDEF:my8r=my8,total,/,100,*,0,100,LIMIT
 
-AREA:my1r#c0c0c0:User  
+AREA:my1r#c0c0c0:User   
 GPRINT:my1r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my1r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my1r:MAX:Max\:%5.1lf[%%]
 GPRINT:my1r:MIN:Min\:%5.1lf[%%]\l
-STACK:my2r#000080:Nice  
+STACK:my2r#000080:Nice   
 GPRINT:my2r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my2r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my2r:MAX:Max\:%5.1lf[%%]
 GPRINT:my2r:MIN:Min\:%5.1lf[%%]\l
-STACK:my3r#008080:System
+STACK:my3r#008080:System 
 GPRINT:my3r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my3r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my3r:MAX:Max\:%5.1lf[%%]
 GPRINT:my3r:MIN:Min\:%5.1lf[%%]\l
-STACK:my4r#800080:Idle  
+STACK:my4r#800080:Idle   
 GPRINT:my4r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my4r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my4r:MAX:Max\:%5.1lf[%%]
 GPRINT:my4r:MIN:Min\:%5.1lf[%%]\l
-STACK:my5r#f00000:Wait  
+STACK:my5r#f00000:Wait   
 GPRINT:my5r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my5r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my5r:MAX:Max\:%5.1lf[%%]
 GPRINT:my5r:MIN:Min\:%5.1lf[%%]\l
-STACK:my6r#500000:Kernel
+STACK:my6r#500000:Kernel 
 GPRINT:my6r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my6r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my6r:MAX:Max\:%5.1lf[%%]
 GPRINT:my6r:MIN:Min\:%5.1lf[%%]\l
-STACK:my7r#0000E0:Intr  
+STACK:my7r#0000E0:Intr   
 GPRINT:my7r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my7r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my7r:MAX:Max\:%5.1lf[%%]
 GPRINT:my7r:MIN:Min\:%5.1lf[%%]\l
+STACK:my8r#0000E0:SoftIRQ
+GPRINT:my8r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my8r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my8r:MAX:Max\:%5.1lf[%%]
+GPRINT:my8r:MIN:Min\:%5.1lf[%%]\l
 
 @@ load.def
 DEF:my1=<%RRD%>:load:AVERAGE
