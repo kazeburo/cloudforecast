@@ -18,13 +18,14 @@ __PACKAGE__->mk_accessors(qw/hostname address details args
                              component_config _component_instance
                              global_config/);
 __PACKAGE__->mk_classdata('rrd_schema');
+__PACKAGE__->mk_classdata('extend_rrd_schema');
 __PACKAGE__->mk_classdata('fetcher_func');
 __PACKAGE__->mk_classdata('graph_key_list');
 __PACKAGE__->mk_classdata('graph_defs');
 __PACKAGE__->mk_classdata('title_func');
 __PACKAGE__->mk_classdata('sysinfo_func');
 
-our @EXPORT = qw/rrds fetcher graphs title sysinfo/;
+our @EXPORT = qw/rrds extend_rrd fetcher graphs title sysinfo/;
 
 sub import {
     my ($class, $name) = @_;
@@ -64,6 +65,24 @@ sub rrds {
             push @$schema, [ shift(@args), shift(@args) ];
         }
     }
+}
+
+sub extend_rrd {
+    my $class = caller;
+    my ($key, $type) = @_;
+    
+    my $schema = $class->rrd_schema;
+    if ( !$schema ) {
+        $schema = $class->rrd_schema([]);
+    }
+
+    my $extend_rrd = $class->extend_rrd_schema;
+    if ( !$schema ) {
+        $schema = $class->extend_rrd_schema({});
+    }
+
+    $extend_rrd->{$key} = $type;
+    push @$schema, [ $key, $type ];
 }
 
 sub fetcher(&) {
@@ -293,6 +312,7 @@ sub draw_graph {
         next if $line =~ m!^\s+$!;
         $line =~ s!<%RRD%>!$rrd_path!g;
         $line =~ s!<%RRD_FOR\s+(.+?)\s+%>!&rrd_path_for($self,$1)!ge;
+        $line =~ s!<%RRD_EXTEND\s+(.+?)\s+%>!&rrd_path_extend($self,$1)!ge;
         push @args, $line;
     }
 
@@ -362,6 +382,21 @@ sub rrd_path {
         $self->resource_name,
         $filename )->cleanup;
     
+}
+
+sub rrd_path_extend {
+    my $self = shift;
+    my $key = shift;
+
+    my $filename = sprintf "%s_%s_%s.rrd",
+        $key,
+        URI::Escape::uri_escape( $self->address ),
+        join( "-", map { URI::Escape::uri_escape($_) } @{$self->args});
+
+    return Path::Class::file(
+        $self->global_config->{data_dir},
+        $self->resource_name,
+        $filename )->cleanup;
 }
 
 sub rrd_path_for {
@@ -556,37 +591,76 @@ sub ledge_set_haserror {
 sub init_rrd {
     my $self = shift;
     my $file = $self->rrd_path;
-    return if -f $file;
-    
+
+    if ( ! -d $file->dir ) {
+        CloudForecast::Log->debug('mkdir:' . $file->dir);
+        File::Path::mkpath("".$file->dir);
+    }
+
     #init
-    CloudForecast::Log->debug('mkdir:' . $file->dir);
-    File::Path::mkpath("".$file->dir);
-    my @ds = map { sprintf "DS:%s:%s:600:0:U", $_->[0], $_->[1] } @{$self->rrd_schema};
-    
-    CloudForecast::Log->debug('create rrd file:' . $file);
-    eval {
-        RRDs::create(
-            $file,
-            '--step', '60',
-            @ds,
-            'RRA:AVERAGE:0.5:5:9216',
-            'RRA:AVERAGE:0.5:30:1536',
-            'RRA:AVERAGE:0.5:120:768',
-            'RRA:AVERAGE:0.5:1440:794',
-            'RRA:MAX:0.5:30:1536',
-            'RRA:MAX:0.5:120:768',
-            'RRA:MAX:0.5:1440:794'
-        );
-        my $ERR=RRDs::error;
-        die $ERR if $ERR;
-    };
-    die "create rrd failed: $@ " if $@;
+    my @base_schema;
+    my %extend_schema;
+    for my $schema ( @{$self->rrd_schema} ) {
+        if ( exists $self->extend_rrd_schema->{$schema->[0]} ) {
+            $extend_schema{$schema->[0]} = $schema;;
+        }
+        else {
+            push @base_schema, $schema;
+        }
+    }
+
+    if ( ! -f $file ) {
+        my @ds = map { sprintf "DS:%s:%s:600:0:U", $_->[0], $_->[1] } @base_schema;    
+        CloudForecast::Log->debug('create rrd file:' . $file);
+        eval {
+            RRDs::create(
+                $file,
+                '--step', '60',
+                @ds,
+                'RRA:AVERAGE:0.5:5:9216',
+                'RRA:AVERAGE:0.5:30:1536',
+                'RRA:AVERAGE:0.5:120:768',
+                'RRA:AVERAGE:0.5:1440:794',
+                'RRA:MAX:0.5:30:1536',
+                'RRA:MAX:0.5:120:768',
+                'RRA:MAX:0.5:1440:794'
+            );
+            my $ERR=RRDs::error;
+            die $ERR if $ERR;
+        };
+        die "create rrd failed: $@ " if $@;
+    }
+
+    for my $schema ( keys %extend_schema ) {
+        my $extend_file = $self->rrd_path_extend($schema);
+        if ( ! -f $extend_file ) {
+            CloudForecast::Log->debug('create extend rrd file:' . $extend_file);
+            eval {
+                RRDs::create(
+                    $extend_file,
+                    '--step', '60',
+                    sprintf("DS:%s:%s:600:0:U", $extend_schema{$schema}->[0],$extend_schema{$schema}->[1]),
+                    'RRA:AVERAGE:0.5:5:9216',
+                    'RRA:AVERAGE:0.5:30:1536',
+                    'RRA:AVERAGE:0.5:120:768',
+                    'RRA:AVERAGE:0.5:1440:794',
+                    'RRA:MAX:0.5:30:1536',
+                    'RRA:MAX:0.5:120:768',
+                    'RRA:MAX:0.5:1440:794'
+                );
+                my $ERR=RRDs::error;
+                die $ERR if $ERR;
+            };
+            die "create extend rrd failed: $@ " if $@;
+        }
+    }
+
 }
 
 sub update_rrd {
     my $self = shift;
     my $ret = shift;
-    my $file = $self->rrd_path;
+
 
     my $timestamp;
     my $result;
@@ -600,8 +674,23 @@ sub update_rrd {
     }
 
     # update
-    my $ds = join ":", map { sprintf "%s", $_->[0] } @{$self->rrd_schema};
-    my $data= join ":", $timestamp, map { ! defined $_ ? 'U' : $_ } @$result;
+    my @base;
+    my @base_schema;
+    my %extend;
+    for my $schema ( @{$self->rrd_schema} ) {
+        my $data = @$result;
+        if ( exists $self->extend_rrd_schema->{$schema->[0]} ) {
+            $extend{$schema->[0]} = $data;
+        }
+        else {
+            push @base, $data;
+            push @base_schema, $schema->[0];
+        }
+    }
+
+    my $file = $self->rrd_path;
+    my $ds = join ":", @base;
+    my $data= join ":", $timestamp, map { ! defined $_ ? 'U' : $_ } @base;
     CloudForecast::Log->debug('update rrd file: '. $file. " -t $ds $data");
     eval {
         RRDs::update(
@@ -613,6 +702,22 @@ sub update_rrd {
         die $ERR if $ERR;
     };
     die "udpate rrdfile failed: $@" if $@;
+
+    foreach my $schema ( keys %extend ) {
+        my $ds = $schema;
+        my $data = join ":", $timestamp, defined $extend{$schema} ? $extend{$schema} : 'U';
+        eval {
+            RRDs::update(
+                $self->rrd_path_extend($schema),
+            '-t', $ds,
+            '--',$data,
+            );
+            my $ERR=RRDs::error;
+            die $ERR if $ERR;
+        };    
+        die "udpate extend rrdfile failed: $@" if $@;
+    }
+
 }
 
 
