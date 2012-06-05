@@ -22,7 +22,8 @@ graphs 'cpu' => 'CPU Usage [%]' => 'cpu.def', sub {
     my %sysinfo = @$sysinfo;
     my $version = $sysinfo{'snmp version'} || 0;
     if ( $version < 5.4 ) {
-        $template = $c->graph_defs->{'cpu_old.def'} 
+        my $reader = Data::Section::Simple->new(ref $self);
+        $template = $reader->get_data_section('cpu_old.def');
     } 
     return $template;
 };
@@ -139,7 +140,7 @@ GPRINT:my5r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my5r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my5r:MAX:Max\:%5.1lf[%%]
 GPRINT:my5r:MIN:Min\:%5.1lf[%%]\l
-STACK:my7r#0000E0:Intr   
+STACK:my7r#F39034:Intr   
 GPRINT:my7r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my7r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my7r:MAX:Max\:%5.1lf[%%]
@@ -195,7 +196,7 @@ GPRINT:my5r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my5r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my5r:MAX:Max\:%5.1lf[%%]
 GPRINT:my5r:MIN:Min\:%5.1lf[%%]\l
-STACK:my7r#0000E0:Intr   
+STACK:my7r#F39034:Intr   
 GPRINT:my7r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my7r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my7r:MAX:Max\:%5.1lf[%%]
