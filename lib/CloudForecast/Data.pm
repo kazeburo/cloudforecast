@@ -56,6 +56,11 @@ sub rrds {
         $schema = $class->rrd_schema([]);
     }
 
+    my $extend_rrd = $class->extend_rrd_schema;
+    if ( !$schema ) {
+        $schema = $class->extend_rrd_schema({});
+    }
+
     if ( ref $args[0] ) {
         push @$schema, @args;
     }
