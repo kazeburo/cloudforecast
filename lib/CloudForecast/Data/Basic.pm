@@ -16,13 +16,19 @@ rrds 'tcpestab' => 'GAUGE';
 # templateは<%RRD%>をファイル名に置き換えて改行区切りで、rrdtool graphに渡される
 # #から始まる行、<%RRD%> 以外の<%  %>はコメント、空行は切り詰め
 # callbackがある場合は、<%RRD%>を置き換える前に渡せる、フィルタとかの処理ができる。
-graphs 'cpu' => 'CPU Usage [%]' => 'cpu.def';
-graphs 'load' => 'Load Average' => 'load.def';
-graphs 'memory' => 'Memory Usage' => 'memory.def';
-graphs 'tcpestab' => 'TCP Established' => 'tcpestab.def',  sub {
+graphs 'cpu' => 'CPU Usage [%]' => 'cpu.def', sub {
     my ($c,$template) = @_;
+    my $sysinfo = $c->ledge_get('sysinfo') || [];
+    my %sysinfo = @$sysinfo;
+    my $version = $sysinfo{'snmp version'} || 0;
+    if ( $version < 5.4 ) {
+        $template = $c->graph_defs->{'cpu_old.def'} 
+    } 
     return $template;
 };
+graphs 'load' => 'Load Average' => 'load.def';
+graphs 'memory' => 'Memory Usage' => 'memory.def';
+graphs 'tcpestab' => 'TCP Established' => 'tcpestab.def';
 
 # 補助情報を出せます。[ key => value, key => value ]な配列のリファレンスで返します
 sysinfo {
@@ -63,7 +69,6 @@ fetcher {
 
     #sysinfo
     my @sysinfo;
-    push @sysinfo, 'snmp version' => $version;
     my $uptime = pop @$ret;
     if ( defined $uptime ) {
         $uptime = $uptime / 100;
@@ -79,6 +84,7 @@ fetcher {
 
     my $sysdescr = pop @$ret;
     push @sysinfo, system => $sysdescr;
+    push @sysinfo, 'snmp version' => $version;
 
     $c->ledge_set('sysinfo', \@sysinfo );
 
@@ -94,20 +100,18 @@ DEF:my2=<%RRD%>:nice:AVERAGE
 DEF:my3=<%RRD%>:system:AVERAGE
 DEF:my4=<%RRD%>:idle:AVERAGE
 DEF:my5t=<%RRD%>:wait:AVERAGE
-DEF:my6t=<%RRD%>:kernel:AVERAGE
 DEF:my7t=<%RRD%>:interrupt:AVERAGE
 DEF:my8t=<%RRD_EXTEND softirq  %>:softirq:AVERAGE
 CDEF:my5=my5t,UN,0,my5t,IF
 CDEF:my6=my6t,UN,0,my6t,IF
 CDEF:my7=my7t,UN,0,my7t,IF
 CDEF:my8=my8t,UN,0,my8t,IF
-CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my6,+,my7,+,my8,+
+CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my7,+,my8,+
 CDEF:my1r=my1,total,/,100,*,0,100,LIMIT
 CDEF:my2r=my2,total,/,100,*,0,100,LIMIT
 CDEF:my3r=my3,total,/,100,*,0,100,LIMIT
 CDEF:my4r=my4,total,/,100,*,0,100,LIMIT
 CDEF:my5r=my5,total,/,100,*,0,100,LIMIT
-CDEF:my6r=my6,total,/,100,*,0,100,LIMIT
 CDEF:my7r=my7,total,/,100,*,0,100,LIMIT
 CDEF:my8r=my8,total,/,100,*,0,100,LIMIT
 AREA:my1r#c0c0c0:User   
@@ -135,11 +139,6 @@ GPRINT:my5r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my5r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my5r:MAX:Max\:%5.1lf[%%]
 GPRINT:my5r:MIN:Min\:%5.1lf[%%]\l
-STACK:my6r#500000:Kernel 
-GPRINT:my6r:LAST:Cur\:%5.1lf[%%]
-GPRINT:my6r:AVERAGE:Ave\:%5.1lf[%%]
-GPRINT:my6r:MAX:Max\:%5.1lf[%%]
-GPRINT:my6r:MIN:Min\:%5.1lf[%%]\l
 STACK:my7r#0000E0:Intr   
 GPRINT:my7r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my7r:AVERAGE:Ave\:%5.1lf[%%]
@@ -150,6 +149,63 @@ GPRINT:my8r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my8r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my8r:MAX:Max\:%5.1lf[%%]
 GPRINT:my8r:MIN:Min\:%5.1lf[%%]\l
+
+@@ cpu_old.def
+DEF:my1=<%RRD%>:user:AVERAGE
+DEF:my2=<%RRD%>:nice:AVERAGE
+DEF:my4=<%RRD%>:idle:AVERAGE
+DEF:my5t=<%RRD%>:wait:AVERAGE
+DEF:my6t=<%RRD%>:kernel:AVERAGE
+DEF:my7t=<%RRD%>:interrupt:AVERAGE
+DEF:my8t=<%RRD_EXTEND softirq  %>:softirq:AVERAGE
+CDEF:my5=my5t,UN,0,my5t,IF
+CDEF:my6=my6t,UN,0,my6t,IF
+CDEF:my7=my7t,UN,0,my7t,IF
+CDEF:my8=my8t,UN,0,my8t,IF
+CDEF:total=my1,my2,+,my4,+,my5,+,my6,+,my7,+,my8,+
+CDEF:my1r=my1,total,/,100,*,0,100,LIMIT
+CDEF:my2r=my2,total,/,100,*,0,100,LIMIT
+CDEF:my4r=my4,total,/,100,*,0,100,LIMIT
+CDEF:my5r=my5,total,/,100,*,0,100,LIMIT
+CDEF:my6r=my6,total,/,100,*,0,100,LIMIT
+CDEF:my7r=my7,total,/,100,*,0,100,LIMIT
+CDEF:my8r=my8,total,/,100,*,0,100,LIMIT
+AREA:my1r#c0c0c0:User   
+GPRINT:my1r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my1r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my1r:MAX:Max\:%5.1lf[%%]
+GPRINT:my1r:MIN:Min\:%5.1lf[%%]\l
+STACK:my2r#000080:Nice   
+GPRINT:my2r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my2r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my2r:MAX:Max\:%5.1lf[%%]
+GPRINT:my2r:MIN:Min\:%5.1lf[%%]\l
+STACK:my6r#008080:System 
+GPRINT:my6r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my6r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my6r:MAX:Max\:%5.1lf[%%]
+GPRINT:my6r:MIN:Min\:%5.1lf[%%]\l
+STACK:my4r#800080:Idle   
+GPRINT:my4r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my4r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my4r:MAX:Max\:%5.1lf[%%]
+GPRINT:my4r:MIN:Min\:%5.1lf[%%]\l
+STACK:my5r#f00000:Wait   
+GPRINT:my5r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my5r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my5r:MAX:Max\:%5.1lf[%%]
+GPRINT:my5r:MIN:Min\:%5.1lf[%%]\l
+STACK:my7r#0000E0:Intr   
+GPRINT:my7r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my7r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my7r:MAX:Max\:%5.1lf[%%]
+GPRINT:my7r:MIN:Min\:%5.1lf[%%]\l
+STACK:my8r#3D282A:SoftIRQ
+GPRINT:my8r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my8r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my8r:MAX:Max\:%5.1lf[%%]
+GPRINT:my8r:MIN:Min\:%5.1lf[%%]\l
+
 
 @@ load.def
 DEF:my1=<%RRD%>:load:AVERAGE
