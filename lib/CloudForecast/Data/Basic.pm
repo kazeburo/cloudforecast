@@ -145,7 +145,7 @@ GPRINT:my7r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my7r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my7r:MAX:Max\:%5.1lf[%%]
 GPRINT:my7r:MIN:Min\:%5.1lf[%%]\l
-STACK:my8r#0000E0:SoftIRQ
+STACK:my8r#3D282A:SoftIRQ
 GPRINT:my8r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my8r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my8r:MAX:Max\:%5.1lf[%%]
