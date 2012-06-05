@@ -56,9 +56,9 @@ sub rrds {
         $schema = $class->rrd_schema([]);
     }
 
-    my $extend_rrd = $class->extend_rrd_schema;
-    if ( !$schema ) {
-        $schema = $class->extend_rrd_schema({});
+    my $extend_rrd_schema = $class->extend_rrd_schema;
+    if ( !$extend_rrd_schema ) {
+        $extend_rrd_schema = $class->extend_rrd_schema({});
     }
 
     if ( ref $args[0] ) {
@@ -81,12 +81,12 @@ sub extend_rrd {
         $schema = $class->rrd_schema([]);
     }
 
-    my $extend_rrd = $class->extend_rrd_schema;
-    if ( !$schema ) {
-        $schema = $class->extend_rrd_schema({});
+    my $extend_rrd_schema = $class->extend_rrd_schema;
+    if ( !$extend_rrd_schema ) {
+        $extend_rrd_schema = $class->extend_rrd_schema({});
     }
 
-    $extend_rrd->{$key} = $type;
+    $extend_rrd_schema->{$key} = $type;
     push @$schema, [ $key, $type ];
 }
 
