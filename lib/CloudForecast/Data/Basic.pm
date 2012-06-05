@@ -39,7 +39,7 @@ fetcher {
     #$c->ledge_(get|add|set|delete)..
 
     #cpu
-    my @map = map { [ $_, 0 ] } qw/ssCpuRawUser ssCpuRawNice ssCpuRawSystem
+    my @map = map { [ $_, 0 ] } qw/versionTag ssCpuRawUser ssCpuRawNice ssCpuRawSystem
                                 ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ/;
     #load
     push @map, [ 'laLoad', 1 ];
@@ -59,8 +59,11 @@ fetcher {
     my $ret = $c->component('SNMP')->get(@map);
     my $processor = $c->component('SNMP')->table('hrProcessorTable',columns=>[qw/hrProcessorLoad/]);
 
+    my $version = shift @$ret;
+
     #sysinfo
     my @sysinfo;
+    push @sysinfo, 'snmp version' => $version;
     my $uptime = pop @$ret;
     if ( defined $uptime ) {
         $uptime = $uptime / 100;
@@ -94,12 +97,10 @@ DEF:my5t=<%RRD%>:wait:AVERAGE
 DEF:my6t=<%RRD%>:kernel:AVERAGE
 DEF:my7t=<%RRD%>:interrupt:AVERAGE
 DEF:my8t=<%RRD_EXTEND softirq  %>:softirq:AVERAGE
-
 CDEF:my5=my5t,UN,0,my5t,IF
 CDEF:my6=my6t,UN,0,my6t,IF
 CDEF:my7=my7t,UN,0,my7t,IF
 CDEF:my8=my8t,UN,0,my8t,IF
-
 CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my6,+,my7,+,my8,+
 CDEF:my1r=my1,total,/,100,*,0,100,LIMIT
 CDEF:my2r=my2,total,/,100,*,0,100,LIMIT
@@ -109,7 +110,6 @@ CDEF:my5r=my5,total,/,100,*,0,100,LIMIT
 CDEF:my6r=my6,total,/,100,*,0,100,LIMIT
 CDEF:my7r=my7,total,/,100,*,0,100,LIMIT
 CDEF:my8r=my8,total,/,100,*,0,100,LIMIT
-
 AREA:my1r#c0c0c0:User   
 GPRINT:my1r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my1r:AVERAGE:Ave\:%5.1lf[%%]
