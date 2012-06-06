@@ -48,15 +48,11 @@ fetcher {
         PeerAddr => $host,
         PeerPort => $port,
         Proto    => 'tcp',
-        Blocking => 0,
+        Blocking => 1,
+        Timeout => 3.5,
     );
-    my $fbits = '';
-    vec($fbits, fileno($sock), 1) = 1;
-    my $found = select( undef, $fbits, undef, 3.5 );
+    die "could not connecet to $host:$port" unless $sock;
 
-    die "could not connecet to $host:$port" unless $found;
-
-    $sock->blocking(1);
     $sock->syswrite("info\r\n");
     my $raw_stats;
     $sock->sysread( $raw_stats, 8192 );
