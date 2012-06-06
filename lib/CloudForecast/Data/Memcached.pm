@@ -1,7 +1,7 @@
 package CloudForecast::Data::Memcached;
 
 use CloudForecast::Data -base;
-use IO::Socket::INET;
+use CloudForecast::TinyClient;
 
 =head1 NAME
 
@@ -56,18 +56,10 @@ fetcher {
 
     my $host = $c->address;
     my $port = $c->args->[0] || 11211;
-    my $sock = IO::Socket::INET->new(
-        PeerAddr => $host,
-        PeerPort => $port,
-        Proto    => 'tcp',
-        Blocking => 1,
-        Timeout => 3.5,
-    );
-    die "could not connecet to $host:$port" unless $sock;
 
-    $sock->syswrite("stats\r\n");
-    my $raw_stats;
-    $sock->sysread( $raw_stats, 8192 );
+    my $client = CloudForecast::TinyClient->new($host,$port,3.5);
+    $client->write("stats\r\n",1);
+    my $raw_stats = $client->read(1);
     die "could not retrieve status from $host:$port" unless $raw_stats;
 
     my %stats;
@@ -89,9 +81,8 @@ fetcher {
     }
 
     if ( $stats{version} && $stats{version} =~ m!^1\.4! ) {
-        $sock->syswrite("stats settings\r\n");
-        my $raw_setting_stats;
-        $sock->sysread( $raw_setting_stats, 8192 );
+        $client->write("stats settings\r\n");
+        my $raw_setting_stats = $client->read(1);
         my %setting_stats;
         foreach my $line ( split /\r?\n/, $raw_setting_stats ) {
             if ( $line =~ /^STAT\s([^ ]+)\s(.+)$/ ) {

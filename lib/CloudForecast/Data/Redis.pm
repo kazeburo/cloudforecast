@@ -1,7 +1,7 @@
 package CloudForecast::Data::Redis;
 
 use CloudForecast::Data -base;
-use IO::Socket::INET;
+use CloudForecast::TinyClient;
 
 =head1 NAME
 
@@ -44,18 +44,9 @@ fetcher {
     my $host = $c->address;
     my $port = $c->args->[0] || 6379;
 
-    my $sock = IO::Socket::INET->new(
-        PeerAddr => $host,
-        PeerPort => $port,
-        Proto    => 'tcp',
-        Blocking => 1,
-        Timeout => 3.5,
-    );
-    die "could not connecet to $host:$port" unless $sock;
-
-    $sock->syswrite("info\r\n");
-    my $raw_stats;
-    $sock->sysread( $raw_stats, 8192 );
+    my $client = CloudForecast::TinyClient->new($host,$port,3.5);
+    $client->write("info\r\n",1);
+    my $raw_stats = $client->read(1);
     die "could not retrieve status from $host:$port" unless $raw_stats;
 
     my %stats;
