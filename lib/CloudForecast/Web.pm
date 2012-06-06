@@ -864,7 +864,7 @@ $(function() {
   : }
 <div class="resource-graph">
 : if $resource.last_error {
-<p style="color:#B22222"><: $resource.last_error :></p>
+<p style="border:1px solid #B22222; padding:3px; color:#B22222"><: $resource.last_error :></p>
 : }
   : for $resource.graphs -> $graph {
 <div class="ngraph">
@@ -1028,7 +1028,7 @@ Selected Servers
 
 <div class="resource-graph">
 : if $resource.last_error {
-<p style="color:#B22222"><: $resource.last_error :></p>
+<p style="border:1px solid #B22222; padding:3px; color:#B22222"><: $resource.last_error :></p>
 : }
   : for $resource.graphs -> $graph {
 <div class="ngraph">
