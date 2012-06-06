@@ -339,6 +339,7 @@ sub draw_graph {
             unlink($tmpfile);
             die "draw graph failed: $@";
         }
+        last;
     }
 
     open( my $fh, $tmpfile ) or die "cannot open graph tmpfile: $!";
