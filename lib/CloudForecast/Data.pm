@@ -13,6 +13,7 @@ use File::Path qw//;
 use URI::Escape qw//;
 use HTTP::Date qw//;
 use RRDs;
+use Fcntl qw(:DEFAULT :flock);
 
 __PACKAGE__->mk_accessors(qw/hostname address details args
                              component_config _component_instance
@@ -208,6 +209,7 @@ sub list_graph {
 
 sub draw_graph {
     my $self = shift;
+
     my ($key, $span, $from, $to, $size ) = @_;
     die 'key no defined' unless $key;
     $span ||= 'd';
@@ -321,14 +323,22 @@ sub draw_graph {
         push @args, $line;
     }
 
-    eval {
-        RRDs::graph(@args);
-        my $ERR=RRDs::error;
-        die $ERR if $ERR;
-    };
-    if ( $@ ) {
-        unlink($tmpfile);
-        die "draw graph failed: $@";
+    my $try = 0;
+    while ( 1 ) {
+        $try++;
+        eval {
+            RRDs::graph(@args);
+            my $ERR=RRDs::error;
+            die $ERR if $ERR;
+        };
+        if ( $try == 1 && $@ && $@ =~ m!No such file or directory! ) {
+            $self->init_rrd;
+            next;
+        }
+        if ( $@ ) {
+            unlink($tmpfile);
+            die "draw graph failed: $@";
+        }
     }
 
     open( my $fh, $tmpfile ) or die "cannot open graph tmpfile: $!";
@@ -602,6 +612,14 @@ sub init_rrd {
         File::Path::mkpath("".$file->dir);
     }
 
+    my $init_lock = Path::Class::file(
+        $self->global_config->{data_dir},
+        $self->resource_name,
+        sprintf("%s.lock",$self->address)
+    );
+    open( my $fh, '>', $init_lock ) or die "cannot open lockfile: $!";
+    flock $fh, LOCK_EX;
+
     #init
     my @base_schema;
     my %extend_schema;
@@ -660,6 +678,7 @@ sub init_rrd {
         }
     }
 
+    undef $fh;
 }
 
 sub update_rrd {
