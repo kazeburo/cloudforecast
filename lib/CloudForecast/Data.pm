@@ -201,6 +201,11 @@ sub graph_sysinfo {
     return [];
 }
 
+sub last_error {
+    my $self = shift;
+    $self->ledge_get('__error');
+}
+
 sub list_graph {
     my $self = shift;
     my $graph_key_list = $self->graph_key_list;
@@ -468,6 +473,12 @@ sub exec_fetch {
     }
     else {
         $self->ledge_set_haserror('ok');
+    }
+    if ( $err ) {
+        $self->ledge_background_set('__error', $err );
+    }
+    else {
+        $self->ledge_background_delete('__error');
     }
     die $err if $err;
     $self->call_updater($ret);

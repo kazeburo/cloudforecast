@@ -29,7 +29,7 @@ test_tcp(
                 ok( $sysinfo{max_connections} );
             }
             else {
-                is_deeply( $ret, [0,0,0,0,1,0,67108864] );
+                is_deeply( $ret, [0,0,0,0,4,0,67108864] );
                 ok( 1 );
             }
                        

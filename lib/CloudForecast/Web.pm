@@ -863,6 +863,9 @@ $(function() {
 </div>
   : }
 <div class="resource-graph">
+: if $resource.last_error {
+<p style="color:#B22222"><: $resource.last_error :></p>
+: }
   : for $resource.graphs -> $graph {
 <div class="ngraph">
     : if $daterange {
@@ -1024,6 +1027,9 @@ Selected Servers
   : } # if resource.sysinfo.size
 
 <div class="resource-graph">
+: if $resource.last_error {
+<p style="color:#B22222"><: $resource.last_error :></p>
+: }
   : for $resource.graphs -> $graph {
 <div class="ngraph">
     : if $daterange {
