@@ -475,7 +475,10 @@ sub exec_fetch {
         $self->ledge_set_haserror('ok');
     }
     if ( $err ) {
-        $self->ledge_background_set('__error', $err );
+        my @lt = localtime();
+        my $lt = sprintf "%04d-%02d-%02dT%02d:%02d:%02d",$lt[5]+1900, $lt[4]+1,
+           $lt[3],$lt[2],$lt[1],$lt[0];
+        $self->ledge_background_set('__error', "[$lt] $err" );
     }
     else {
         $self->ledge_background_delete('__error');
