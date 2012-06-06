@@ -56,6 +56,8 @@ fetcher {
     $sock->syswrite("info\r\n");
     my $raw_stats;
     $sock->sysread( $raw_stats, 8192 );
+    die "could not retrieve status from $host:$port" unless $raw_stats;
+
     my %stats;
     foreach my $line ( split /\r?\n/, $raw_stats ) {
         chomp($line);chomp($line);
