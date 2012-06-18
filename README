@@ -34,7 +34,7 @@ $ ./cloudforecast_web -r -p 5000 -c cloudforecast.yaml -l server_list.yaml
 # 情報取得Gearmanワーカー
 $ ./cf_fetcher_worker -r -c cloudforecast.yaml \
      -max-workers 2 -max-request-per-child 100 -max-exection-time 60 
-  - geamarnでのリソース情報取得ワーカー
+  - gearmanでのリソース情報取得ワーカー
   - -max-worker preforkするワーカー数
   - -max-request-per-child 1ワーカープロセス処理回数。この回数を超えるとプロセスが新しく作り直される
   - -max-exection-time ワーカーの１回の取得作業でこれ以上の時間かかっている場合、そのワーカーを停止します
