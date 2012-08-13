@@ -239,7 +239,7 @@ GPRINT:my66:AVERAGE:Ave\:%6.2lf%sByte
 GPRINT:my66:MAX:Max\:%6.2lf%sByte\l
 
 # cached
-CDEF:my77=my7,1024,*,0,34359738368,LIMIT
+CDEF:my77=my7,1024,*,0,343597383680,LIMIT
 STACK:my77#6060e0:cached    
 GPRINT:my77:LAST:Cur\:%6.2lf%sByte
 GPRINT:my77:AVERAGE:Ave\:%6.2lf%sByte
