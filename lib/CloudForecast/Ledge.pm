@@ -42,6 +42,7 @@ sub connection {
                                 sqlite_use_immediate_transaction => 1,
                             } );
     $dbh->do('PRAGMA journal_mode = WAL');
+    $dbh->do('PRAGMA synchronous = NORMAL');
     $dbh->do(<<EOF);
 CREATE TABLE IF NOT EXISTS ledge (
     resource_name VARCHAR(255) NOT NULL,
