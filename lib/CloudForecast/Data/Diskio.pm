@@ -21,7 +21,7 @@ fetcher {
 
     if ( $device !~ /^\d+$/ ) {
         my $disks = $c->component('SNMP')->table("diskIOTable",
-            columns => [qw/diskIOIndex diskIODevice diskIONRead diskIONWritten diskIOReads diskIOWrites/] );
+            columns => [qw/diskIOIndex diskIODevice diskIONReadX diskIONWrittenX diskIOReads diskIOWrites/] );
         if ( !$disks ) {
             CloudForecast::Log->warn("couldnot get disk table");
             return [undef, undef, undef, undef];
@@ -32,10 +32,10 @@ fetcher {
             return [undef, undef, undef, undef];
         }
         CloudForecast::Log->debug("found partition '$device' with diskIOIndex:$disk->{diskIOIndex}");
-        return [ map { $disk->{$_} } qw/diskIONRead diskIONWritten diskIOReads diskIOWrites/ ];
+        return [ map { $disk->{$_} } qw/diskIONReadX diskIONWrittenX diskIOReads diskIOWrites/ ];
     }
     else {
-        my @map = map { [ $_, $device ] } qw/diskIODevice diskIONRead diskIONWritten diskIOReads diskIOWrites/;
+        my @map = map { [ $_, $device ] } qw/diskIODevice diskIONReadX diskIONWrittenX diskIOReads diskIOWrites/;
         my $ret = $c->component('SNMP')->get(@map);
         my $device_name = shift @$ret;
         if ( $device_name ) {
@@ -48,8 +48,10 @@ fetcher {
 
 __DATA__
 @@ byte
-DEF:my1=<%RRD%>:read:AVERAGE
-DEF:my2=<%RRD%>:write:AVERAGE
+DEF:my1a=<%RRD%>:read:AVERAGE
+DEF:my2a=<%RRD%>:write:AVERAGE
+CDEF:my1=my1a,0,200000000,LIMIT
+CDEF:my2=my2a,0,200000000,LIMIT
 AREA:my1#00C000:Read(B/S)  
 GPRINT:my1:LAST:Cur\: %4.1lf%s
 GPRINT:my1:AVERAGE:Ave\: %4.1lf%s
