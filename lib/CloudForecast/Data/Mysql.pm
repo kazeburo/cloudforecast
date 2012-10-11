@@ -33,7 +33,7 @@ sysinfo {
         }
 
         map { push @sysinfo, $_, $sysinfo->{$_} } grep { exists $sysinfo->{$_} } 
-            qw/max_connections max_connect_errors thread_cache_size slow_query_log long_query_time log_queries_not_using_indexes/;
+            qw/max_connections max_connect_errors thread_cache_size slow_query_log log_slow_queries long_query_time log_queries_not_using_indexes/;
         
     }
     return \@sysinfo;
