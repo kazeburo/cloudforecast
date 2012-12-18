@@ -22,7 +22,7 @@ sub list_graph {
             resource => $resource,
             graphs => \@graphs,
             sysinfo => $data->graph_sysinfo,
-            last_error => $data->last_error,
+            last_error => $data->last_error || '',
         };
     }
     return @ret;
