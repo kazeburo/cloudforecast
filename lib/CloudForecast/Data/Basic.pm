@@ -21,7 +21,7 @@ graphs 'cpu' => 'CPU Usage [%]' => 'cpu.def', sub {
     my $sysinfo = $c->ledge_get('sysinfo') || [];
     my %sysinfo = @$sysinfo;
     my $version = $sysinfo{'snmp version'} || 0;
-    if ( $version < 5.4 ) {
+    if ( $version lt '5.4' ) {
         my $reader = Data::Section::Simple->new(ref $c);
         $template = $reader->get_data_section('cpu_old.def');
     } 
