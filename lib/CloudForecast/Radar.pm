@@ -39,7 +39,8 @@ sub run {
     }
 
     my $now = time;
-    my $next = $now - ( $now % 300 )  + 300;
+    my $interval = $global_config->{interval} || 300;
+    my $next = $now - ( $now % $interval )  + $interval;
     my $pid;
 
     my @signals_received;

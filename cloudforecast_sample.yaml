@@ -9,6 +9,8 @@ config:
   data_dir: data
 # 監視項目の設定ファイルを設置するディレクトリ。「/」から始まると絶対パス
   host_config_dir: host_config
+# radarの実行間隔(秒)
+  interval: 300
 
 component_config:
 # SNMPでデータを取得する時のオプション。communityとversion
