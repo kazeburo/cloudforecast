@@ -8,8 +8,8 @@ rrds map { [ $_, 'COUNTER'] } qw/pr pw/;
 rrds map { [ $_, 'GAUGE'] }   qw/dirtyr/;
 rrds map { [ $_, 'GAUGE'] }   qw/bp_total bp_free/;
 
-graphs 'row_count',  'ROW OPERATIONS Count';
-graphs 'row_speed',  'ROW OPERATIONS Speed';
+graphs 'rows_rate',  'ROW OPERATIONS Rate';
+graphs 'rows_count', 'ROW OPERATIONS Count';
 graphs 'bp_usage',   'Buffer pool usage';
 graphs 'cache',      'Buffer pool hit rate';
 graphs 'page_io',    'Page read(+)/write(-) count';
@@ -123,7 +123,7 @@ L<http://forums.innodb.com/read.php?4,1228,1233>
 =cut
 
 __DATA__
-@@ row_count
+@@ rows_rate
 DEF:my1=<%RRD%>:ir:AVERAGE
 DEF:my2=<%RRD%>:ur:AVERAGE
 DEF:my3=<%RRD%>:dr:AVERAGE
@@ -154,7 +154,7 @@ GPRINT:my4r:AVERAGE:Ave\: %5.1lf[%%]
 GPRINT:my4r:MAX:Max\: %5.1lf[%%]
 GPRINT:my4r:MIN:Min\: %5.1lf[%%]\l
 
-@@ row_speed
+@@ rows_count
 DEF:my1=<%RRD%>:ir:AVERAGE
 DEF:my2=<%RRD%>:ur:AVERAGE
 DEF:my3=<%RRD%>:dr:AVERAGE
