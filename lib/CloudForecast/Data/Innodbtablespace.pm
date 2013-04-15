@@ -92,7 +92,12 @@ HIROSE Masaaki E<lt>hirose31@gmail.comE<gt>
 __DATA__
 @@ free
 DEF:my1=<%RRD%>:free:AVERAGE
+VDEF:slope=my1,LSLSLOPE
+VDEF:cons=my1,LSLINT
+CDEF:lsl2=my1,POP,slope,COUNT,*,cons,+
 AREA:my1#1d71ff:Free 
 GPRINT:my1:LAST:Cur\: %4.1lf%s
 GPRINT:my1:MAX:Max\: %4.1lf%s
-GPRINT:my1:MIN:Min\: %4.1lf%s\c
+GPRINT:my1:MIN:Min\: %4.1lf%s\l
+LINE1:lsl2#00A000:Prediction:dashes=2,8
+
