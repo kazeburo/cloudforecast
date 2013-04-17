@@ -23,8 +23,12 @@ CloudForecast::Data::Memcached - memcached resource monitor
 
 rrds map { [$_,'COUNTER'] } qw/cmdget cmdset gethits getmisses/;
 rrds map { [$_,'GAUGE'] } qw/rate used max/;
+extend_rrd $_,'COUNTER' for qw/evt_total evt_unfetched/;
+extend_rrd $_,'GAUGE' for qw/items_cur/;
 # rate is using for current_connections
 graphs 'usage' => 'Cache Usage';
+graphs 'items' => 'Items';
+graphs 'evictions' => 'Evictions/sec';
 graphs 'count' => 'Request Count';
 graphs 'rate' => 'Cache Hit Rate';
 graphs 'conn' => 'Connections' => 'conn' => sub {
@@ -96,7 +100,10 @@ fetcher {
     $c->ledge_set( 'sysinfo', \@sysinfo );
 
     return [ $stats{cmd_get}, $stats{cmd_set}, $stats{get_hits}, $stats{get_misses},
-             $stats{curr_connections}, $stats{bytes}, $stats{limit_maxbytes} ];
+             $stats{curr_connections}, $stats{bytes}, $stats{limit_maxbytes},
+             $stats{evictions}, $stats{evicted_unfetched},
+             $stats{curr_items},
+            ];
 
 };
 
@@ -153,7 +160,25 @@ GPRINT:conn:AVERAGE:Ave\:%7.1lf
 GPRINT:conn:MAX:Max\:%7.1lf
 GPRINT:conn:MIN:Min\:%7.1lf\l
 
+@@ evictions
+DEF:my1=<%RRD_EXTEND evt_total %>:evt_total:AVERAGE
+DEF:my2=<%RRD_EXTEND evt_unfetched %>:evt_unfetched:AVERAGE
+AREA:my1#800040:Evictions Total    
+GPRINT:my1:LAST:Cur\:%6.1lf
+GPRINT:my1:AVERAGE:Ave\:%6.1lf
+GPRINT:my1:MAX:Max\:%6.1lf
+GPRINT:my1:MIN:Min\:%6.1lf\l
+LINE2:my2#004080:Evictions Unfetched
+GPRINT:my2:LAST:Cur\:%6.1lf
+GPRINT:my2:AVERAGE:Ave\:%6.1lf
+GPRINT:my2:MAX:Max\:%6.1lf
+GPRINT:my2:MIN:Min\:%6.1lf\l
 
-
-
+@@ items
+DEF:my1=<%RRD_EXTEND items_cur %>:items_cur:AVERAGE
+AREA:my1#00A000:Current Items
+GPRINT:my1:LAST:Cur\:%8.0lf
+GPRINT:my1:AVERAGE:Ave\:%8.0lf
+GPRINT:my1:MAX:Max\:%8.0lf
+GPRINT:my1:MIN:Min\:%8.0lf\l
 
