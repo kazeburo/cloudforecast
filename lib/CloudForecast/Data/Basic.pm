@@ -6,6 +6,7 @@ use CloudForecast::Data -base;
 # [定義名,タイプ]
 rrds map { [ $_, 'DERIVE' ] } qw /user nice system idle wait kernel interrupt/;
 extend_rrd 'softirq','DERIVE';
+extend_rrd 'steal','DERIVE';
 rrds 'load' => 'GAUGE';
 rrds map { [ $_, 'GAUGE' ] } qw/totalswap availswap totalreal availreal totalfree shared buffer cached/;
 rrds 'tcpestab' => 'GAUGE';
@@ -47,7 +48,7 @@ fetcher {
 
     #cpu
     my @map = map { [ $_, 0 ] } qw/versionTag ssCpuRawUser ssCpuRawNice ssCpuRawSystem
-                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ/;
+                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ ssCpuRawSteal/;
     #load
     push @map, [ 'laLoad', 1 ];
     # memory
@@ -103,10 +104,12 @@ DEF:my4=<%RRD%>:idle:AVERAGE
 DEF:my5t=<%RRD%>:wait:AVERAGE
 DEF:my7t=<%RRD%>:interrupt:AVERAGE
 DEF:my8t=<%RRD_EXTEND softirq  %>:softirq:AVERAGE
+DEF:my9t=<%RRD_EXTEND steal    %>:steal:AVERAGE
 CDEF:my5=my5t,UN,0,my5t,IF
 CDEF:my7=my7t,UN,0,my7t,IF
 CDEF:my8=my8t,UN,0,my8t,IF
-CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my7,+,my8,+
+CDEF:my9=my9t,UN,0,my9t,IF
+CDEF:total=my1,my2,+,my3,+,my4,+,my5,+,my7,+,my8,+,my9,+
 CDEF:my1r=my1,total,/,100,*,0,100,LIMIT
 CDEF:my2r=my2,total,/,100,*,0,100,LIMIT
 CDEF:my3r=my3,total,/,100,*,0,100,LIMIT
@@ -114,6 +117,7 @@ CDEF:my4r=my4,total,/,100,*,0,100,LIMIT
 CDEF:my5r=my5,total,/,100,*,0,100,LIMIT
 CDEF:my7r=my7,total,/,100,*,0,100,LIMIT
 CDEF:my8r=my8,total,/,100,*,0,100,LIMIT
+CDEF:my9r=my9t,total,/,100,*,0,100,LIMIT
 AREA:my1r#c0c0c0:User   
 GPRINT:my1r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my1r:AVERAGE:Ave\:%5.1lf[%%]
@@ -149,6 +153,11 @@ GPRINT:my8r:LAST:Cur\:%5.1lf[%%]
 GPRINT:my8r:AVERAGE:Ave\:%5.1lf[%%]
 GPRINT:my8r:MAX:Max\:%5.1lf[%%]
 GPRINT:my8r:MIN:Min\:%5.1lf[%%]\l
+STACK:my9r#EBF906:Steal  
+GPRINT:my9r:LAST:Cur\:%5.1lf[%%]
+GPRINT:my9r:AVERAGE:Ave\:%5.1lf[%%]
+GPRINT:my9r:MAX:Max\:%5.1lf[%%]
+GPRINT:my9r:MIN:Min\:%5.1lf[%%]\l
 
 @@ cpu_old.def
 DEF:my1=<%RRD%>:user:AVERAGE
