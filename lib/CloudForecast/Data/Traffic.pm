@@ -56,8 +56,8 @@ __DATA__
 @@ traffic
 DEF:ind=<%RRD%>:in:AVERAGE
 DEF:outd=<%RRD%>:out:AVERAGE
-CDEF:in=ind,0,125000000,LIMIT,8,*
-CDEF:out=outd,0,125000000,LIMIT,8,*
+CDEF:in=ind,0,1250000000,LIMIT,8,*
+CDEF:out=outd,0,1250000000,LIMIT,8,*
 AREA:in#00C000:Inbound  
 GPRINT:in:LAST:Cur\:%6.2lf%sbps
 GPRINT:in:AVERAGE:Ave\:%6.2lf%sbps
