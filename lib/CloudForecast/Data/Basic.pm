@@ -48,7 +48,9 @@ fetcher {
 
     #cpu
     my @map = map { [ $_, 0 ] } qw/versionTag ssCpuRawUser ssCpuRawNice ssCpuRawSystem
-                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ ssCpuRawSteal/;
+                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ/;
+    my $index_cpusteal = $#map + 1;
+
     #load
     push @map, [ 'laLoad', 1 ];
     # memory
@@ -68,6 +70,14 @@ fetcher {
     my $processor = $c->component('SNMP')->table('hrProcessorTable',columns=>[qw/hrProcessorLoad/]);
 
     my $version = shift @$ret;
+    $index_cpusteal--;
+
+    if ($version ge 5.7) {
+        my $ret2 = $c->component('SNMP')->get(map { [ $_, 0 ] } qw/ssCpuRawSteal/);
+        splice @$ret, $index_cpusteal, 0, ($ret2->[0] || 0);
+    } else {
+        splice @$ret, $index_cpusteal, 0, 0;
+    }
 
     #sysinfo
     my @sysinfo;
