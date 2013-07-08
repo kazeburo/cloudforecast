@@ -48,7 +48,9 @@ fetcher {
 
     #cpu
     my @map = map { [ $_, 0 ] } qw/versionTag ssCpuRawUser ssCpuRawNice ssCpuRawSystem
-                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ ssCpuRawSteal/;
+                                ssCpuRawIdle ssCpuRawWait ssCpuRawKernel ssCpuRawInterrupt ssCpuRawSoftIRQ /;
+    my $index_cpusteal = $#map + 1;
+
     #load
     push @map, [ 'laLoad', 1 ];
     # memory
@@ -65,6 +67,13 @@ fetcher {
 
     # SNMP->get 配列のリファレンスが最終的に戻る
     my $ret = $c->component('SNMP')->get(@map);
+
+    # session->get(SNMP::VarList->new(@ids)) は知らないMIBがあると
+    # 値をひとつも返さない実装のがあるので、そういう可能性があるやつは
+    # あとで別途値を得る。
+    my $ret2 = $c->component('SNMP')->get(map { [ $_, 0 ] } qw/ssCpuRawSteal/);
+    splice @$ret, $index_cpusteal, 0, ($ret2->[0] || undef);
+
     my $processor = $c->component('SNMP')->table('hrProcessorTable',columns=>[qw/hrProcessorLoad/]);
 
     my $version = shift @$ret;
