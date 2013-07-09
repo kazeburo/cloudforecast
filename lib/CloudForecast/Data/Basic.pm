@@ -74,9 +74,9 @@ fetcher {
 
     if ($version ge 5.7) {
         my $ret2 = $c->component('SNMP')->get(map { [ $_, 0 ] } qw/ssCpuRawSteal/);
-        splice @$ret, $index_cpusteal, 0, ($ret2->[0] || 0);
+        splice @$ret, $index_cpusteal, 0, ($ret2->[0] || undef);
     } else {
-        splice @$ret, $index_cpusteal, 0, 0;
+        splice @$ret, $index_cpusteal, 0, undef;
     }
 
     #sysinfo
