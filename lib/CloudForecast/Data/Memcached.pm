@@ -17,7 +17,7 @@ CloudForecast::Data::Memcached - memcached resource monitor
   eg)
     - memcached  # memcachedを11211で動かしている場合
     - memcached:11212 # ほかのportで起動
-    - memcached:1978:tokyotyrant # tokyotyrantを関する場合
+    - memcached:1978:tokyotyrant # tokyotyrantを監視する場合
 
 =cut
 
