@@ -55,6 +55,10 @@ extend_rrd 'active_transactions', 'GAUGE';
 extend_rrd 'locked_transactions', 'GAUGE';
 extend_rrd 'current_transactins', 'GAUGE';
 extend_rrd 'read_views', 'GAUGE';
+# InnoDB Semaphores
+extend_rrd 'spin_rounds', 'DERIVE';
+extend_rrd 'spin_waits', 'DERIVE';
+extend_rrd 'os_waits', 'DERIVE';
 
 graphs 'rows_rate',  'ROW OPERATIONS Rate';
 graphs 'rows_count', 'ROW OPERATIONS Count';
@@ -75,6 +79,7 @@ graphs 'idb_row_lock_waits','Row Lock Waits';
 graphs 'idb_tables_in_use','InnoDB Tables In Use';
 graphs 'idb_transactions','InnoDB Transactions';
 graphs 'idb_transactions_activelocked','Transactions Active/Locked';
+graphs 'idb_semaphores','InnoDB Semaphores';
 
 title {
     my $c = shift;
@@ -588,6 +593,10 @@ fetcher {
         $ibstatus{locked_transactions},
         $ibstatus{current_transactions},
         $ibstatus{read_views},
+        # InnoDB Semaphores
+        $ibstatus{spin_rounds},
+        $ibstatus{spin_waits},
+        $ibstatus{os_waits},
 
        ];
 };
@@ -917,3 +926,19 @@ GPRINT:read_views:LAST:Cur\: %5.1lf
 GPRINT:read_views:AVERAGE:Ave\: %5.1lf
 GPRINT:read_views:MAX:Max\: %5.1lf\l
 
+@@ idb_semaphores
+DEF:spin_rounds=<%RRD_EXTEND spin_rounds %>:spin_rounds:AVERAGE
+DEF:spin_waits=<%RRD_EXTEND spin_waits %>:spin_waits:AVERAGE
+DEF:os_waits=<%RRD_EXTEND os_waits %>:os_waits:AVERAGE
+LINE1:spin_rounds#306078:Spin Rounds
+GPRINT:spin_rounds:LAST:Cur\: %5.1lf%S
+GPRINT:spin_rounds:AVERAGE:Ave\: %5.1lf%S
+GPRINT:spin_rounds:MAX:Max\: %5.1lf%S\l
+LINE1:spin_waits#4444FF:Spin Waits 
+GPRINT:spin_waits:LAST:Cur\: %5.1lf%S
+GPRINT:spin_waits:AVERAGE:Ave\: %5.1lf%S
+GPRINT:spin_waits:MAX:Max\: %5.1lf%S\l
+LINE1:os_waits#FF7D00:Os Waits   
+GPRINT:os_waits:LAST:Cur\: %5.1lf%S
+GPRINT:os_waits:AVERAGE:Ave\: %5.1lf%S
+GPRINT:os_waits:MAX:Max\: %5.1lf%S\l
