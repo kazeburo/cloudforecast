@@ -88,10 +88,14 @@ sub run {
             next if $pid; #main process
 
             # child process
+            my %seen;
             foreach my $group ( @$server_list ) {
                 foreach my $sub_group ( @{$group->{sub_groups}} ) {
                     my $hosts = $sub_group->{hosts};
                     foreach my $host ( @$hosts ) {
+                        my $ident = join ',', $host->{address}, @{ $host->{resources} };
+                        next if exists $seen{$ident};
+                        $seen{$ident} = 1;
                         $self->run_host($host, $global_config);
                     }
                 }
