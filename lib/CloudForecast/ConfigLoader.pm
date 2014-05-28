@@ -118,8 +118,9 @@ sub load_server_list {
     foreach my $group ( @groups ) {
 
         my @sub_groups;
-        my %sub_group_label;
+        my @sub_group_labels;
         my $server_count=0;
+        my %sub_groups_by_label;
         foreach my $sub_group ( @{$group->{servers}} ) {
 
             my $host_config = $sub_group->{config}
@@ -127,11 +128,6 @@ sub load_server_list {
             $server_count++;
 
             my $hosts = $sub_group->{hosts} || [];
-            if ( $sub_group->{label} ) {
-                die "duplicated label found in $group_titles[$i] : $sub_group->{label}"
-                    if exists $sub_group_label{$sub_group->{label}};
-                $sub_group_label{$sub_group->{label}}=1;
-            }
             my @sub_group_hosts;
             for my $host_line ( @$hosts ) {
                 my $host = $self->parse_host( $host_line, $host_config );
@@ -140,17 +136,24 @@ sub load_server_list {
                 $all_hosts{$host->{address}} = $host;
                 $sub_config_group_num++;
             }
-            
-            if ( @sub_groups && ! $sub_group->{label} ) {
-                push @{$sub_groups[-1]->{hosts}}, @sub_group_hosts;
-                next;
+
+            my $label_key = substr(Digest::MD5::md5_hex( $group_titles[$i] . '\0' . ($sub_group->{label} || '')),0,12);
+
+            if (! exists $sub_groups_by_label{$label_key}) {
+                push @sub_group_labels, {
+                    label     => $sub_group->{label} || '',
+                    label_key => $label_key,
+                };
             }
 
-            my $label = $sub_group->{label} ? $sub_group->{label} : Digest::MD5::md5_hex($$ . $sub_group . rand(1000) );
+            push @{ $sub_groups_by_label{$label_key} }, @sub_group_hosts;
+        }
+
+        for my $l (@sub_group_labels) {
             push @sub_groups, {
-                label => $sub_group->{label} || '',
-                label_key => substr(Digest::MD5::md5_hex( $group_titles[$i] . '\0' . $label),0,12),
-                hosts => \@sub_group_hosts,
+                label     => $l->{label},
+                label_key => $l->{label_key},
+                hosts     => $sub_groups_by_label{$l->{label_key}},
             };
         }
 
