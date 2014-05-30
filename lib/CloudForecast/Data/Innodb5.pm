@@ -319,8 +319,8 @@ sub _get_innodb_status {
             # Output of show engine innodb status has changed in 5.5
             # merged operations:
             # insert 593983, delete mark 387006, delete 73092
-            $ibstatus{'ibuf_inserts'} = $row[1];
-            $ibstatus{'ibuf_merged'}  = $row[1] + $row[4] + $row[6];
+            $ibstatus{'ibuf_inserts'} = to_int($row[1]);
+            $ibstatus{'ibuf_merged'}  = to_int($row[1]) + to_int($row[4]) + to_int($row[6]);
         }
         elsif ($line =~ / merged recs, /) {
             # 19817685 inserts, 19817684 merged recs, 3552620 merges
