@@ -229,6 +229,8 @@ fetcher {
                 @mp_old  = @{ $value->{$mp}{Usage} }{qw(max committed used)}
             } elsif ($mp =~ /name=.*Perm Gen/) {
                 @mp_perm = @{ $value->{$mp}{Usage} }{qw(max committed used)}
+            } elsif ($mp =~ /name=Code Cache/) {
+                ;
             } else {
                 CloudForecast::Log->warn("unknown MemoryPool: $mp");
             }
