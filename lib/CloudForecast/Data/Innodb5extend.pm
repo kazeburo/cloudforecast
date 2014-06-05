@@ -1,4 +1,4 @@
-package CloudForecast::Data::Innodb5;
+package CloudForecast::Data::Innodb5extend;
 
 use CloudForecast::Data -base;
 
@@ -605,7 +605,7 @@ fetcher {
 
 =head1 NAME
 
-CloudForecast::Data::Innodb5 - monitor InnoDB for MySQL 5
+CloudForecast::Data::Innodb5extend - monitor InnoDB for MySQL 5
 
 =head1 SYNOPSIS
 

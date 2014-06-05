@@ -1,4 +1,4 @@
-package CloudForecast::Data::Mysql;
+package CloudForecast::Data::Mysqlextend;
 
 use CloudForecast::Data -base;
 
