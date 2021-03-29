@@ -15,7 +15,7 @@ my $config_yaml = $root_dir . '/cloudforecast.yaml';
 
 my $max_workers            = 2;
 my $max_requests_per_child = 100;
-my $max_execution_time = 60;
+my $max_exection_time = 60;
 my $restarter = 0;
 
 GetOptions(
@@ -23,7 +23,7 @@ GetOptions(
     'r|restarter' => \$restarter,
     'max-workers=i'   => \$max_workers,
     'max-request-per-child=i' => \$max_requests_per_child,
-    'max-exection-time=i' => \$max_execution_time,
+    'max-exection-time=i' => \$max_exection_time,
 );
 
 die 'config not found' unless $config_yaml;
@@ -34,7 +34,7 @@ my $gearman = CloudForecast::Gearman::Worker->new({
     restarter => $restarter,
     max_workers => $max_workers,
     max_requests_per_child => $max_requests_per_child,
-    max_execution_time => $max_execution_time,
+    max_exection_time => $max_exection_time,
 });
 
 $gearman->updater_worker();
