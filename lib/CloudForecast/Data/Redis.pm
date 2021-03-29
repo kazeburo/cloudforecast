@@ -47,6 +47,25 @@ sysinfo {
     $c->ledge_get('sysinfo') || [];
 };
 
+sub read_result {
+    my $client = shift;
+    my $prefix = $client->read(1);
+    while ($prefix !~ /\r\n/) {
+        my $tmp = $client->read(1);
+        die "could not retrieve whole string" if $tmp == '';
+        $prefix = $prefix . $tmp;
+    }
+    my ($length, $buffer) = ( split /\r\n/, $prefix, 2 );
+    $length =~ s/\$//g;
+    while (length($buffer) != $length + 2) { # prefixed length terminated by CRLF
+        my $tmp = $client->read(1);
+        die "could not retrieve whole string" if $tmp == '';
+        $buffer = $buffer . $tmp;
+    }
+    die "string is not finished CRLF" if $buffer !~ /\r\n\z/;
+    $buffer =~ s/\r\n\z//g;
+    return length($buffer) == $length ? $buffer : undef;
+}
 
 fetcher {
     my $c = shift;
@@ -56,7 +75,7 @@ fetcher {
 
     my $client = CloudForecast::TinyClient->new($host,$port,3.5);
     $client->write("info\r\n",1);
-    my $raw_stats = $client->read(1);
+    my $raw_stats = read_result($client);
     die "could not retrieve status from $host:$port" unless $raw_stats;
 
     my %stats;
