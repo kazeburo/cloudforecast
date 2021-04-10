@@ -39,7 +39,8 @@ sub run {
     }
 
     my $now = time;
-    my $next = $now - ( $now % 300 )  + 300;
+    my $interval = $global_config->{interval} || 300;
+    my $next = $now - ( $now % $interval )  + $interval;
     my $pid;
 
     my @signals_received;
@@ -76,7 +77,7 @@ sub run {
         $now = time;
         if ( $now >= $next ) {
             CloudForecast::Log->warn( sprintf( "(%s) radar start ", scalar localtime $next) );
-            $next = $now - ( $now % 300 ) + 300;
+            $next = $now - ( $now % $interval ) + $interval;
 
             if ( $pid ) {
                 CloudForecast::Log->warn( "Previous radar exists, skipping this time");
